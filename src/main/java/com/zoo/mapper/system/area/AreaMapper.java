@@ -20,4 +20,11 @@ public interface AreaMapper {
 	 * @return
 	 */
 	int addArea(@Param("area") Area area);
+	
+	
+	/**
+	 * 修改区域数据功能
+	 * @param area
+	 */
+	void updateArea(@Param("area") Area area);
 }

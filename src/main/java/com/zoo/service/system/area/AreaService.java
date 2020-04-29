@@ -35,6 +35,14 @@ public class AreaService {
 		return area;
 	}
 	
-	
+	/**
+	 * 修改区域数据功能
+	 * @param area
+	 */
+	public void updateArea(Area area) {
+		// TODO Auto-generated method stub
+		System.out.println(area);
+		areaMapper.updateArea(area);
+	}
 	
 }
