@@ -50,4 +50,18 @@ public class AreaController {
 		}
 	}
 	
+	/**
+	 * 修改区域数据功能
+	 */
+	@PostMapping("updateArea")
+	public RespBean updateArea(@RequestBody Area area) {
+		try {
+			areaService.updateArea(area);
+			return new RespBean("200","保存成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500","保存失败");
+		}
+	}
+	
 }
