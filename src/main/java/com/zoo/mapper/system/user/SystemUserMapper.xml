@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.user.SystemUserMapper">
+    <resultMap id="BaseResultMap" type="com.zoo.model.system.user.SystemUser">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="realName" property="realName" jdbcType="VARCHAR"/>
+        <result column="userName" property="userName" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="salt" property="salt" jdbcType="VARCHAR"/>
+      	<collection column="id" property="positions" ofType="com.zoo.model.system.position.Position" select="getPositions">
+      	
+      	</collection>
+    </resultMap> 
+    <select id="getPositions" resultType="com.zoo.model.system.position.Position">
+    	select p.* from u_p up left join position p on up.positionId = p.id left join system_user su ON up.userId=su.id 
+    	where su.id = #{id}
+    </select>
+    <select id="getUserByUserName" resultMap="BaseResultMap">
+    	select * from system_user where userName = #{username}
+    </select>
+	<select id="getUserByPage" resultMap="BaseResultMap">
+		select 
+			* 
+		from
+			system_user u
+		where u.realName like concat('%',#{keywords},'%')
+		<if test="companyId!=null">
+			AND companyId=#{companyId}
+		</if>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCountByKeywords" resultType="Long">
+		select count(*) from system_user u where u.realName like concat('%',#{keywords},'%') 
+		<if test="companyId!=null">
+			AND companyId=#{companyId}
+		</if>
+	</select>
+	<select id="getUserById" resultMap="BaseResultMap">
+		select * from system_user where id=#{id}
+	</select>
+	<insert id="addUser">
+		insert into system_user(
+			id,
+			realName,
+			userName,
+			password,
+			salt,
+			companyId
+		)values(
+			#{user.id},
+			#{user.realName},
+			#{user.userName},
+			#{user.password},
+			#{user.salt},
+			#{user.companyId}
+		)
+	</insert>
+	<insert id="addPosition">
+		insert into u_p (id,userId,positionId) values(#{id},#{userId},#{positionId})
+	</insert>
+	
+	<update id="updateUser">
+		update system_user
+			<set>
+				<if test="user.realName!=null">
+					realName = #{user.realName},
+				</if>
+				<if test="user.userName!=null">
+					userName = #{user.userName},
+				</if>
+			</set>
+		where id=#{user.id,jdbcType=VARCHAR}
+	</update>
+	<delete id="deletePosition">
+		delete from u_p where userId=#{userId}
+	</delete>
+</mapper>

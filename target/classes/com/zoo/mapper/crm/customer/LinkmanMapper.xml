@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.crm.customer.LinkmanMapper">
+	<resultMap type="com.zoo.model.crm.Linkman" id="BaseResultMap">
+		<id column="id" property="id"/>
+	</resultMap>
+	<select id="getLinkmanByCustomerId" resultMap="BaseResultMap">
+		select * from linkman where customerId=#{customerId}
+	</select>
+	<insert id="addLinkman">
+		insert into linkman (
+			id,
+			realName,
+			sex,
+			customerId,
+			email,
+			telphone,
+			cellphone,
+			nikeName,
+			job,
+			birthday,
+			description
+		) values(
+			#{linkman.id},
+			#{linkman.realName},
+			#{linkman.sex},
+			#{linkman.customerId},
+			#{linkman.email},
+			#{linkman.telphone},
+			#{linkman.cellphone},
+			#{linkman.nikeName},
+			#{linkman.job},
+			#{linkman.birthday},
+			#{linkman.description}
+		)
+	</insert>
+	<update id="updateLinkman">
+		update linkman set
+			realName = #{linkman.realName},
+			sex=#{linkman.sex},
+			email=#{linkman.email},
+			telphone=#{linkman.telphone},
+			cellphone=#{linkman.cellphone},
+			nikeName=#{linkman.nikeName},
+			job = #{linkman.job},
+			birthday=#{linkman.birthday},
+			description=#{linkman.description}
+		where id = #{linkman.id}
+	</update>
+</mapper>

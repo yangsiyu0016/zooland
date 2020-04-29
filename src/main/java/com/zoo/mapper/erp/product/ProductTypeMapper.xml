@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.product.ProductTypeMapper">
+	<resultMap type="com.zoo.model.erp.product.ProductType" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="code" property="code"/>
+		<result column="companyId" property="companyId"/>
+		<result column="leaf" property="leaf"/>
+		<result column ="parentId" property="parentId"></result>
+		<collection  column="{id=id,companyId=companyId}" ofType="com.zoo.model.erp.product.ProductType" property="children" select="getSubTreeData">
+		</collection>
+	</resultMap>
+	<select id="getSubTreeData" resultMap="BaseResult">
+		select * from product_type where companyId=#{companyId} and parentId =#{id}
+	</select>
+	<select id="getTreeData" resultMap="BaseResult">
+		select * from product_type where companyId=#{companyId} and (parentId is null or parentId='')
+	</select>
+	<select id="getTypeById" resultType="com.zoo.model.erp.product.ProductType">
+		select * from product_type where id=#{id}
+	</select>
+	<select id="getTypeByBrandId" resultType="com.zoo.model.erp.product.ProductType">
+		select pt.* from b_t bt left join product_type pt on pt.id=bt.typeId where bt.brandId=#{brandId}
+	</select>
+	<select id="getTypeByIds" resultMap="BaseResult">
+		select * from product_type
+		where id in
+		<foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+	<insert id="addProductType">
+		insert into product_type (id,name,code,parentId,companyId) values(#{type.id},#{type.name},#{type.code},#{type.parentId},#{type.companyId})
+	</insert>
+	
+	<update id="updateProductType">
+		update product_type 
+			<set>
+				<if test="type.name!=null">
+					name=#{type.name},
+				</if>
+				<if test="type.code!=null">
+					code = #{type.code}
+				</if>
+			</set>
+		where id = #{type.id}
+	</update>
+</mapper>

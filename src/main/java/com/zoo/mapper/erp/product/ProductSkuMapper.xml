@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.product.ProductSkuMapper">
+	<resultMap type="com.zoo.model.erp.product.ProductSku" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/> 
+		<result column="productId" property="productId"/>
+		<result column="ownSpec" property="ownSpec"/>
+		<result column="indexes" property="indexes"/>
+		<association column="productId" property="product"  select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+	</resultMap>
+	<select id="getProductSkuByPage" resultMap="BaseResultMap">
+		select sku.* from product_sku sku left join product p on sku.productId = p.id
+		where 1=1 
+		<if test="companyId!=null">
+			and p.companyId = #{companyId}
+		</if>
+		<if test="key!=null">
+				and p.name like CONCAT('%',#{key},'%')
+		</if>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="long"> 
+		select count(*) from product_sku sku left join product p on sku.productId = p.id
+		where 1=1
+		<if test="companyId!=null">
+			and p.companyId = #{companyId}
+		</if>
+		<if test="key!=null">
+				and p.name like CONCAT('%',#{key},'%')
+		</if>
+	</select>
+	<select id="getSkuById" resultMap="BaseResultMap">
+		select * from product_sku where id=#{id}
+	</select>
+	<select id="getSkuByProductId" resultMap="BaseResultMap">
+		select * from product_sku where productId=#{productId}
+	</select>
+	<insert id="addSku">
+		insert into product_sku (id,code,productId,ownSpec,indexes) values(#{sku.id},#{sku.code},#{sku.productId},#{sku.ownSpec},#{sku.indexes})
+	</insert>
+</mapper>

@@ -1,0 +1,56 @@
+package com.zoo.controller.erp.openingInventory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+import com.zoo.filter.LoginInterceptor;
+import com.zoo.model.erp.openingInventory.OpeningInventory;
+import com.zoo.service.erp.openingInventory.OpeningInventoryService;
+import com.zoo.vo.RespBean;
+@RestController
+@RequestMapping("/oi")
+public class OpeningInventoryController {
+	@Autowired
+	OpeningInventoryService oiService;
+	
+	@GetMapping("page")
+	public Map<String,Object> getOpeningInventory_self(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<OpeningInventory> ois = oiService.getOpeningInventoryByPage(page, size, LoginInterceptor.getLoginUser().getId());
+		long count = oiService.getCount(LoginInterceptor.getLoginUser().getId());
+		map.put("ois", ois);
+		map.put("count",count);
+		return map;
+	}
+	@GetMapping("getOiById")
+	public OpeningInventory getOiById(@RequestParam("id")String id) {
+		return oiService.getOpeningInventoryById(id);
+	}
+	@PostMapping("add")
+	public RespBean addOpeningInventory(@RequestBody OpeningInventory oi) {
+		try {
+			oiService.addOpeningInventory(oi);
+			return new RespBean("200","保存成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}	
+	}
+	@PostMapping("startFlow")
+	public void startFlow(@RequestParam("id")String id) {
+		oiService.startProcess(id);
+	}
+	@PostMapping("deleteFlow")
+	public void deleteFlow(@RequestParam("id")String id) {
+		oiService.doCallBackFlow(id);
+	}
+}

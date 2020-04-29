@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.sell.SellDetailMapper">
+	<resultMap type="com.zoo.model.erp.sell.SellDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="notOutNumber" property="notOutNumber"/>
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+	</resultMap>
+	<select id="getDetailBySellId"  resultMap="BaseResultMap">
+		select * from sell_detail where sellId= #{sellId}
+	</select>
+	<select id="getNotOutDetailBySellId" resultMap="BaseResultMap">
+		select * from sell_detail where sellId = #{sellId} and notOutNumber!=0
+	</select>
+	<insert id="addDetail">
+		insert into sell_detail (
+			id,
+			skuId,
+			warehouseId,
+			number,
+			notOutNumber,
+			price,
+			totalMoney,
+			sellId
+		)values(
+			#{detail.id},
+			#{detail.productSku.id},
+			#{detail.warehouse.id},
+			#{detail.number},
+			#{detail.number},
+			#{detail.price},
+			#{detail.totalMoney},
+			#{detail.sellId}
+		)
+	</insert>
+	<delete id="deleteDetailBySellId">
+		delete from sell_detail where sellId=#{sellId}
+	</delete>
+</mapper>

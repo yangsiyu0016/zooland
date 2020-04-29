@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.openingInventory.OpeningInventoryMapper">
+	<resultMap type="com.zoo.model.erp.openingInventory.OpeningInventory" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="initDate" property="initDate"/>
+		<result column="code" property="code"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="companyId" property="companyId"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="status" property="status"/>
+		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.openingInventory.OpeningInventoryDetailMapper.getDetailByOpeningInventoryId"></collection>
+	</resultMap>
+	<select id="getOpeningInventoryByPage" resultMap="BaseResultMap">
+		select * from opening_inventory where 1=1 
+		<if test="companyId!=null">
+			and companyId = #{companyId}
+		</if>
+		<if test="cuserId!=null">
+			and cuserId = #{cuserId}
+		</if>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from opening_inventory where 1=1 
+		<if test="companyId!=null">
+			and companyId = #{companyId}
+		</if>
+		<if test="cuserId!=null">
+			and cuserId = #{cuserId}
+		</if>
+	</select>
+	<select id="getOpeningInventoryById"  resultMap="BaseResultMap">
+		select * from opening_inventory where id=#{id}
+	</select>
+	<insert id="addOpeningInventory">
+		insert into opening_inventory (
+			id,
+			code,
+			initDate,
+			warehouseId,
+			ctime,
+			cuserId,
+			companyId,
+			processInstanceId,
+			status
+		) values(
+			#{oi.id},
+			#{oi.code},
+			#{oi.initDate},
+			#{oi.warehouse.id},
+			#{oi.ctime},
+			#{oi.cuserId},
+			#{oi.companyId},
+			#{oi.processInstanceId},
+			#{oi.status}
+		)
+	</insert>
+	<update id="updateProcessInstanceId">
+		update opening_inventory set processInstanceId=#{processInstanceId} where id=#{id}
+	</update>
+	<update id="updateOpeningInventoryStatus">
+		UPDATE 
+			opening_inventory  
+		SET 
+			status = #{condition.status} 
+			<if test="condition.etime!=null">
+				,etime = #{condition.etime} 
+			</if> 
+			 
+		WHERE id = #{condition.id}
+	</update>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.cost.CostMapper">
+	<resultMap type="com.zoo.model.erp.cost.Cost" id="BaseResultMap">
+		<id column="id" property="id" />
+		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
+		
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.cost.CostDetailMapper.getDetailByCostId"></collection>
+	</resultMap>
+	<select id="getCostByForeignKey" resultMap="BaseResultMap">
+		select * from cost where foreignKey = #{foreignKey}
+	</select>
+	<select id="getCostById" resultMap="BaseResultMap">
+		select * from cost where id=#{id}
+	</select>
+	<insert id="addCost">
+		insert into cost (
+			id,
+			foreignKey,
+			money,
+			expressId,
+			logisticsNumber,
+			fromType,
+			ctime,
+			warehouseId
+		)values(
+			#{cost.id},
+			#{cost.foreignKey},
+			#{cost.money},
+			#{cost.express.id},
+			#{cost.logisticsNumber},
+			#{cost.fromType},
+			#{cost.ctime},
+			#{cost.warehouse.id}
+		)
+	</insert>
+</mapper>

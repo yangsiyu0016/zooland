@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.crm.customer.CustomerMapper">
+	<resultMap type="com.zoo.model.crm.Customer" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="gtime" property="gtime"/>
+		<result column="name" property="name"/>
+		<result column="countryId" property="countryId"/>
+		<result column="provinceId" property="provinceId"/>
+		<result column="cityId" property="cityId"/>
+		<result column="countyId" property="countyId"/>
+		<result column="address" property="address"/>
+		<result column="description" property="description"/>
+		<result column="created" property="created"/>
+		
+		<result column="companyId" property="companyId"/>
+		<association column="owner" property="owner" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="systemUserId" property="cuser"  select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="countryId" property="country"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="provinceId" property="province"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="cityId" property="city"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="countyId" property="county"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<collection column="id" property="receivings" select="com.zoo.mapper.crm.customer.ReceivingMapper.getReceivingsByCustomerId"></collection>
+		<collection column="id" property="accounts" select="com.zoo.mapper.crm.customer.AccountMapper.getAccountByCustomerId"></collection>
+		<collection column="id" property="linkmans" select="com.zoo.mapper.crm.customer.LinkmanMapper.getLinkmanByCustomerId"></collection>
+		
+		
+	</resultMap>
+	<select id="getCustomerByPage" resultMap="BaseResultMap">
+		select * from customer where 1=1 
+		<if test="companyId!=null">
+			and companyId=#{companyId}
+		</if>
+		order by created desc
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+		
+	</select>
+	<select id="getCount" resultType="long">
+		select count(*) from customer where 1=1
+		<if test="companyId!=null">
+			and companyId=#{companyId}
+		</if>
+	</select>
+	<select id="getCustomerById" resultMap="BaseResultMap">
+		select * from customer Where id=#{id}
+	</select>
+	<insert id="addCustomer">
+		insert into customer (
+			id,
+			type,
+			gtime,
+			name,
+			owner,
+			countryId,
+			provinceId,
+			cityId,
+			countyId,
+			address,
+			description,
+			created,
+			companyId,
+			systemUserId
+		) values(
+			#{customer.id},
+			#{customer.type},
+			#{customer.gtime},
+			#{customer.name},
+			#{customer.owner.id},
+			#{customer.countryId},
+			#{customer.provinceId},
+			#{customer.cityId},
+			#{customer.countyId},
+			#{customer.address},
+			#{customer.description},
+			#{customer.created},
+			#{customer.companyId},
+			#{customer.systemUserId}
+		)
+	</insert>
+	<update id="updateCustomer">
+		update customer set 
+			name = #{customer.name},
+			gtime = #{customer.gtime},
+			owner = #{customer.owner.id},
+			countryId=#{customer.countryId},
+			provinceId=#{customer.provinceId},
+			cityId=#{customer.cityId},
+			countyId=#{customer.countyId},
+			address=#{customer.address},
+			description=#{customer.description}
+		where id=#{customer.id}
+	</update>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.product.ProductMapper">
+	<resultMap type="com.zoo.model.erp.product.Product" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="typeId" property="typeId"/>
+		<result column="name" property="name"/>
+		<result column="code" property="code"/>
+		<result column="companyId" property="companyId"/>
+		<result column="ctime" property="ctime"/>
+		<association column="brandId"   property="productBrand" select="com.zoo.mapper.erp.product.ProductBrandMapper.getBrandById"></association>
+		<association column="id" property="productDetail" select="com.zoo.mapper.erp.product.ProductDetailMapper.getProductDetailById"></association>
+	</resultMap>
+	<select id="getProductByPage" resultMap="BaseResultMap">
+		select * from product where 1=1 
+		<if test="companyId!=null">
+			and companyId = #{companyId}
+		</if>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getProductById" resultMap="BaseResultMap">
+		select * from product where id=#{id}
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from product where 1=1 
+		<if test="companyId!=null">
+			and companyId = #{companyId}
+		</if>
+	</select>
+	<insert id="addProduct">
+		insert into product (id,name,code,typeId,brandId,companyId,ctime) values(#{product.id},#{product.name},#{product.code},#{product.typeId},#{product.brandId},#{product.companyId},#{product.ctime})
+	</insert>
+</mapper>

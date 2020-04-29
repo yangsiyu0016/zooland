@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.menu.SystemMenuMapper">
+    <resultMap id="BaseResultMap" type="com.zoo.model.system.menu.SystemMenu">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="component" property="component" javaType="java.lang.Object"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="iconCls" property="iconCls" jdbcType="VARCHAR"/>
+        <result column="keepAlive" property="keepAlive" jdbcType="BIT"/>
+        <result column="parentId" property="parentId" jdbcType="INTEGER"/>
+        <association property="meta" javaType="com.zoo.model.system.menu.MenuMeta">
+            <result column="keepAlive" property="keepAlive"/>
+            <result column="requireAuth" property="requireAuth"/>
+        </association>
+       <collection property="children" ofType="com.zoo.model.system.menu.SystemMenu">
+            <id column="id2" property="id"/>
+            <result column="path2" property="path" jdbcType="VARCHAR"/>
+            <result column="component2" property="component" jdbcType="VARCHAR"/>
+            <result column="name2" property="name" jdbcType="VARCHAR"/>
+            <result column="iconCls2" property="iconCls" jdbcType="VARCHAR"/>
+            <association property="meta" javaType="com.zoo.model.system.menu.MenuMeta">
+                <result column="keepAlive2" property="keepAlive"/>
+                <result column="requireAuth2" property="requireAuth"/>
+            </association>
+            <collection property="children" ofType="com.zoo.model.system.menu.SystemMenu">
+                <id column="id3" property="id"/>
+                <result column="name3" property="name" jdbcType="VARCHAR"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.zoo.model.system.menu.SystemMenu">
+    	<id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="companyId" property="companyId" jdbcType="VARCHAR"/>
+        <result column="component" property="component" javaType="java.lang.Object"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="iconCls" property="iconCls" jdbcType="VARCHAR"/>
+        <result column="keepAlive" property="keepAlive" jdbcType="BIT"/>
+        <result column="parentId" property="parentId" jdbcType="INTEGER"/>
+        <result column="requireAuth" property="requireAuth"/>
+    </resultMap>
+    <resultMap id='allSystemMenuMap' type="com.zoo.model.system.menu.SystemMenu" extends='BaseResultMap2' >
+		<collection property="children" select="getAllSubNodes" column="id"/>
+	</resultMap>
+	<resultMap type="com.zoo.model.system.menu.SystemMenu" id="companyMenuMap" extends="BaseResultMap2">
+		<collection property="children" select="getCompanySubNodes" column="{id=id,companyId=companyId}">
+			
+		</collection>
+	</resultMap>
+	<select id ="getMenuTreeData" resultMap = "allSystemMenuMap">
+		SELECT 
+			m1.`id`,
+        	m1.`url`,
+        	m1.`path`,
+        	m1.`component`,
+        	m1.`iconCls`,
+        	m1.`name`,
+        	m1.`requireAuth`,
+        	m1.type,
+        	m1.title
+		FROM 
+			system_menu m1 
+		WHERE m1.parentId is null or m1.parentId=''
+	</select>
+	<select id="getAllSubNodes" resultMap = "allSystemMenuMap">
+		SELECT
+			m1.`id`,
+        	m1.`url`,
+        	m1.`path`,
+        	m1.`component`,
+        	m1.`iconCls`,
+        	m1.`name`,
+        	m1.`requireAuth`,
+        	m1.type,
+        	m1.title
+		FROM
+			system_menu m1  
+		WHERE
+			m1.parentId =#{id} 
+			
+	</select>
+    <select id="getMenuById" resultMap="BaseResultMap2">
+        select 
+        	m1.`id`,
+        	m1.`url`,
+        	m1.`path`,
+        	m1.`component`,
+        	m1.`iconCls`,
+        	m1.`parentId`,
+        	m1.`name`,
+        	m1.`requireAuth`,
+        	m1.type
+        from
+        	system_menu m1
+        where  m1.id=#{id}
+    </select>
+    <select id="menuTree" resultMap="BaseResultMap">
+            select 
+            	m1.`id`,
+            	m1.`path`,
+            	m1.`component`,
+            	m1.`iconCls`,
+            	m1.`name`,
+            	m1.`requireAuth`,
+            	m2.`component` as component2,
+            	m2.`iconCls` as iconCls2,
+            	m2.`keepAlive` as keepAlive2,
+            	m2.`name` as name2,
+            	m2.`path` as path2,
+            	m2.`requireAuth` as requireAuth2 
+            from 
+            	system_menu m1,system_menu m2
+            where m1.`id`=m2.`parentId` 
+            	and m1.`id`!='d4582b80-7831-47cf-844b-3a4f754807af' 
+            	and m2.`enabled`=true 
+    </select>
+    <select id="getCountByParentId" resultType="Long">
+    	select count(*) from system_menu where parentId=#{parentId}
+    </select>
+    <select id="getCompanyMenuData" resultMap="companyMenuMap" >
+    	SELECT DISTINCT
+			m1.`id`,
+        	m1.`url`,
+        	m1.`path`,
+        	m1.`component`,
+        	m1.`iconCls`,
+        	m1.`name`,
+        	m1.`requireAuth`,
+        	m1.type,
+        	c.id companyId
+		FROM
+			company c LEFT JOIN company_type ct ON c.companyTypeId=ct.id 
+			LEFT JOIN c_mt cmt ON cmt.companyTypeId=ct.id 
+			LEFT JOIN system_menu m1 ON cmt.menuId = m1.id
+		WHERE
+			m1.parentId ='d4582b80-7831-47cf-844b-3a4f754807af' AND c.id=#{companyId}
+    </select>
+    <select id="getCompanySubNodes" resultMap = "companyMenuMap">
+		SELECT DISTINCT
+			m1.`id`,
+        	m1.`url`,
+        	m1.`path`,
+        	m1.`component`,
+        	m1.`iconCls`,
+        	m1.`name`,
+        	m1.`requireAuth`,
+        	m1.type,
+        	c.id companyId
+		FROM
+			company c LEFT JOIN company_type ct ON c.companyTypeId=ct.id 
+			LEFT JOIN c_mt cmt ON cmt.companyTypeId=ct.id 
+			LEFT JOIN system_menu m1 ON cmt.menuId = m1.id
+		WHERE
+			m1.parentId =#{id} AND c.id=#{companyId}
+			
+	</select>
+    <insert id="addMenu">
+    	insert into system_menu (
+    		id,
+    		name,
+    		url,
+    		path,
+    		component,
+    		iconCls,
+    		parentId,
+    		enabled,
+    		type,
+    		title
+    	)
+    	values(
+    		#{menu.id},
+    		#{menu.name},
+    		#{menu.url},
+    		#{menu.path},
+    		#{menu.component},
+    		#{menu.iconCls},
+    		#{menu.parentId},
+    		#{menu.enabled},
+    		#{menu.type},
+    		#{menu.title}
+    	)
+    </insert>
+    <update id="updateMenu">
+		update system_menu
+			<set>
+				<if test="menu.name!=null">
+					name = #{menu.name},
+				</if>
+				<if test="menu.type!=null">
+					type = #{menu.type},
+				</if>
+				<if test="menu.url!=null">
+					url = #{menu.url},
+				</if>
+				<if test="menu.type!=null">
+					path = #{menu.path},
+				</if>
+				<if test="menu.type!=null">
+					component = #{menu.component},
+				</if>
+				<if test="menu.iconCls!=null">
+					iconCls = #{menu.iconCls},
+				</if>
+			</set>
+		where id=#{menu.id,jdbcType=VARCHAR}
+	</update>
+    <delete id="deleteMenuById">
+    	delete from system_menu where id = #{id}
+    </delete>
+</mapper>

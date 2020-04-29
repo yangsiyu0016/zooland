@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.warehouse.StockMapper">
+	<resultMap type="com.zoo.model.erp.warehouse.Stock" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="usableNumber" property="usableNumber" />
+		<result column="lockedNumber" property="lockedNumber" />
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>		
+		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+	</resultMap>
+	<select id="getStockByPage" resultMap="BaseResultMap">
+		select s.* from stock s left join warehouse w on s.warehouseId=w.id  where w.companyId=#{companyId} 
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getStockCount" resultType="long">
+		select count(*) from stock s left join warehouse w on s.warehouseId=w.id where w.companyId=#{companyId}
+	</select>
+	<select id="getStock" resultMap="BaseResultMap">
+		select * from stock where skuId=#{skuId} and warehouseId = #{warehouseId}
+	</select>
+	<select id="getStockById" resultMap="BaseResultMap">
+		select * from stock where id=#{id}
+	</select>
+	<insert id="addStock">
+		INSERT INTO 
+			stock
+			(
+				id,
+				skuId,
+				warehouseId,
+				usableNumber,
+				lockedNumber,
+				costPrice,
+				totalMoney 
+			)
+			VALUES
+			(
+				#{stock.id},
+				#{stock.productSku.id},
+				#{stock.warehouse.id},
+				#{stock.usableNumber},
+				#{stock.lockedNumber},
+				#{stock.costPrice},
+				#{stock.totalMoney} 
+			)
+	</insert>
+	<update id="updateStock">
+		UPDATE 
+			stock
+		SET 
+			usableNumber =#{stock.usableNumber},
+			lockedNumber=#{stock.lockedNumber},
+			costPrice = #{stock.costPrice},
+			totalMoney = #{stock.totalMoney}   
+		WHERE id = #{stock.id} 
+			
+	</update>
+</mapper>

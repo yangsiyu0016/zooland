@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.sell.SellMapper">
+	<resultMap type="com.zoo.model.erp.sell.Sell" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="initDate" property="initDate"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
+		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="receivingId" property="receiving" select="com.zoo.mapper.crm.customer.ReceivingMapper.getReceivingById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.sell.SellDetailMapper.getDetailBySellId"></collection>
+	</resultMap>
+	<select id="getSellByPage" resultMap="BaseResultMap">
+		select * from sell where companyId=#{companyId}
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="long">
+		select count(*) from sell where companyId=#{companyId}
+	</select>
+	<select id="getSellById" resultMap="BaseResultMap">
+	
+		select * from sell where id=#{id}
+	</select>
+	<insert id="addSell">
+		insert into sell (
+			id,
+			initDate,
+			code,
+			customerId,
+			cuserId,
+			ctime,
+			etime,
+			processInstanceId,
+			status,
+			companyId,
+			receivingId
+		)values(
+			#{sell.id},
+			#{sell.initDate},
+			#{sell.code},
+			#{sell.customer.id},
+			#{sell.cuserId},
+			#{sell.ctime},
+			#{sell.etime},
+			#{sell.processInstanceId},
+			#{sell.status},
+			#{sell.companyId},
+			#{sell.receiving.id}
+		)
+	</insert>
+	<update id="updateProcessInstanceId">
+		update sell set processInstanceId=#{processInstanceId} where id=#{id}
+	</update>
+	<update id="updateSellStatus">
+		UPDATE 
+			sell 
+		SET 
+			status = #{condition.status} 
+			<if test="condition.etime!=null">
+				,etime = #{condition.etime} 
+			</if> 
+			 
+		WHERE id = #{condition.id}
+	</update>
+	<delete id="deleteSellById">
+		delete from sell where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+</mapper>

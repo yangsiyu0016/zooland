@@ -1,0 +1,45 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://rm-2ze7z11s8c03zn2pg3o.mysql.rds.aliyuncs.com:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    url: jdbc:mysql://localhost:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    username: root
+    #password: zooland_007
+    password: root
+    hikari:
+      maximum-pool-size: 30
+      minimum-idle: 10
+  activiti:
+    database-schema-update: true    check-process-definitions: false
+  
+  data:
+    elasticsearch:      cluster-name: elasticsearch
+      cluster-nodes: localhost:9300
+  jackson:
+    default-property-inclusion: non-null # 配置json处理时忽略空值
+#mybatis:#  configuration:#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+zoo:
+  jwt:
+    secret: zoo@Login(Auth}*^31)&zooland% # 登录校验的密钥
+    pubKeyPath: D:\\bystander\\rsa.pub # 公钥地址
+    priKeyPath: D:\\bystander\\rsa.pri # 私钥地址
+    expire: 1800 # 过期时间,单位分钟
+    cookieName: ZOO_TOKEN
+    cookieMaxAge: 1800
+  upload:
+    allowTypes:
+      - image/jpeg
+      - image/png
+      - image/bmp
+    baseUrl: http://localhost:8081/
+fdfs:
+  connect-timeout: 600
+  so-timeout: 2500
+  thumb-image:
+    height: 60
+    width: 60
+  tracker-list:
+    - 127.0.0.1:8081

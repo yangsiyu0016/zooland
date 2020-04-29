@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.area.AreaMapper">
+	<resultMap type="com.zoo.model.system.area.Area" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="parentId" property="parentId"/>
+	</resultMap>
+	<select id="getSubTreeData" resultMap="BaseResult">
+		select * from area where  parentId =#{id}
+	</select>
+	<select id="getTreeData" resultMap="BaseResult">
+		select * from area where parentId =0
+	</select>
+	<select id="getDataByParentId" resultMap="BaseResult">
+		select * from area where parentId=#{parentId}
+	</select>
+	<select id="getAreaById" resultMap="BaseResult">
+		select * from area where id=#{id}
+	</select>
+	<insert id = "addArea">
+		
+		insert into area(
+			parentId,
+			name,
+			id
+		)
+		values(
+			#{area.parentId},
+			#{area.name},
+			#{area.id}
+		)
+		
+	</insert>
+</mapper>

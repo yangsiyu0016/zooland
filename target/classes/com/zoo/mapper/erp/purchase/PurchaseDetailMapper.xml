@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.purchase.PurchaseDetailMapper">
+	<resultMap type="com.zoo.model.erp.purchase.PurchaseDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="notInNumber" property="notInNumber"/>
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+	</resultMap>
+	<select id="getDetailByPurchaseId"  resultMap="BaseResultMap">
+		select * from purchase_detail where purchaseId= #{purchaseId}
+	</select>
+	<select id="getDetailById" resultMap="BaseResultMap">
+		select * from purchase_detail where id=#{id}
+	</select>
+	<select id="getNotInDetailByPurchaseId" resultMap="BaseResultMap">
+		select * from purchase_detail where purchaseId = #{purchaseId} and notInNumber!=0
+	</select>
+	<insert id="addDetail">
+		insert into purchase_detail (
+			id,
+			skuId,
+			warehouseId,
+			number,
+			notInNumber,
+			price,
+			totalMoney,
+			purchaseId
+		)values(
+			#{detail.id},
+			#{detail.productSku.id},
+			#{detail.warehouse.id},
+			#{detail.number},
+			#{detail.number},
+			#{detail.price},
+			#{detail.totalMoney},
+			#{detail.purchaseId}
+		)
+	</insert>
+	<delete id="deleteDetailByPurchaseId">
+		delete from purchase_detail where purchaseId=#{purchaseId}
+	</delete>
+</mapper>

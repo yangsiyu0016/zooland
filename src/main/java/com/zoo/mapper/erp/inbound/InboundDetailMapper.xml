@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.inbound.InboundDetailMapper">
+	<insert id="addDetail">
+		insert into inbound_detail (
+			id,
+			inboundId,
+			skuId,
+			number,
+			price,
+			totalMoney,
+			orderDetailId,
+			goodsAllocationId,
+			ctime
+		)values(
+			#{detail.id},
+			#{detail.inboundId},
+			#{detail.productSku.id},
+			#{detail.number},
+			#{detail.price},
+			#{detail.totalMoney},
+			#{detail.orderDetailId},
+			#{detail.goodsAllocation.id},
+			#{detail.ctime}
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.company.CompanyMapper">
+	<resultMap type="com.zoo.model.system.company.Company" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="description" property="description" jdbcType="VARCHAR"/>
+		<association property="companyType" select="com.zoo.mapper.system.company.CompanyTypeMapper.getCompanyTypeById"
+			column = "companyTypeId"
+		>
+			
+		</association>
+		<association property="systemUser"  column="managerId" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById">
+
+		</association>
+	</resultMap>
+	<select id="getCompanyByPage" resultMap="BaseResultMap">
+		select * from company
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from company
+	</select>
+	<select id="getCompanyById" resultMap="BaseResultMap">
+		select * from company where id=#{id}
+	</select>
+	<insert id="addCompany" >
+		insert into company (
+			id,
+			name,
+			companyTypeId,
+			managerId,
+			description
+		)
+		values(
+			#{company.id},
+			#{company.name},
+			#{company.companyTypeId},
+			#{company.managerId},
+			#{company.description}
+		)
+	</insert>
+	
+	<delete id="deleteCompanyById">
+		delete from company where id=#{id}
+	</delete>
+</mapper>

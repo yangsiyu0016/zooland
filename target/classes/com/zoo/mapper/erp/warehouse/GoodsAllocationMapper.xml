@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper">
+	<resultMap type="com.zoo.model.erp.warehouse.GoodsAllocation" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="description" property="description" jdbcType="VARCHAR"/>
+		<result column="warehouseId" property="warehouseId" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="getGoodsAllocationByPage" resultMap="BaseResultMap">
+		select * from goods_allocation where 1=1 
+		<if test="warehouseId!=null">
+			and warehouseId = #{warehouseId}
+		</if>
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from goods_allocation where 1=1
+		<if test="warehouseId!=null">
+			and warehouseId = #{warehouseId}
+		</if>
+	</select>
+	<select id="getGoodsAllocationByWarehouseId" resultMap="BaseResultMap">
+		select * from goods_allocation where warehouseId=#{warehouseId}
+	</select>
+	<select id="getGoodsAllocationById" resultMap="BaseResultMap">
+		select * from goods_allocation where id=#{id}
+	</select>
+	<insert id="addGoodsAllocation" >
+		insert into goods_allocation (
+			id,
+			name,
+			description,
+			warehouseId
+		)
+		values(
+			#{ga.id},
+			#{ga.name},
+			#{ga.description},
+			#{ga.warehouseId}
+		)
+	</insert>
+	<update id="updateGoodsAllocation">
+		update goods_allocation set name = #{ga.name} where id = #{ga.id}
+	</update>
+</mapper>
