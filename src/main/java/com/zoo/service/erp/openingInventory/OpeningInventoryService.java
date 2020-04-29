@@ -1,5 +1,6 @@
 package com.zoo.service.erp.openingInventory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,32 +52,36 @@ public class OpeningInventoryService {
 		return ois;
 	}
 	private OpeningInventory buildSpec(OpeningInventory oi) {
+		List<String> built = new ArrayList<String>();
 		for(OpeningInventoryDetail detail:oi.getDetails()) {
 			ProductSku sku = detail.getProductSku();
-			
-			//通用规格参数处理
-			String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-			Map<String,String> map = new HashMap<String,String>();
-			JSONObject obj = JSONObject.fromObject(genericSpec);
-			Set<String> keyset = obj.keySet();
-			for(String key:keyset) {
-				SpecParam param = paramMapper.getParamById(key);
-				map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
+			if(!built.contains(sku.getProduct().getId())){
+				//通用规格参数处理
+				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
+				Map<String,String> map = new HashMap<String,String>();
+				JSONObject obj = JSONObject.fromObject(genericSpec);
+				Set<String> keyset = obj.keySet();
+				for(String key:keyset) {
+					SpecParam param = paramMapper.getParamById(key);
+					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
+				}
+				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
+				
+				
+				String ownSpec = sku.getOwnSpec();
+				 map = new HashMap<String,String>();
+				 obj  = JSONObject.fromObject(ownSpec);
+				keyset = obj.keySet();
+				for(String key:keyset) {
+					SpecParam param = paramMapper.getParamById(key);
+					map.put(param.getName(), obj.getString(key));
+				}
+				sku.setOwnSpec(map.toString());
+				
+				detail.setProductSku(sku);
+				built.add(sku.getProduct().getId());
 			}
-			sku.getProduct().getProductDetail().setGenericSpec(map.toString());
 			
-			
-			String ownSpec = sku.getOwnSpec();
-			 map = new HashMap<String,String>();
-			 obj  = JSONObject.fromObject(ownSpec);
-			keyset = obj.keySet();
-			for(String key:keyset) {
-				SpecParam param = paramMapper.getParamById(key);
-				map.put(param.getName(), obj.getString(key));
-			}
-			sku.setOwnSpec(map.toString());
-			
-			detail.setProductSku(sku);
 		}
 		return oi;
 	}
@@ -141,6 +146,10 @@ public class OpeningInventoryService {
 		openingInventoryMapper.updateProcessInstanceId(id, null);
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		runtimeService.deleteProcessInstance(openingInventory.getProcessInstanceId(), "待定");
+		
+	}
+	public int updateOpeningInventory(OpeningInventory oi) {
+		return openingInventoryMapper.updateOpeningInventory(oi);
 		
 	}
 }

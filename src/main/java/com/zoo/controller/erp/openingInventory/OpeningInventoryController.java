@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +45,15 @@ public class OpeningInventoryController {
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());
 		}	
+	}
+	@PutMapping("update")
+	public RespBean updateOpeningInventory(@RequestBody OpeningInventory oi) {
+		try {
+			oiService.updateOpeningInventory(oi);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
 	}
 	@PostMapping("startFlow")
 	public void startFlow(@RequestParam("id")String id) {

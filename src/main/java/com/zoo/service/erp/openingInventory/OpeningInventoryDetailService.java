@@ -1,7 +1,9 @@
 package com.zoo.service.erp.openingInventory;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -24,5 +26,14 @@ public class OpeningInventoryDetailService {
 		return detailMapper.updatePrice(id,new BigDecimal(costPrice),new BigDecimal(totalMoney));
 		
 	}
-
+	public OpeningInventoryDetail addDetail(OpeningInventoryDetail detail) {
+		detail.setId(UUID.randomUUID().toString());
+		detail.setCtime(new Date());
+		detailMapper.addDetail(detail);
+		return detail;
+	}
+	public void deleteDetailById(String ids) {
+		String[] split = ids.split(",");
+		detailMapper.deleteDetailById(split);
+	}
 }

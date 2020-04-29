@@ -1,7 +1,6 @@
 package com.zoo.mapper.erp.openingInventory;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -15,4 +14,5 @@ public interface OpeningInventoryDetailMapper {
 	int updatePrice(@Param("id")String id, @Param("costPrice")BigDecimal costPrice,@Param("totalMoney") BigDecimal totalMoney);
 
 	//List<OpeningInventoryDetail> getDetailsByOpeningInventoryId(@Param("openingInventoryId")String openingInventoryId);
+	int deleteDetailById(@Param("ids")String[] ids);
 }
