@@ -19,5 +19,5 @@ public interface AreaMapper {
 	 * @param id 本级id
 	 * @return
 	 */
-	int addArea(@Param("parentId") String parentId, @Param("name") String name, @Param("id") String id);
+	int addArea(@Param("area") Area area);
 }

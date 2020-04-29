@@ -39,13 +39,13 @@ public class AreaController {
 		try {
 			Area respArea = areaService.addArea(area);
 			
-			map.put("respArea", respArea);
-			map.put("respBean", new RespBean("200", "保存成功"));
+			map.put("area", respArea);
+			map.put("status", "200");
 			return map;
 		} catch (Exception e) {
 			// TODO: handle exception
-			map.put("respArea", null);
-			map.put("respBean", new RespBean("500","保存失败"));
+			map.put("status", "500");
+			map.put("msg", e.getMessage());
 			return map;
 		}
 	}

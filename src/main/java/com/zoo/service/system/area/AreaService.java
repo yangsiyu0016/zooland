@@ -30,16 +30,9 @@ public class AreaService {
 		// TODO Auto-generated method stub
 		//生成uuid
 		String uuidStr = UUID.randomUUID().toString();
-		//插入数据
-		int addFlag = areaMapper.addArea(area.getParentId(), area.getName(), uuidStr);
-		//判断int值是否>0，
-		if(addFlag > 0) {
-			Area respArea = areaMapper.getAreaById(uuidStr);
-			return respArea;
-		}else {
-			return new Area();
-		}
-		
+		area.setId(uuidStr);
+		areaMapper.addArea(area);
+		return area;
 	}
 	
 	
