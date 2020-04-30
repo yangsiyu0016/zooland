@@ -37,6 +37,9 @@
 			#{detail.ctime}
 		)
 	</insert>
+	<update id="updateDetail">
+		update opening_inventory_detail set skuId=#{detail.productSku.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
+	</update>
 	<update id="updatePrice">
 		update opening_inventory_detail set costPrice=#{costPrice},totalMoney=#{totalMoney} where id=#{id}
 	</update>

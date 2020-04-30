@@ -36,4 +36,8 @@ public class OpeningInventoryDetailService {
 		String[] split = ids.split(",");
 		detailMapper.deleteDetailById(split);
 	}
+	public void updateDetail(OpeningInventoryDetail detail) {
+		detailMapper.updateDetail(detail);
+		
+	}
 }

@@ -40,6 +40,15 @@ public class OpeningInventoryDetailController {
 		}
 		return resultMap;
 	}
+	@PutMapping("update")
+	public RespBean updateDetail(@RequestBody OpeningInventoryDetail detail) {
+		try {
+			detailService.updateDetail(detail);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
 	@PutMapping("updatePrice")
 	public void updatePrice(@RequestParam("id")String id,@RequestParam("costPrice") String costPrice,@RequestParam("totalMoney")String totalMoney) {
 		detailService.updatePrice(id,costPrice,totalMoney);

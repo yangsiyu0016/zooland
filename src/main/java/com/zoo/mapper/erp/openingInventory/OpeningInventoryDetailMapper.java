@@ -15,4 +15,6 @@ public interface OpeningInventoryDetailMapper {
 
 	//List<OpeningInventoryDetail> getDetailsByOpeningInventoryId(@Param("openingInventoryId")String openingInventoryId);
 	int deleteDetailById(@Param("ids")String[] ids);
+
+	int updateDetail(@Param("detail")OpeningInventoryDetail detail);
 }

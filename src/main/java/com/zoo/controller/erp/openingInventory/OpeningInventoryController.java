@@ -56,8 +56,13 @@ public class OpeningInventoryController {
 		}
 	}
 	@PostMapping("startFlow")
-	public void startFlow(@RequestParam("id")String id) {
-		oiService.startProcess(id);
+	public RespBean startFlow(@RequestParam("id")String id) {
+		try {
+			oiService.startProcess(id);
+			return new RespBean("200","启动成功");
+		} catch (Exception e) {
+			return new RespBean("500","启动失败");
+		}
 	}
 	@PostMapping("deleteFlow")
 	public void deleteFlow(@RequestParam("id")String id) {
