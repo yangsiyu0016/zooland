@@ -17,4 +17,5 @@ public interface CustomTaskMapper {
 	long getSellTaskCount(@Param("userId")String userId);
 	List<PurchaseTask> getPurchaseTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
 	long getPurchaseTaskCount(@Param("userId")String userId);
+	OpeningInventoryTask getOpeningInventoryTaskById(@Param("taskId")String taskId);
 }

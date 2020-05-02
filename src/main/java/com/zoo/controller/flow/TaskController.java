@@ -56,6 +56,11 @@ public class TaskController {
 		map.put("count", count);
 		return map;
 	}
+	@GetMapping("getOpeningInventoryTaskById")
+	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
+		return customTaskService.getOpeningInventoryTaskById(taskId);
+	}
+	
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {

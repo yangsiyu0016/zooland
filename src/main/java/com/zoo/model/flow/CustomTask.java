@@ -1,6 +1,8 @@
 package com.zoo.model.flow;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,7 @@ public class CustomTask {
 	private String assignee;
 	private String assigneeName;
 	private String formKey;
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date createTime;
 	private String executionId;
 	private String processInstanceId;//流程实例ID
