@@ -21,6 +21,7 @@ public class GlobalCorsConfig {
         config.addAllowedOrigin("http://www.zhuland.com");
         config.addAllowedOrigin("http://59.110.67.115:8080");
         config.addAllowedOrigin("http://192.168.1.237:8080");
+        config.addAllowedOrigin("http://192.168.1.177:8080");
         //2) 是否发送Cookie信息
         config.setAllowCredentials(true);
         //3) 允许的请求方式
