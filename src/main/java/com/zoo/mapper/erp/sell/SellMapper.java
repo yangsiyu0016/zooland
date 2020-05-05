@@ -22,4 +22,6 @@ public interface SellMapper {
 	public int updateSellStatus(@Param("condition")Map<String, Object> condition);
 	int deleteSellById(@Param("ids")String[] ids);
 
+	int updateSell(@Param("sell")Sell sell);
+
 }

@@ -1,6 +1,7 @@
 package com.zoo.model.erp.sell;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.warehouse.Warehouse;
@@ -18,4 +19,5 @@ public class SellDetail {
 	private BigDecimal totalMoney;
 	
 	private String sellId;
+	private Date ctime;
 }

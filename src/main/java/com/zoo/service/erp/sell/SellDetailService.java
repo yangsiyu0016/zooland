@@ -1,9 +1,11 @@
 package com.zoo.service.erp.sell;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -59,6 +61,21 @@ public class SellDetailService {
 			detail.setProductSku(sku);
 		}
 		return details;
+	}
+	public SellDetail addDetail(SellDetail detail) {
+		detail.setId(UUID.randomUUID().toString());
+		detail.setCtime(new Date());
+		detailMapper.addDetail(detail);
+		return detail;
+	}
+	public void updateDetail(SellDetail detail) {
+		detailMapper.updateDetail(detail);
+		
+	}
+	public void deleteDetailById(String ids) {
+		String[] split = ids.split(",");
+		detailMapper.deleteDetailById(split);
+		
 	}
 
 }

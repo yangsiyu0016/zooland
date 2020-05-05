@@ -3,7 +3,6 @@ package com.zoo.controller.erp.product;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,9 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.service.erp.product.ProductSkuService;
-
-import net.sf.json.JSONObject;
-
 @RestController
 @RequestMapping("/sku")
 public class ProductSkuController {

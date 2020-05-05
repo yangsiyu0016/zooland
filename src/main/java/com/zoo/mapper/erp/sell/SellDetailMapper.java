@@ -16,6 +16,10 @@ public interface SellDetailMapper {
 
 	List<SellDetail> getDetailBySellId(@Param("sellId")String sellId);
 	List<SellDetail> getNotOutDetailBySellId(@Param("sellId")String sellId);
+
+	int updateDetail(@Param("detail")SellDetail detail);
+
+	int deleteDetailById(@Param("ids")String[] ids);
 	
 
 }

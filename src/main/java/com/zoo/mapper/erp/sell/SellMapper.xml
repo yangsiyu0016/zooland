@@ -54,6 +54,9 @@
 			#{sell.receiving.id}
 		)
 	</insert>
+	<update id="updateSell">
+		update sell set initDate=#{sell.initDate},customerId=#{sell.customer.id},receivingId=#{sell.receiving.id} where id=#{sell.id}	
+	</update>
 	<update id="updateProcessInstanceId">
 		update sell set processInstanceId=#{processInstanceId} where id=#{id}
 	</update>

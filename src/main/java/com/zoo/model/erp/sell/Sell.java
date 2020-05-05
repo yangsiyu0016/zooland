@@ -17,8 +17,9 @@ public class Sell {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date initDate;
 	private Customer customer;//客户
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date ctime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" ,timezone = "GMT+8")
 	private Date etime;
 	private String cuserId;
 	private List<SellDetail> details;

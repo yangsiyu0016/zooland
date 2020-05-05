@@ -17,7 +17,7 @@
 		<if test="companyId!=null">
 			and p.companyId = #{companyId}
 		</if>
-		<if test="key!=null">
+		<if test="key!=null and key!=''">
 				and p.name like CONCAT('%',#{key},'%')
 		</if>
 		<if test="start!=null and size!=null">
@@ -30,7 +30,7 @@
 		<if test="companyId!=null">
 			and p.companyId = #{companyId}
 		</if>
-		<if test="key!=null">
+		<if test="key!=null and key!=''">
 				and p.name like CONCAT('%',#{key},'%')
 		</if>
 	</select>

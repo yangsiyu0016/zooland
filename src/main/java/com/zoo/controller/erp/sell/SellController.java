@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,11 +37,20 @@ public class SellController {
 	public Sell getSellById(@PathVariable String id) {
 		return sellService.getSellById(id);
 	}
-	@RequestMapping("add")
+	@PostMapping("add")
 	public RespBean addSell(@RequestBody Sell sell) {
 		try {
 			sellService.addSell(sell);
 			return new RespBean("200","添加成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
+	@PutMapping("update")
+	public RespBean updateSell(@RequestBody Sell sell) {
+		try {
+			sellService.updateSell(sell);
+			return new RespBean("200","更新成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());
 		}
