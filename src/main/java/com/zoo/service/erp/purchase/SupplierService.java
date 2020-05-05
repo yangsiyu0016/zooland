@@ -140,6 +140,20 @@ public class SupplierService {
 		// TODO Auto-generated method stub
 		if(supplier != null) {
 			
+			
+			List<String> area = supplier.getArea();
+			if(area.size()>0) {
+				supplier.setCountryId(area.get(0));
+				supplier.setProvinceId(area.get(1));
+				supplier.setCityId(area.get(2));
+				supplier.setCountyId(area.get(3));
+			}else {
+				supplier.setCountryId(null);
+				supplier.setProvinceId(null);
+				supplier.setCityId(null);
+				supplier.setCountyId(null);
+			}
+			
 			//更新主表数据
 			supplierMapper.update(supplier);
 			
