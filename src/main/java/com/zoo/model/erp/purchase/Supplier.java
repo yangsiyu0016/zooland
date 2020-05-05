@@ -39,6 +39,6 @@ public class Supplier {
 	private Area county;//地区id
 	private String beat;//选择的区域
 	private List<Contact> contacts;//联系人集合
-	private List<SupplyAddress> supplyAdresses;//供货地址集合
+	private List<SupplyAddress> supplyAddresses;//供货地址集合
 	private String remarks;//备注
 }

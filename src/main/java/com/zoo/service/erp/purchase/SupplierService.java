@@ -63,15 +63,14 @@ public class SupplierService {
 					
 				
 			}
-			
-			for(SupplyAddress supplyAddress : supplier.getSupplyAdresses()) {
+			for(SupplyAddress supplyAddress : supplier.getSupplyAddresses()) {
 				List<String> areas = new ArrayList<String>();
 				
 				areas.add(supplyAddress.getCountryId());
 				areas.add(supplyAddress.getProvinceId());
 				areas.add(supplyAddress.getCityId());
 				areas.add(supplyAddress.getCountyId());
-				
+				supplyAddress.setArea(areas);
 				supplyAddress.setBeat(supplyAddress.getCountry().getName() + "/" + supplyAddress.getProvince().getName() + "/" + supplyAddress.getCity().getName() + "/" + supplyAddress.getCounty().getName());
 			}
 		}
@@ -99,7 +98,8 @@ public class SupplierService {
 		supplier.setCompanyId(companyId);
 		supplier.setSystemUserId(systemUserId);
 		supplier.setCreateTime(new Date());
-		
+		supplier.setOwnerId(supplier.getOwner().getId());
+		supplier.setType("E");
 		//设置区域各级id
 		if(supplier.getArea().size() > 0) {
 			supplier.setCountryId(supplier.getArea().get(0));
@@ -120,11 +120,15 @@ public class SupplierService {
 			}
 		}
 		
-		List<SupplyAddress> supplyAddresses = supplier.getSupplyAdresses();
+		List<SupplyAddress> supplyAddresses = supplier.getSupplyAddresses();
 		if(supplyAddresses.size() > 0) {
 			for(SupplyAddress supplyAddress : supplyAddresses) {
 				supplyAddress.setId(UUID.randomUUID().toString());
 				supplyAddress.setSupplierId(supplierId);
+				supplyAddress.setCountryId(supplyAddress.getArea().get(0));
+				supplyAddress.setProvinceId(supplyAddress.getArea().get(1));
+				supplyAddress.setCityId(supplyAddress.getArea().get(2));
+				supplyAddress.setCountyId(supplyAddress.getArea().get(3));
 				supplyAddressMapper.add(supplyAddress);
 			}
 		}
@@ -149,7 +153,7 @@ public class SupplierService {
 			}
 			
 			//取出供货地址
-			List<SupplyAddress> supplyAddresses = supplier.getSupplyAdresses();
+			List<SupplyAddress> supplyAddresses = supplier.getSupplyAddresses();
 			
 			if(supplyAddresses.size() > 0) {
 				for(SupplyAddress supplyAddress : supplyAddresses) {

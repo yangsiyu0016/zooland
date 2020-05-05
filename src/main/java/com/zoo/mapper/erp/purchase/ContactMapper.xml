@@ -51,16 +51,15 @@
 	</insert>
 	
 	<update id="update">
-		update customer set 
-		name = #{contact.},
-		supplyCall = #{contact.},
+		update supplier_contact set 
+		name = #{contact.name},
+		supplyCall = #{contact.supplyCall},
 		sex = #{contact.sex},
 		position = #{contact.position},
 		telephone = #{contact.telephone},
 		callphone = #{contact.callphone},
 		email = #{contact.email},
 		birthday = #{contact.birthday},
-		supplierId = #{contact.supplierId},
 		remarks = #{contact.remarks} 
 		where id = #{contact.id}
 	</update>
