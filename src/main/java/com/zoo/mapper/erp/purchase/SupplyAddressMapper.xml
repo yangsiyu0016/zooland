@@ -5,10 +5,15 @@
 <mapper namespace = "com.zoo.mapper.erp.purchase.SupplyAddressMapper">
 	<resultMap type="com.zoo.model.erp.purchase.SupplyAddress" id="BaseResult">
 		<id column="id" property="id"/>
+		<result column="countryId" property="countryId"/>
+		<result column="cityId" property="cityId"/>
+		<result column="provinceId" property="provinceId"/>
+		<result column="countyId" property="countyId"/>
 		<result column="address" property="address"/>
 		<result column="supply" property="supply"/>
 		<result column="phone" property="phone"/>
 		<result column="supplierId" property="supplierId"/>
+		
 		<result column="remarks" property="remarks"/>
 		
 		<association column="countryId" property="country"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
@@ -19,16 +24,16 @@
 	</resultMap>
 	
 	<select id = "getAddressById" resultMap = "BaseResult">
-		select * from supplier_contact where supplierId = #{id}
+		select * from supplier_address where supplierId = #{id}
 	</select>
 	
 	<insert id="add">
 		insert into supplier_address(
 			id,
-			countyId,
-			cityId,
-			provinceId,
 			countryId,
+			provinceId,
+			cityId,
+			countyId,
 			address,
 			supply,
 			phone,
@@ -36,10 +41,10 @@
 			remarks
 		) values (
 			#{supplyAddress.id},
-			#{supplyAddress.countyId},
-			#{supplyAddress.cityId},
+			#{supplyAddress.countryId},
 			#{supplyAddress.provinceId},
-			#{supplyAddress.countryId}
+			#{supplyAddress.cityId},
+			#{supplyAddress.countyId},
 			#{supplyAddress.address},
 			#{supplyAddress.supply},
 			#{supplyAddress.phone},
@@ -53,7 +58,7 @@
 			countyId=#{supplyAddress.countyId},
 			cityId=#{supplyAddress.cityId},
 			provinceId=#{supplyAddress.provinceId},
-			countryId=#{supplyAddress.countryId}
+			countryId=#{supplyAddress.countryId},
 			address=#{supplyAddress.address},
 			supply=#{supplyAddress.supply},
 			phone=#{supplyAddress.phone},

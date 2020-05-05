@@ -28,7 +28,7 @@
 		<association column="cityId" property="city"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
 		<association column="countyId" property="county"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
 		<collection column="id" property="contacts" select="com.zoo.mapper.erp.purchase.ContactMapper.getContactById"></collection>
-		<collection column="id" property="supplyAdresses" select="com.zoo.mapper.erp.purchase.SupplyAddressMapper.getAddressById"></collection>
+		<collection column="id" property="supplyAddresses" select="com.zoo.mapper.erp.purchase.SupplyAddressMapper.getAddressById"></collection>
 		
 		
 	</resultMap>
@@ -106,8 +106,8 @@
 			provinceId=#{supplier.provinceId},
 			countyId=#{supplier.countyId},
 			companyId=#{supplier.companyId},
-			systemUserId=#{supplier.systemUserId},
-			ownerId=#{supplier.ownerId},
+			systemUserId=#{supplier.systemUser.id},
+			ownerId=#{supplier.owner.id},
 			remarks=#{supplier.remarks} 
 		where id = #{supplier.id}
 	</update>

@@ -51,9 +51,9 @@
 	</insert>
 	
 	<update id="update">
-		update customer set 
-		name = #{contact.},
-		supplyCall = #{contact.},
+		update supplier_contact set 
+		name = #{contact.name},
+		supplyCall = #{contact.supplyCall},
 		sex = #{contact.sex},
 		position = #{contact.position},
 		telephone = #{contact.telephone},

@@ -55,6 +55,7 @@ public class SupplierController {
 			
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(e.getMessage());
 			return new RespBean("500", "保存失败");
 		}
 	}
@@ -68,6 +69,7 @@ public class SupplierController {
 			return new RespBean("200", "修改成功");
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(e.getMessage());
 			return new RespBean("500", "修改失败");
 		}
 		

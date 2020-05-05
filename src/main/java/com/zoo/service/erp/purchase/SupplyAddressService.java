@@ -20,12 +20,20 @@ public class SupplyAddressService {
 	public SupplyAddress addSupplyAddress(SupplyAddress supplyAddress) {
 		// TODO Auto-generated method stub
 		supplyAddress.setId(UUID.randomUUID().toString());
+		supplyAddress.setCountryId(supplyAddress.getArea().get(0));
+		supplyAddress.setProvinceId(supplyAddress.getArea().get(1));
+		supplyAddress.setCityId(supplyAddress.getArea().get(2));
+		supplyAddress.setCountyId(supplyAddress.getArea().get(3));
 		supplyAddressMapper.add(supplyAddress);
 		return supplyAddress;
 	}
 
 	public int updateSupplyAddress(SupplyAddress supplyAddress) {
 		// TODO Auto-generated method stub
+		supplyAddress.setCountryId(supplyAddress.getArea().get(0));
+		supplyAddress.setProvinceId(supplyAddress.getArea().get(1));
+		supplyAddress.setCityId(supplyAddress.getArea().get(2));
+		supplyAddress.setCountyId(supplyAddress.getArea().get(3));
 		return supplyAddressMapper.update(supplyAddress);
 		
 	}
