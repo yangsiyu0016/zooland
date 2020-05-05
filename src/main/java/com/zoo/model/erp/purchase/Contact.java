@@ -18,7 +18,8 @@ public class Contact {
 	private String telephone;//座机
 	private String callphone;//手机
 	private String email;//邮箱
-	private String birthday;//生日
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date birthday;//生日
 	private String supplierId;//供货商id
 	private String remarks;//备注
 

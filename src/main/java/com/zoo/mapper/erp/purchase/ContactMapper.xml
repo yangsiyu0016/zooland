@@ -60,7 +60,6 @@
 		callphone = #{contact.callphone},
 		email = #{contact.email},
 		birthday = #{contact.birthday},
-		supplierId = #{contact.supplierId},
 		remarks = #{contact.remarks} 
 		where id = #{contact.id}
 	</update>
