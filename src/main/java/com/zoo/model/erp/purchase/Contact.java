@@ -13,7 +13,7 @@ public class Contact {
 	private String id; //主键
 	private String name;//姓名
 	private String supplyCall;//称呼
-	private String sex;//性别
+	private Integer sex;//性别
 	private String position;//职位
 	private String telephone;//座机
 	private String callphone;//手机

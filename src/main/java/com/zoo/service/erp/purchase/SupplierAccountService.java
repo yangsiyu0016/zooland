@@ -17,8 +17,11 @@ public class SupplierAccountService {
 	
 	//根据供应商id获取开户信息
 	public List<SupplierAccount> getSupplierAccountById( String id) {
-		
-		return supplierAccountMapper.getSupplierAccountsById(id);
+		List<SupplierAccount> accounts = supplierAccountMapper.getSupplierAccountsById(id);
+		for(SupplierAccount account:accounts) {
+			account.setAccountContext(account.getBankNumber()+" | "+account.getBankName()+" | "+account.getAccountName());
+		}
+		return accounts;
 		
 	}
 	

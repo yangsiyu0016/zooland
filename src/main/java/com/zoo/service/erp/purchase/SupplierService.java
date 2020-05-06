@@ -64,8 +64,11 @@ public class SupplierService {
 					
 				
 			}
-			
+			for(SupplierAccount account:supplier.getSupplierAccounts()) {
+				account.setAccountContext(account.getBankNumber()+" | "+account.getBankName()+" | "+account.getAccountName());
+			}
 		}
+		
 		return suppliers;
 	}
 

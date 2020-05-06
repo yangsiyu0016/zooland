@@ -11,5 +11,5 @@ public class SupplierAccount {
 	private String bankNumber;//银行卡号
 	private String bankName;//开户行名称
 	private String accountName;//开户名称
-	
+	private String accountContext;
 }

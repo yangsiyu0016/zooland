@@ -16,7 +16,9 @@
 	<select id = "getSupplierAccountsById" resultMap = "BaseResult">
 		select * from supplier_account where supplierId = #{id}
 	</select>
-	
+	<select id="getSupplierAccountById" resultMap="BaseResult">
+		select * from supplier_account where id=#{id}
+	</select>
 	<insert id = "addSupplierAccount">
 		insert into supplier_account (
 			id,

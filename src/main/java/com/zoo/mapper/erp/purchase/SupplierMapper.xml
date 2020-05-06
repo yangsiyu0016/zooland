@@ -50,7 +50,9 @@
 			and companyId=#{companyId}
 		</if>
 	</select>
-	
+	<select id="getSupplierById" resultMap="BaseResultMap">
+		select * from supplier where id=#{id}
+	</select>
 	<insert id="add">
 		insert into supplier(
 			id,
