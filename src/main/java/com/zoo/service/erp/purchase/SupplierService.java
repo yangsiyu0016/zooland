@@ -14,12 +14,13 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.purchase.ContactMapper;
+import com.zoo.mapper.erp.purchase.SupplierAccountMapper;
 import com.zoo.mapper.erp.purchase.SupplierMapper;
 import com.zoo.mapper.erp.purchase.SupplyAddressMapper;
 import com.zoo.model.erp.purchase.Contact;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.Supplier;
-import com.zoo.model.erp.purchase.SupplyAddress;
+import com.zoo.model.erp.purchase.SupplierAccount;
 import com.zoo.model.system.user.SystemUser;
 
 @Service
@@ -31,7 +32,7 @@ public class SupplierService {
 	
 	//供货地址mapper
 	@Autowired
-	private SupplyAddressMapper supplyAddressMapper;
+	private SupplierAccountMapper supplierAccountMapper;
 	
 	//供货联系人mapper
 	@Autowired
@@ -63,16 +64,7 @@ public class SupplierService {
 					
 				
 			}
-			for(SupplyAddress supplyAddress : supplier.getSupplyAddresses()) {
-				List<String> areas = new ArrayList<String>();
-				
-				areas.add(supplyAddress.getCountryId());
-				areas.add(supplyAddress.getProvinceId());
-				areas.add(supplyAddress.getCityId());
-				areas.add(supplyAddress.getCountyId());
-				supplyAddress.setArea(areas);
-				supplyAddress.setBeat(supplyAddress.getCountry().getName() + "/" + supplyAddress.getProvince().getName() + "/" + supplyAddress.getCity().getName() + "/" + supplyAddress.getCounty().getName());
-			}
+			
 		}
 		return suppliers;
 	}
@@ -120,18 +112,16 @@ public class SupplierService {
 			}
 		}
 		
-		List<SupplyAddress> supplyAddresses = supplier.getSupplyAddresses();
-		if(supplyAddresses.size() > 0) {
-			for(SupplyAddress supplyAddress : supplyAddresses) {
-				supplyAddress.setId(UUID.randomUUID().toString());
-				supplyAddress.setSupplierId(supplierId);
-				supplyAddress.setCountryId(supplyAddress.getArea().get(0));
-				supplyAddress.setProvinceId(supplyAddress.getArea().get(1));
-				supplyAddress.setCityId(supplyAddress.getArea().get(2));
-				supplyAddress.setCountyId(supplyAddress.getArea().get(3));
-				supplyAddressMapper.add(supplyAddress);
+		List<SupplierAccount> supplierAccounts = supplier.getSupplierAccounts();
+		
+		if(supplierAccounts.size() > 0) { 
+			for(SupplierAccount supplierAccount : supplierAccounts) {
+				supplierAccount.setId(UUID.randomUUID().toString());
+				supplierAccount.setSupplierId(supplierId);
+				supplierAccountMapper.addSupplierAccount(supplierAccount);
 			}
 		}
+		
 		
 	}
 
@@ -167,11 +157,11 @@ public class SupplierService {
 			}
 			
 			//取出供货地址
-			List<SupplyAddress> supplyAddresses = supplier.getSupplyAddresses();
+			List<SupplierAccount> supplierAccounts = supplier.getSupplierAccounts();
 			
-			if(supplyAddresses.size() > 0) {
-				for(SupplyAddress supplyAddress : supplyAddresses) {
-					supplyAddressMapper.update(supplyAddress);
+			if(supplierAccounts.size() > 0) {
+				for(SupplierAccount supplierAccount : supplierAccounts) {
+					supplierAccountMapper.updateSupplierAccount(supplierAccount);
 				}
 			}
 			

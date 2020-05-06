@@ -28,7 +28,7 @@
 		<association column="cityId" property="city"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
 		<association column="countyId" property="county"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
 		<collection column="id" property="contacts" select="com.zoo.mapper.erp.purchase.ContactMapper.getContactById"></collection>
-		<collection column="id" property="supplyAddresses" select="com.zoo.mapper.erp.purchase.SupplyAddressMapper.getAddressById"></collection>
+		<collection column="id" property="supplierAccounts" select="com.zoo.mapper.erp.purchase.SupplierAccountMapper.getSupplierAccountsById"></collection>
 		
 		
 	</resultMap>
