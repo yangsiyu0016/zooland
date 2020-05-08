@@ -68,4 +68,16 @@ public class SellController {
 	public void startFlow(@RequestParam("id")String id) {
 		sellService.startProcess(id);
 	}
+	
+	//作废订单
+	@PostMapping("destroy")
+	public RespBean destroy(@RequestParam("id") String id) {
+		try {
+			sellService.destroy(id);
+			return new RespBean("200", "作废成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
 }

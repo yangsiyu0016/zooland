@@ -148,4 +148,20 @@ public class SellService {
 		return sellMapper.updateSell(sell);
 		
 	}
+	public void destroy(String id) {
+		// TODO Auto-generated method stub
+		
+		Sell sell = sellMapper.getSellById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", SellStatus.DESTROY);
+		condition.put("etime", new Date());
+		sellMapper.updateSellStatus(condition);
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+		
+		sellMapper.updateProcessInstanceId(id, null);
+		
+	}
 }
