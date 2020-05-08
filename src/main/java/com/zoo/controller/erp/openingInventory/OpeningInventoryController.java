@@ -68,4 +68,9 @@ public class OpeningInventoryController {
 	public void deleteFlow(@RequestParam("id")String id) {
 		oiService.doCallBackFlow(id);
 	}
+	//作废功能
+	@PostMapping("destroy")
+	public void destroy(@RequestParam("id")String id) {
+		//功能未确定，暂时不识现
+	}
 }
