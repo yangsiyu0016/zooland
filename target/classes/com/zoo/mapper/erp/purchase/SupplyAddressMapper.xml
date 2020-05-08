@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.zoo.mapper.erp.purchase.SupplyAddressMapper">
+	<resultMap type="com.zoo.model.erp.purchase.SupplyAddress" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="countryId" property="countryId"/>
+		<result column="cityId" property="cityId"/>
+		<result column="provinceId" property="provinceId"/>
+		<result column="countyId" property="countyId"/>
+		<result column="address" property="address"/>
+		<result column="supply" property="supply"/>
+		<result column="phone" property="phone"/>
+		<result column="supplierId" property="supplierId"/>
+		
+		<result column="remarks" property="remarks"/>
+		
+		<association column="countryId" property="country"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="provinceId" property="province"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="cityId" property="city"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		<association column="countyId" property="county"  select="com.zoo.mapper.system.area.AreaMapper.getAreaById"></association>
+		
+	</resultMap>
+	
+	<select id = "getAddressById" resultMap = "BaseResult">
+		select * from supplier_address where supplierId = #{id}
+	</select>
+	
+	<insert id="add">
+		insert into supplier_address(
+			id,
+			countryId,
+			provinceId,
+			cityId,
+			countyId,
+			address,
+			supply,
+			phone,
+			supplierId,
+			remarks
+		) values (
+			#{supplyAddress.id},
+			#{supplyAddress.countryId},
+			#{supplyAddress.provinceId},
+			#{supplyAddress.cityId},
+			#{supplyAddress.countyId},
+			#{supplyAddress.address},
+			#{supplyAddress.supply},
+			#{supplyAddress.phone},
+			#{supplyAddress.supplierId},
+			#{supplyAddress.remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		update supplier_address set 
+			countyId=#{supplyAddress.countyId},
+			cityId=#{supplyAddress.cityId},
+			provinceId=#{supplyAddress.provinceId},
+			countryId=#{supplyAddress.countryId},
+			address=#{supplyAddress.address},
+			supply=#{supplyAddress.supply},
+			phone=#{supplyAddress.phone},
+			supplierId=#{supplyAddress.supplierId},
+			remarks=#{supplyAddress.remarks} 
+		where id = #{supplyAddress.id}
+	</update>
+	
+</mapper>

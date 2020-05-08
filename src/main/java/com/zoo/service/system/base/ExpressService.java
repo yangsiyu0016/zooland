@@ -38,4 +38,8 @@ public class ExpressService {
 		expressMapper.updateExpress(express);
 		
 	}
+	public Express getExpressById(String id) {
+		// TODO Auto-generated method stub
+		return expressMapper.getExpressById(id);
+	}
 }
