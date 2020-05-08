@@ -11,6 +11,7 @@ public class BaseTask {
 	private String id;
 	private String formKey;
 	private String name;
+	private String taskKey;
 	private String originatorName;//发起人名称
 	private String assignee;//待办人ID
 	private String assigneeName;

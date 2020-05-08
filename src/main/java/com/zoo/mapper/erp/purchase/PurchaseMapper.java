@@ -22,5 +22,7 @@ public interface PurchaseMapper {
 	Purchase getPurchaseById(@Param("id")String id);
 
 	int updateProcessInstanceId(@Param("id")String id, @Param("processInstanceId")String processInstanceId);
+
+	int updatePurchase(@Param("purchase")Purchase purchase);
 	
 }

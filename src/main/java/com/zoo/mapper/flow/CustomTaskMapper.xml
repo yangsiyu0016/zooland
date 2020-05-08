@@ -12,7 +12,7 @@
 	    	t.FORM_KEY_ formKey,
 	    	TIMESTAMPDIFF(MINUTE,t.CREATE_TIME_,NOW()) stateTime,
 	    	code,
-	    	customerName,
+	    	supplierName,
 	    	originatorName,
 	    	assigneeName,
 	    	businessKey
@@ -21,7 +21,7 @@
 		    SELECT
 		    	ART.*,
 		    	p.code,
-		    	c.name customerName,
+		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
 		    	detail.skuId skuId,
@@ -30,7 +30,7 @@
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
 								LEFT JOIN purchase p ON ARE.BUSINESS_KEY_=p.id		    					
-								LEFT JOIN customer c ON p.customerId=c.id
+								LEFT JOIN supplier s ON p.supplierId=s.id
 		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
 								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
 								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
@@ -44,7 +44,7 @@
 		    SELECT
 		    	ART.*,
 		    	p.code,
-		    	c.name customerName,
+		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
 		    	detail.skuId skuId,
@@ -54,7 +54,7 @@
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
 		    					LEFT JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_=ART.ID_
 		    					LEFT JOIN purchase p ON ARE.BUSINESS_KEY_=p.id
-		    					LEFT JOIN customer c ON p.customerId=c.id
+		    					LEFT JOIN supplier s ON p.supplierId=s.id
 		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
 								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
 								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
@@ -80,7 +80,7 @@
 		    SELECT
 		    	ART.*,
 		    	p.code,
-		    	c.name customerName,
+		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
 		    	detail.skuId skuId
@@ -88,7 +88,7 @@
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
 								LEFT JOIN purchase p ON ARE.BUSINESS_KEY_=p.id		    					
-								LEFT JOIN customer c ON p.customerId=c.id
+								LEFT JOIN supplier s ON p.supplierId=s.id
 		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
 								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
 								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
@@ -102,7 +102,7 @@
 		    SELECT
 		    	ART.*,
 		    	p.code,
-		    	c.name customerName,
+		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
 		    	detail.skuId skuId
@@ -111,7 +111,7 @@
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
 		    					LEFT JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_=ART.ID_
 		    					LEFT JOIN purchase p ON ARE.BUSINESS_KEY_=p.id
-		    					LEFT JOIN customer c ON p.customerId=c.id
+		    					LEFT JOIN supplier s ON p.supplierId=s.id
 		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
 								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
 								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
@@ -375,6 +375,28 @@
 	    	ARE.BUSINESS_KEY_ businessKey
     	FROM ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_  AND ARE.BUSINESS_KEY_ IS NOT NULL
     		LEFT JOIN opening_inventory oi ON ARE.BUSINESS_KEY_=oi.id
+    		LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+    		LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+    		LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+    	
+    	WHERE ART.ID_=#{taskId} 
+    		
+    </select>
+    <select id="getPurchaseTaskById" resultType="com.zoo.model.flow.PurchaseTask">
+    	SELECT 
+    		ART.ID_ id,
+	    	ART.NAME_ name,
+	    	ART.TASK_DEF_KEY_ taskKey,
+	    	ART.CREATE_TIME_ createTime,
+	    	ART.ASSIGNEE_ assignee,
+	    	ART.FORM_KEY_ formKey,
+	    	TIMESTAMPDIFF(MINUTE,ART.CREATE_TIME_,NOW()) stateTime,
+	    	pur.code,
+	    	su.realName originatorName,
+	    	su2.realName assigneeName,
+	    	ARE.BUSINESS_KEY_ businessKey
+    	FROM ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_  AND ARE.BUSINESS_KEY_ IS NOT NULL
+    		LEFT JOIN purchase pur ON ARE.BUSINESS_KEY_=pur.id
     		LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
     		LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
     		LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id

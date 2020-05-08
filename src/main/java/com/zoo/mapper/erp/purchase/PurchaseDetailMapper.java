@@ -9,7 +9,9 @@ import com.zoo.model.erp.purchase.PurchaseDetail;
 public interface PurchaseDetailMapper {
 
 	int addDetail(@Param("detail")PurchaseDetail detail);
-
+	int updateDetail(@Param("detail")PurchaseDetail detail);
 	PurchaseDetail getDetailById(@Param("id")String id);
+
+	int deleteDetailById(@Param("ids")String[] ids);
 
 }

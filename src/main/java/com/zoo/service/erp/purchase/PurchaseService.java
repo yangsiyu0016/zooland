@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.util.StringUtil;
 import com.zoo.controller.erp.constant.PurchaseStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -131,6 +132,9 @@ public class PurchaseService {
 
 	public void startProcess(String id) {
 		Purchase purchase = this.getPurchaseById(id);
+		if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())) {
+			throw new ZooException(ExceptionEnum.FLOWSTATED);
+		}
 		UserInfo user = LoginInterceptor.getLoginUser();
 		Map<String, Object> variables=new HashMap<String,Object>();
 		// 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
@@ -146,6 +150,27 @@ public class PurchaseService {
         condition.put("id", id);
 		condition.put("status", PurchaseStatus.CGJLSH);
 		this.updatePurchaseStatus(condition);
+	}
+
+	public void updatePurchase(Purchase purchase) {
+		purchase.setAccountContext(purchase.getSupplierAccount().getBankNumber()+" | "
+					+purchase.getSupplierAccount().getBankName()+" | "
+					+purchase.getSupplierAccount().getAccountName());
+		purchaseMapper.updatePurchase(purchase);
+	}
+
+	public void destroy(String id) {
+		Purchase purchase = purchaseMapper.getPurchaseById(id);
+		Map<String,Object> condition = new HashMap<String,Object>();
+		condition.put("id", id);
+		condition.put("status", PurchaseStatus.DESTROY);
+		condition.put("etime", new Date());
+		purchaseMapper.updatePurchaseStatus(condition);
+		//删除流程实例
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(),"待定");
+		
+		purchaseMapper.updateProcessInstanceId(id, null);
 	}
 
 }

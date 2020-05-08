@@ -6,6 +6,7 @@ public class PurchaseStatus {
 	public static final String CWSH = "CWSH";
 	public static final String IN = "IN";
 	public static final String FINISHED = "FINISHED";
-	public static final Object CGJLSH = "CGJLSH";
+	public static final String CGJLSH = "CGJLSH";//采购经理审核
+	public static final String DESTROY = "DESTROY";
 
 }

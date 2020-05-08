@@ -56,6 +56,14 @@
 			#{purchase.accountContext}
 		)
 	</insert>
+	<update id="updatePurchase">
+		update purchase set 
+			initDate=#{purchase.initDate},
+			supplierId=#{purchase.supplier.id},
+			accountId=#{purchase.supplierAccount.id},
+			accountContext=#{purchase.accountContext}
+		where id=#{purchase.id}
+	</update>
 	<update id="updateProcessInstanceId">
 		update purchase set processInstanceId=#{processInstanceId} where id=#{id}
 	</update>

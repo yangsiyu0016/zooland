@@ -48,7 +48,7 @@ public class PurchaseCGNQHandler implements TaskListener {
 		SystemUser applyUser = systemUserService.getUserById(applyUserId);
 		Map<String,Object> condition = new HashMap<String,Object>();
 		condition.put("companyId", applyUser.getCompanyId());
-		condition.put("code", "CGZL");
+		condition.put("code", "CGNQ");
 		List<Position> list = positionService.getPositionByCondition(condition);
 		List<String> groupIds = new ArrayList<String>();
 		for(Position position:list){

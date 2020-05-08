@@ -60,7 +60,10 @@ public class TaskController {
 	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
 		return customTaskService.getOpeningInventoryTaskById(taskId);
 	}
-	
+	@GetMapping("getPurchaseTaskById")
+	public PurchaseTask getPurchaseTaskById(String taskId) {
+		return customTaskService.getPurchaseTaskById(taskId);
+	}
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {

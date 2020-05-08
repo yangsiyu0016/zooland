@@ -58,6 +58,7 @@ public enum ExceptionEnum {
     CREATE_TOKEN_ERROR(500,"用户凭证生成失败"), 
     DELETE_MENU_HAS_CHIILDREN(500,"存在子菜单,不能删除"), 
     GENER_CODE_ERROR(500,"生成单号失败"), 
+    FLOWSTATED(500,"流程已启动"), 
 
 
     ;
