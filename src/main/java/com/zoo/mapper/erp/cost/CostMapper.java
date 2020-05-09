@@ -12,4 +12,5 @@ public interface CostMapper {
 	List<Cost> getCostByForeignKey(@Param("foreignKey") String foreignKey);
 	int addCost(@Param("cost")Cost cost);
 	Cost getCostById(@Param("id")String id);
+	void deleteCostById(@Param("id")String id);
 }

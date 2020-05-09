@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zoo.controller.erp.constant.JournalAccountType;
+import com.zoo.enums.ExceptionEnum;
+import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.cost.CostDetailMapper;
 import com.zoo.mapper.erp.cost.CostMapper;
@@ -113,16 +115,27 @@ public class CostService {
 		return costs;
 	} 
 	public void addCostFromPurchase(Cost cost) {
-		Purchase purchase = purchaseMapper.getPurchaseById(cost.getForeignKey());
+		//Purchase purchase = purchaseMapper.getPurchaseById(cost.getForeignKey());
 		cost.setId(UUID.randomUUID().toString());
 		cost.setWarehouse(cost.getDetails().get(0).getWarehouse());
 		cost.setCtime(new Date());
 		costMapper.addCost(cost);
 		
 		for(CostDetail detail:cost.getDetails()) {
-			detail.setId(UUID.randomUUID().toString());
-			detail.setCostId(cost.getId());
-			detailMapper.addCostDetail(detail);
+			PurchaseDetail pdetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
+			BigDecimal notOutNumber =pdetail.getNotOutNumber().subtract(detail.getNumber());
+			if(notOutNumber.compareTo(BigDecimal.ZERO)==-1) {
+				throw new ZooException(ExceptionEnum.NUMBER_ERROR);
+			}else {
+				detail.setId(UUID.randomUUID().toString());
+				detail.setCostId(cost.getId());
+				
+				detailMapper.addCostDetail(detail);
+				
+				purchaseDetailMapper.updateNotOutNumber(pdetail.getId(), notOutNumber);
+				
+			}
+			
 		}
 	}
 	public void addCostFromSell(Cost cost) {
@@ -303,5 +316,16 @@ public class CostService {
 			journalAccountService.addJournalAccount(journalAccount);
 			
 		}
+	}
+	public void deleteCostFromPurchase(String id) {
+		List<CostDetail> details = detailMapper.getDetailByCostId(id);
+		for(CostDetail detail:details) {
+			PurchaseDetail purchaseDetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
+			BigDecimal notOutNumber = purchaseDetail.getNotOutNumber().add(detail.getNumber());
+					
+			purchaseDetailMapper.updateNotOutNumber(detail.getDetailId(), notOutNumber);
+			detailMapper.deleteDetailById(detail.getId());
+		}
+		costMapper.deleteCostById(id);
 	}
 }

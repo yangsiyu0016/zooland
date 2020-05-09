@@ -37,4 +37,7 @@
 			#{cost.warehouse.id}
 		)
 	</insert>
+	<delete id="deleteCostById">
+		delete from cost where id=#{id}
+	</delete>
 </mapper>

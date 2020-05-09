@@ -59,6 +59,7 @@ public enum ExceptionEnum {
     DELETE_MENU_HAS_CHIILDREN(500,"存在子菜单,不能删除"), 
     GENER_CODE_ERROR(500,"生成单号失败"), 
     FLOWSTATED(500,"流程已启动"), 
+    NUMBER_ERROR(500,"发货数量不能大于未发货数量"), 
 
 
     ;

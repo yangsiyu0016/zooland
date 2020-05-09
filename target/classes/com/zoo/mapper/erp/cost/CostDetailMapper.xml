@@ -25,4 +25,7 @@
 			#{detail.number}
 		)
 	</insert>
+	<delete id="deleteDetailById">
+		delete from cost_detail where id=#{id}
+	</delete>
 </mapper>
