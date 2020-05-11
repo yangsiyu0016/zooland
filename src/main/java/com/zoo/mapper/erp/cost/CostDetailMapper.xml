@@ -6,6 +6,7 @@
 	<resultMap type="com.zoo.model.erp.cost.CostDetail" id="BaseResultMap">
 		<id column="id" property="id"/>
 		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<collection column="id" property="cdgas" select="com.zoo.mapper.erp.cost.CostDetailGoodsAllocationMapper.getByCostDetailId"></collection>
 	</resultMap>
 	<select id="getDetailByCostId" resultMap="BaseResultMap">
 		select * from cost_detail where costId=#{costId}

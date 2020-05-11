@@ -37,6 +37,10 @@
 			#{cost.warehouse.id}
 		)
 	</insert>
+	<update id="updateFinished">
+	
+		update cost set finished=#{finished} where id=#{id}
+	</update>
 	<delete id="deleteCostById">
 		delete from cost where id=#{id}
 	</delete>

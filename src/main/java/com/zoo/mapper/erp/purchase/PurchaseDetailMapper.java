@@ -18,5 +18,6 @@ public interface PurchaseDetailMapper {
 	int deleteDetailById(@Param("ids")String[] ids);
 	int updateNotOutNumber(@Param("id")String id,@Param("notOutNumber")BigDecimal notOutNumber);
 	List<PurchaseDetail> getDetailByPurchaseId(@Param("purchaseId")String purchaseId);
+	int updateNotInNumber(@Param("id")String id, @Param("notInNumber")BigDecimal notInNumber);
 
 }

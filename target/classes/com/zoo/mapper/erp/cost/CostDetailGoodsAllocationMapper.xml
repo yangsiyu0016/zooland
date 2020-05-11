@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.cost.CostDetailGoodsAllocationMapper">
+	<resultMap type="com.zoo.model.erp.cost.CostDetailGoodsAllocation" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<association column="goodsAllocationId" property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
+	</resultMap>
+	<select id="getByCostDetailId" resultMap="BaseResultMap">
+		select * from cost_detail_goods_allocation where costDetailId=#{costDetailId}
+	</select>
+	<insert id="addCostDetailGoodsAllocation">
+		insert into cost_detail_goods_allocation  (id,costDetailId,goodsAllocationId,number)
+		values(
+			#{costDetailGoodsAllocation.id},
+			#{costDetailGoodsAllocation.costDetailId},
+			#{costDetailGoodsAllocation.goodsAllocation.id},
+			#{costDetailGoodsAllocation.number}
+		)
+		
+	</insert>
+	<delete id="deleteCostDetailGoodsAllocationById">
+		delete from cost_detail_goods_allocation where id=#{id}
+	</delete>
+</mapper>

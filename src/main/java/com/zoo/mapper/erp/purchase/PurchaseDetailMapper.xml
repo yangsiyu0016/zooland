@@ -54,6 +54,9 @@
 	<update id="updateNotOutNumber">
 		update purchase_detail set notOutNumber = #{notOutNumber} where id = #{id}
 	</update>
+	<update id="updateNotInNumber">
+		update purchase_detail set notInNumber = #{notInNumber} where id = #{id}
+	</update>
 	<delete id="deleteDetailByPurchaseId">
 		delete from purchase_detail where purchaseId=#{purchaseId}
 	</delete>

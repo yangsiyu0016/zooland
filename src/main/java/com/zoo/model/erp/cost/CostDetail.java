@@ -1,9 +1,9 @@
 package com.zoo.model.erp.cost;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.erp.warehouse.Warehouse;
 
 import lombok.Data;
@@ -15,6 +15,6 @@ public class CostDetail {
 	private ProductSku productSku;
 	private BigDecimal number = new BigDecimal("0");
 	private Warehouse warehouse;
-	private GoodsAllocation goodsAllocation;
+	private List<CostDetailGoodsAllocation> cdgas;
 	
 }
