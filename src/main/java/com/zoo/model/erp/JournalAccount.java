@@ -22,6 +22,8 @@ public class JournalAccount {
 	private BigDecimal ckPrice;
 	private BigDecimal ckTotalMoney;
 	private BigDecimal totalNumber;
+	private BigDecimal costPrice;
+	private BigDecimal totalMoney;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date ctime;
 	private String customerId;

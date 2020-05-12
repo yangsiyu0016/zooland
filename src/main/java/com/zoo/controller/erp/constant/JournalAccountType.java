@@ -4,6 +4,6 @@ public class JournalAccountType {
 
 	public static final String QC = "QC";
 	public static final String SELL = "SELL";
-	public static final String Purchase = "PURCHASE";
+	public static final String PURCHASE = "PURCHASE";
 
 }

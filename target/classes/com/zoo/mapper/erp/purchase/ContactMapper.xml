@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.zoo.mapper.erp.purchase.ContactMapper">
+	<resultMap type="com.zoo.model.erp.purchase.Contact" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="supplyCall" property="supplyCall"/>
+		<result column="sex" property="sex"/>
+		<result column="position" property="position"/>
+		<result column="telephone" property="telephone"/>
+		<result column="callphone" property="callphone"/>
+		<result column="email" property="email"/>
+		<result column="birthday" property="birthday"/>
+		<result column="supplierId" property="supplierId"/>
+		<result column="remarks" property="remarks"/>
+	</resultMap>
+	
+	<select id = "getContactById" resultMap = "BaseResult">
+		select * from supplier_contact where supplierId = #{id}
+	</select>
+	
+	<!-- 新增供货联系人 -->
+	<insert id="add">
+		insert into supplier_contact(
+			id,
+			name,
+			supplyCall,
+			sex,
+			position,
+			telephone,
+			callphone,
+			email,
+			birthday,
+			supplierId,
+			remarks
+		) values (
+			#{contact.id},
+			#{contact.name},
+			#{contact.supplyCall},
+			#{contact.sex},
+			#{contact.position},
+			#{contact.telephone},
+			#{contact.callphone},
+			#{contact.email},
+			#{contact.birthday},
+			#{contact.supplierId},
+			#{contact.remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		update supplier_contact set 
+		name = #{contact.name},
+		supplyCall = #{contact.supplyCall},
+		sex = #{contact.sex},
+		position = #{contact.position},
+		telephone = #{contact.telephone},
+		callphone = #{contact.callphone},
+		email = #{contact.email},
+		birthday = #{contact.birthday},
+		remarks = #{contact.remarks} 
+		where id = #{contact.id}
+	</update>
+	
+</mapper>

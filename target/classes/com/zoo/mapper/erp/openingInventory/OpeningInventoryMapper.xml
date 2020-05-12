@@ -63,6 +63,9 @@
 			#{oi.status}
 		)
 	</insert>
+	<update id="updateOpeningInventory">
+		update opening_inventory set initDate=#{oi.initDate} where id = #{oi.id}
+	</update>
 	<update id="updateProcessInstanceId">
 		update opening_inventory set processInstanceId=#{processInstanceId} where id=#{id}
 	</update>

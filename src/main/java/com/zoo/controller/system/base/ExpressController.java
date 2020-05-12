@@ -35,8 +35,12 @@ public class ExpressController {
 	public List<Express> all(){
 		return expressService.getExpressByPage(null, null);
 	}
+	@GetMapping("getExpressById")
+	public Express getExpressById(String id) {
+		return expressService.getExpressById(id);
+	}
 	@PostMapping("addExpress")
-	public RespBean addExpress(Express express) {
+	public RespBean addExpress(@RequestBody Express express) {
 		try {
 			expressService.addExpress(express);
 			return new RespBean("200","添加成功");

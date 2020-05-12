@@ -9,9 +9,9 @@
 		<result column="initDate" property="initDate"/>
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
-		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
+		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
-		<association column="accountId" property="account" select="com.zoo.mapper.crm.customer.AccountMapper.getAccountById"></association>
+		<association column="accountId" property="supplierAccount" select="com.zoo.mapper.erp.purchase.SupplierAccountMapper.getSupplierAccountById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.purchase.PurchaseDetailMapper.getDetailByPurchaseId"></collection>
 	</resultMap>
 	<select id="getPurchaseByPage" resultMap="BaseResultMap">
@@ -32,28 +32,38 @@
 			id,
 			initDate,
 			code,
-			customerId,
+			supplierId,
 			cuserId,
 			ctime,
 			etime,
 			processInstanceId,
 			status,
 			companyId,
-			accountId
+			accountId,
+			accountContext
 		)values(
 			#{purchase.id},
 			#{purchase.initDate},
 			#{purchase.code},
-			#{purchase.customer.id},
+			#{purchase.supplier.id},
 			#{purchase.cuserId},
 			#{purchase.ctime},
 			#{purchase.etime},
 			#{purchase.processInstanceId},
 			#{purchase.status},
 			#{purchase.companyId},
-			#{purchase.account.id}
+			#{purchase.supplierAccount.id},
+			#{purchase.accountContext}
 		)
 	</insert>
+	<update id="updatePurchase">
+		update purchase set 
+			initDate=#{purchase.initDate},
+			supplierId=#{purchase.supplier.id},
+			accountId=#{purchase.supplierAccount.id},
+			accountContext=#{purchase.accountContext}
+		where id=#{purchase.id}
+	</update>
 	<update id="updateProcessInstanceId">
 		update purchase set processInstanceId=#{processInstanceId} where id=#{id}
 	</update>

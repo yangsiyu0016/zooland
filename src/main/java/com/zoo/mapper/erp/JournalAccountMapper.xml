@@ -19,6 +19,8 @@
 	</resultMap>
 	<select id="getJournalAccountByPage" resultMap="BaseResultMap">
 		select * from journal_account where companyId= #{companyId}
+		
+		order by ctime desc
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>

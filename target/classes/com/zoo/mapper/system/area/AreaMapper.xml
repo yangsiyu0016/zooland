@@ -34,4 +34,15 @@
 		)
 		
 	</insert>
+	
+	<!-- 修改区域数据 -->
+	<update id="updateArea">
+		update area
+		<set>
+			<if test="area.name != null">
+					name = #{area.name},
+			</if>
+		</set>
+		where id=#{area.id}
+	</update>
 </mapper>

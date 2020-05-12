@@ -13,4 +13,5 @@ public interface ExpressMapper {
 	long getCount();
 	int addExpress(@Param("express")Express express);
 	int updateExpress(@Param("express")Express express);
+	Express getExpressById(@Param("id")String id);
 }

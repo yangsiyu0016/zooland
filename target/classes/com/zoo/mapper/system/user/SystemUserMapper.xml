@@ -25,7 +25,12 @@
 			* 
 		from
 			system_user u
-		where u.realName like concat('%',#{keywords},'%')
+		where 1=1
+		<if test="keywords!=null">
+			AND u.realName like concat('%',#{keywords},'%')
+		</if>
+		
+		
 		<if test="companyId!=null">
 			AND companyId=#{companyId}
 		</if>
@@ -34,7 +39,10 @@
 		</if>
 	</select>
 	<select id="getCountByKeywords" resultType="Long">
-		select count(*) from system_user u where u.realName like concat('%',#{keywords},'%') 
+		select count(*) from system_user u where 1=1
+		<if test="keywords!=null">
+			AND u.realName like concat('%',#{keywords},'%')
+		</if>
 		<if test="companyId!=null">
 			AND companyId=#{companyId}
 		</if>

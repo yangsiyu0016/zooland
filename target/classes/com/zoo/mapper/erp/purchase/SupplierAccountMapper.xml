@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.zoo.mapper.erp.purchase.SupplierAccountMapper">
+
+	<resultMap type="com.zoo.model.erp.purchase.SupplierAccount" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="supplierId" property="supplierId"/>
+		<result column="type" property="type"/>
+		<result column="bankNumber" property="bankNumber"/>
+		<result column="bankName" property="bankName"/>
+		<result column="accountName" property="accountName"/>
+	</resultMap>
+	
+	<select id = "getSupplierAccountsById" resultMap = "BaseResult">
+		select * from supplier_account where supplierId = #{id}
+	</select>
+	<select id="getSupplierAccountById" resultMap="BaseResult">
+		select * from supplier_account where id=#{id}
+	</select>
+	<insert id = "addSupplierAccount">
+		insert into supplier_account (
+			id,
+			supplierId,
+			type,
+			bankNumber,
+			bankName,
+			accountName
+		) values (
+			#{supplierAccount.id},
+			#{supplierAccount.supplierId},
+			#{supplierAccount.type},
+			#{supplierAccount.bankNumber},
+			#{supplierAccount.bankName},
+			#{supplierAccount.accountName}
+		)
+	</insert>
+	
+	<update id="updateSupplierAccount">
+		update supplier_account set 
+			type = #{supplierAccount.type},
+			bankNumber = #{supplierAccount.bankNumber},
+			bankName = #{supplierAccount.bankName},
+			accountName = #{supplierAccount.accountName}
+		where id = #{supplierAccount.id}
+	</update>
+
+</mapper>

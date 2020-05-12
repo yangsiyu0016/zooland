@@ -20,5 +20,6 @@ public class PurchaseDetail {
 	private String purchaseId;
 	
 	private BigDecimal notInNumber;
+	private BigDecimal notOutNumber;
 	
 }

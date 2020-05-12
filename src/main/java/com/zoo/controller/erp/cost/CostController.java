@@ -3,6 +3,7 @@ package com.zoo.controller.erp.cost;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.cost.Cost;
 import com.zoo.service.erp.cost.CostService;
 import com.zoo.vo.RespBean;
@@ -37,6 +39,15 @@ public class CostController {
 		try {
 			costService.addCostFromPurchase(cost);
 			return new RespBean("200","添加成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
+		}
+	}
+	@DeleteMapping("deleteCostFromPurchase")
+	public RespBean deleteCostFromPurchase(@RequestParam("id")String id) {
+		try {
+			costService.deleteCostFromPurchase(id);
+			return new RespBean("200","删除成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());
 		}

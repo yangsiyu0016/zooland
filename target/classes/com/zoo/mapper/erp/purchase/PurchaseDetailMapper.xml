@@ -25,6 +25,7 @@
 			warehouseId,
 			number,
 			notInNumber,
+			notOutNumber,
 			price,
 			totalMoney,
 			purchaseId
@@ -34,12 +35,35 @@
 			#{detail.warehouse.id},
 			#{detail.number},
 			#{detail.number},
+			#{detail.number},
 			#{detail.price},
 			#{detail.totalMoney},
 			#{detail.purchaseId}
 		)
 	</insert>
+	<update id="updateDetail">
+		update purchase_detail set
+			skuId=#{detail.productSku.id},
+			warehouseId=#{detail.warehouse.id},
+			number = #{detail.number},
+			notInNumber=#{detail.number},
+			price = #{detail.price},
+			totalMoney = #{detail.totalMoney}
+		where id=#{detail.id}
+	</update>
+	<update id="updateNotOutNumber">
+		update purchase_detail set notOutNumber = #{notOutNumber} where id = #{id}
+	</update>
+	<update id="updateNotInNumber">
+		update purchase_detail set notInNumber = #{notInNumber} where id = #{id}
+	</update>
 	<delete id="deleteDetailByPurchaseId">
 		delete from purchase_detail where purchaseId=#{purchaseId}
+	</delete>
+	<delete id="deleteDetailById">
+		delete from purchase_detail where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
 	</delete>
 </mapper>

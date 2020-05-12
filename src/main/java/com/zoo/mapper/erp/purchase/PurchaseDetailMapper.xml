@@ -25,6 +25,7 @@
 			warehouseId,
 			number,
 			notInNumber,
+			notOutNumber,
 			price,
 			totalMoney,
 			purchaseId
@@ -32,6 +33,7 @@
 			#{detail.id},
 			#{detail.productSku.id},
 			#{detail.warehouse.id},
+			#{detail.number},
 			#{detail.number},
 			#{detail.number},
 			#{detail.price},
@@ -48,6 +50,12 @@
 			price = #{detail.price},
 			totalMoney = #{detail.totalMoney}
 		where id=#{detail.id}
+	</update>
+	<update id="updateNotOutNumber">
+		update purchase_detail set notOutNumber = #{notOutNumber} where id = #{id}
+	</update>
+	<update id="updateNotInNumber">
+		update purchase_detail set notInNumber = #{notInNumber} where id = #{id}
 	</update>
 	<delete id="deleteDetailByPurchaseId">
 		delete from purchase_detail where purchaseId=#{purchaseId}

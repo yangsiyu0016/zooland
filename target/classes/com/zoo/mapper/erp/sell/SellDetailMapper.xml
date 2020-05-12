@@ -24,7 +24,8 @@
 			notOutNumber,
 			price,
 			totalMoney,
-			sellId
+			sellId,
+			ctime
 		)values(
 			#{detail.id},
 			#{detail.productSku.id},
@@ -33,10 +34,27 @@
 			#{detail.number},
 			#{detail.price},
 			#{detail.totalMoney},
-			#{detail.sellId}
+			#{detail.sellId},
+			#{detail.ctime}
 		)
 	</insert>
+	<update id="updateDetail">
+		update sell_detail set 
+			skuId=#{detail.productSku.id},
+			warehouseId=#{detail.warehouse.id},
+			number=#{detail.number},
+			notOutNumber=#{detail.number},
+			price=#{detail.price},
+			totalMoney=#{detail.totalMoney}
+		where id=#{detail.id}
+	</update>
 	<delete id="deleteDetailBySellId">
 		delete from sell_detail where sellId=#{sellId}
+	</delete>
+	<delete id="deleteDetailById">
+		delete from sell_detail where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
 	</delete>
 </mapper>
