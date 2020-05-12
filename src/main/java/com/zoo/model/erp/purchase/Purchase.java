@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zoo.model.annex.Annex;
 import com.zoo.model.system.user.SystemUser;
 
 import lombok.Data;
@@ -29,5 +30,5 @@ public class Purchase {
 	private SystemUser cuser;
 	private SupplierAccount supplierAccount;
 	private String accountContext;
-	
+	private List<Annex> annexs;
 }

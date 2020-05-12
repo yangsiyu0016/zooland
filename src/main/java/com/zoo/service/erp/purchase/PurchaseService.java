@@ -23,8 +23,10 @@ import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.purchase.PurchaseMapper;
+import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
+import com.zoo.model.annex.Annex;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
@@ -50,6 +52,9 @@ public class PurchaseService {
 	ProcessEngine processEngine;
 	@Autowired
 	SpecParamMapper paramMapper;
+	@Autowired
+	AnnexMapper annexMapper;
+	
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
@@ -72,6 +77,12 @@ public class PurchaseService {
 			detail.setPurchaseId(id);
 			detail.setCtime(new Date());
 			detailMapper.addDetail(detail);
+		}
+		List<Annex> annexs = purchase.getAnnexs();
+		for(Annex annex: annexs) {
+			annex.setForeignKey(id);
+			//将业务id添加到附件得业务id字段
+			annexMapper.updateAnnexForeignKeyById(annex);
 		}
 	}
 
