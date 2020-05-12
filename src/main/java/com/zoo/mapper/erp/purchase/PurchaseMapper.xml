@@ -13,6 +13,7 @@
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="accountId" property="supplierAccount" select="com.zoo.mapper.erp.purchase.SupplierAccountMapper.getSupplierAccountById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.purchase.PurchaseDetailMapper.getDetailByPurchaseId"></collection>
+		<collection column="id" property="annexs" select="com.zoo.mapper.annex.AnnexMapper.getAnnexsByForeignKey"></collection>
 	</resultMap>
 	<select id="getPurchaseByPage" resultMap="BaseResultMap">
 		select * from purchase where companyId=#{companyId}

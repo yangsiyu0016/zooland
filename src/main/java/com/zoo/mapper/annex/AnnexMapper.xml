@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.annex.AnnexMapper">
+	<resultMap type="com.zoo.model.annex.Annex" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="title" property="title"/>
+		<result column="url" property="url"/>
+		<result column="utime" property="utime"/>
+		<result column="foreignKey" property="foreignKey"/>
+	</resultMap>
+	
+	<select id="getAnnexById" resultMap="BaseResultMap">
+		select * from annex where id = #{id}	
+	</select>
+	<select id="getAnnexsByForeignKey" resultMap="BaseResultMap">
+		select * from annex where foreignKey = #{id}
+	</select>
+	<insert id="addAnnex">
+		insert into annex(
+			id,
+			title,
+			url,
+			utime,
+			foreignKey
+		) values(
+			#{annex.id},
+			#{annex.title},
+			#{annex.url},
+			#{annex.utime},
+			#{annex.foreignKey}
+		)
+	</insert>
+	<delete id="delAnnexById">
+		delete from annex where id = #{id}
+	</delete>
+	<update id="updateAnnexForeignKeyById">
+		update annex set foreignKey = #{annex.foreignKey} where id = #{annex.id}
+	</update>
+</mapper>
