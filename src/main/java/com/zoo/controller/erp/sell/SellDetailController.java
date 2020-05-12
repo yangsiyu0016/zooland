@@ -27,6 +27,10 @@ public class SellDetailController {
 	public List<SellDetail> getNotOutDetailsBySellId(String sellId){
 		return detailService.getNotOutDetailBySellId(sellId);
 	}
+	@GetMapping("getDetailBySellId")
+	public List<SellDetail> getDetailBySellId(String sellId){
+		return detailService.getSellDetailBySellId(sellId);
+	}
 	@PostMapping("add")
 	public Map<String,Object> add(@RequestBody SellDetail detail){
 		Map<String,Object> map = new HashMap<String,Object>();

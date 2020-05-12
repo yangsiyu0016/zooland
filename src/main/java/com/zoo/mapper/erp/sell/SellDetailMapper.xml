@@ -15,6 +15,9 @@
 	<select id="getNotOutDetailBySellId" resultMap="BaseResultMap">
 		select * from sell_detail where sellId = #{sellId} and notOutNumber!=0
 	</select>
+	<select id="getDetailById" resultMap="BaseResultMap">
+		select * from sell_detail where id=#{id}
+	</select>
 	<insert id="addDetail">
 		insert into sell_detail (
 			id,
@@ -47,6 +50,9 @@
 			price=#{detail.price},
 			totalMoney=#{detail.totalMoney}
 		where id=#{detail.id}
+	</update>
+	<update id="updateNotOutNumber">
+		update sell_detail set notOutNumber=#{notOutNumber} where id=#{id}
 	</update>
 	<delete id="deleteDetailBySellId">
 		delete from sell_detail where sellId=#{sellId}

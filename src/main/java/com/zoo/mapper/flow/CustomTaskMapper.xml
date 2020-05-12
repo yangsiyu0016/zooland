@@ -404,4 +404,26 @@
     	WHERE ART.ID_=#{taskId} 
     		
     </select>
+    <select id="getSellTaskById" resultType="com.zoo.model.flow.SellTask">
+    	SELECT 
+    		ART.ID_ id,
+	    	ART.NAME_ name,
+	    	ART.TASK_DEF_KEY_ taskKey,
+	    	ART.CREATE_TIME_ createTime,
+	    	ART.ASSIGNEE_ assignee,
+	    	ART.FORM_KEY_ formKey,
+	    	TIMESTAMPDIFF(MINUTE,ART.CREATE_TIME_,NOW()) stateTime,
+	    	s.code,
+	    	su.realName originatorName,
+	    	su2.realName assigneeName,
+	    	ARE.BUSINESS_KEY_ businessKey
+    	FROM ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_  AND ARE.BUSINESS_KEY_ IS NOT NULL
+    		LEFT JOIN sell s ON ARE.BUSINESS_KEY_=s.id
+    		LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+    		LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+    		LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+    	
+    	WHERE ART.ID_=#{taskId} 
+    		
+    </select>
 </mapper>

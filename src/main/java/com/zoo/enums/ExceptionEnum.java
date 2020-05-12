@@ -60,7 +60,9 @@ public enum ExceptionEnum {
     GENER_CODE_ERROR(500,"生成单号失败"), 
     FLOWSTATED(500,"流程已启动"), 
     NUMBER_ERROR(500,"发货数量不能大于未发货数量"), 
-
+    STOCK_DETAIL_NOT_FOUND(500,"货位库存不存在"), 
+    STOCK_DETAIL_NO_ENOUGH(500,"货位库存不足"), 
+    
 
     ;
     int value;

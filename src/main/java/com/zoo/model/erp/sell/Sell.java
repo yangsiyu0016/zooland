@@ -29,5 +29,6 @@ public class Sell {
 	private String processInstanceId;
 	private String companyId;
 	private SystemUser cuser;
+	private String receivingContext;
 	
 }

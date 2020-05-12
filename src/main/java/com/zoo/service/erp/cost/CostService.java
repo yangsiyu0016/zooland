@@ -19,6 +19,7 @@ import com.zoo.controller.erp.constant.JournalAccountType;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.erp.cost.CostDetailGoodsAllocationMapper;
 import com.zoo.mapper.erp.cost.CostDetailMapper;
 import com.zoo.mapper.erp.cost.CostMapper;
 import com.zoo.mapper.erp.inbound.InboundDetailMapper;
@@ -28,6 +29,7 @@ import com.zoo.mapper.erp.outbound.OutboundMapper;
 import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.mapper.erp.purchase.PurchaseMapper;
+import com.zoo.mapper.erp.sell.SellDetailMapper;
 import com.zoo.mapper.erp.sell.SellMapper;
 import com.zoo.mapper.erp.warehouse.StockDetailMapper;
 import com.zoo.mapper.erp.warehouse.StockMapper;
@@ -44,6 +46,7 @@ import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.erp.sell.Sell;
+import com.zoo.model.erp.sell.SellDetail;
 import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.erp.warehouse.Warehouse;
@@ -80,6 +83,10 @@ public class CostService {
 	InboundDetailMapper inboundDetailMapper;
 	@Autowired
 	PurchaseDetailMapper purchaseDetailMapper;
+	@Autowired
+	SellDetailMapper sellDetailMapper;
+	@Autowired
+	CostDetailGoodsAllocationMapper costDetailGoodsAllocationMapper;
 	public List<Cost> getCostByForeignKey(String foreignKey){
 		List<Cost> costs = costMapper.getCostByForeignKey(foreignKey);
 		List<String> built = new ArrayList<String>();
@@ -140,83 +147,110 @@ public class CostService {
 		}
 	}
 	public void addCostFromSell(Cost cost) {
+		Sell sell = sellMapper.getSellById(cost.getForeignKey());
+		cost.setId(UUID.randomUUID().toString());
+		cost.setWarehouse(cost.getDetails().get(0).getWarehouse());
+		cost.setCtime(new Date());
+		costMapper.addCost(cost);
 		
-		/*
-		 * Sell sell = sellMapper.getSellById(cost.getForeignKey());
-		 * 
-		 * cost.setId(UUID.randomUUID().toString()); cost.setCtime(new Date());
-		 * cost.setWarehouse(cost.getDetails().get(0).getWarehouse());
-		 * costMapper.addCost(cost); //生成出库单 Outbound outbound = new Outbound();
-		 * outbound.setId(UUID.randomUUID().toString());
-		 * outbound.setCode(sell.getCode()); outbound.setCtime(new Date());
-		 * outbound.setType("SELL");
-		 * 
-		 * outbound.setWarehouse(cost.getDetails().get(0).getWarehouse());
-		 * outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
-		 * outbound.setCost(cost);
-		 * 
-		 * outboundMapper.addOutbound(outbound);
-		 * 
-		 * for(CostDetail detail:cost.getDetails()) {
-		 * 
-		 * Stock stock = stockMapper.getStock(detail.getProductSku().getId(),
-		 * detail.getWarehouse().getId()); if(stock==null) throw new
-		 * RuntimeException("库存不存在");
-		 * 
-		 * detail.setId(UUID.randomUUID().toString()); detail.setCostId(cost.getId());
-		 * detailMapper.addCostDetail(detail);
-		 * 
-		 * OutboundDetail outboundDetail = new OutboundDetail();
-		 * outboundDetail.setId(UUID.randomUUID().toString());
-		 * outboundDetail.setGoodsAllocation(detail.getGoodsAllocation());
-		 * outboundDetail.setNumber(detail.getNumber()); BigDecimal ckPrice =
-		 * stock.getCostPrice(); outboundDetail.setPrice(ckPrice); BigDecimal totalMoney
-		 * = detail.getNumber().multiply(ckPrice);
-		 * outboundDetail.setTotalMoney(totalMoney);
-		 * outboundDetail.setOrderDetailId(detail.getDetailId());
-		 * outboundDetail.setOutboundId(outbound.getId());
-		 * outboundDetail.setProductSku(detail.getProductSku());
-		 * outboundDetail.setCtime(new Date());
-		 * outboundDetailMapper.addDetail(outboundDetail);
-		 * 
-		 * //总库存改变后的可用数量 BigDecimal stock_afterUsableNumberChange =
-		 * stock.getUsableNumber().subtract(detail.getNumber()); //总库存改变后的锁定数量
-		 * BigDecimal after_costPrice = stock.getCostPrice(); BigDecimal
-		 * after_totalMoney = stock.getTotalMoney().subtract(totalMoney);
-		 * stock.setUsableNumber(stock_afterUsableNumberChange);
-		 * 
-		 * if(stock_afterUsableNumberChange.compareTo(BigDecimal.ZERO)==0) {
-		 * after_totalMoney = new BigDecimal("0"); }else { after_costPrice =
-		 * after_totalMoney.divide(stock_afterUsableNumberChange, 4,
-		 * BigDecimal.ROUND_HALF_UP); } stock.setCostPrice(after_costPrice);
-		 * stock.setTotalMoney(after_totalMoney);
-		 * 
-		 * stockMapper.updateStock(stock);
-		 * 
-		 * StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(),
-		 * detail.getGoodsAllocation().getId()); if(stockDetail==null) throw new
-		 * RuntimeException("货位库存不存在");
-		 * 
-		 * BigDecimal stockDetail_afterUsableNumberChange =
-		 * stockDetail.getUsableNumber().subtract(detail.getNumber());
-		 * stockDetail.setUsableNumber(stockDetail_afterUsableNumberChange);
-		 * stockDetailMapper.updateStockDetail(stockDetail);
-		 * 
-		 * JournalAccount journalAccount = new JournalAccount();
-		 * journalAccount.setId(UUID.randomUUID().toString());
-		 * journalAccount.setType(JournalAccountType.Purchase);
-		 * journalAccount.setOrderDetailId(detail.getId());
-		 * journalAccount.setOrderCode(sell.getCode()); journalAccount.setStock(stock);
-		 * journalAccount.setCkNumber(detail.getNumber());
-		 * journalAccount.setCkPrice(ckPrice);
-		 * journalAccount.setCkTotalMoney(totalMoney); journalAccount.setCtime(new
-		 * Date()); journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.
-		 * getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
-		 * journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-		 * journalAccountService.addJournalAccount(journalAccount);
-		 * 
-		 * }
-		 */
+		Outbound outbound = new Outbound();
+		outbound.setId(UUID.randomUUID().toString());
+		outbound.setCode(sell.getCode());
+		outbound.setType("SELL");
+		outbound.setForeignKey(sell.getId());
+		outbound.setCtime(new Date());
+		outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
+		outbound.setCost(cost);
+		outbound.setWarehouse(cost.getWarehouse());
+		outboundMapper.addOutbound(outbound);
+		
+		for(CostDetail detail:cost.getDetails()) {
+			SellDetail sdetail = sellDetailMapper.getDetailById(detail.getDetailId());
+			BigDecimal notOutNumber =sdetail.getNotOutNumber();
+			if(sdetail.getNotOutNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+				throw new ZooException(ExceptionEnum.NUMBER_ERROR);
+			}else {
+				detail.setId(UUID.randomUUID().toString());
+				detail.setCostId(cost.getId());
+				detailMapper.addCostDetail(detail);
+				
+				for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
+					cdga.setId(UUID.randomUUID().toString());
+					cdga.setCostDetailId(detail.getId());
+					
+					costDetailGoodsAllocationMapper.addCostDetailGoodsAllocation(cdga);
+					
+					OutboundDetail outboundDetail = new OutboundDetail();
+					outboundDetail.setId(UUID.randomUUID().toString());
+					outboundDetail.setCtime(new Date());
+					outboundDetail.setGoodsAllocation(cdga.getGoodsAllocation());
+					outboundDetail.setNumber(cdga.getNumber());
+					outboundDetail.setOrderDetailId(detail.getDetailId());
+					outboundDetail.setOutboundId(outbound.getId());
+					
+					Stock stock = stockMapper.getStock(detail.getProductSku().getId(), outbound.getWarehouse().getId());
+					
+					if(stock!=null) {
+						StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), cdga.getGoodsAllocation().getId());
+						if(stockDetail!=null) {
+							BigDecimal stock_detail_usableNumber = stockDetail.getUsableNumber();
+							
+							if(stock_detail_usableNumber.subtract(cdga.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+								throw new ZooException(ExceptionEnum.STOCK_DETAIL_NO_ENOUGH);
+							}else {
+								//出库成本 价
+								BigDecimal outPrice = stock.getCostPrice();
+								//出库总额
+								BigDecimal outTotalMoney = outPrice.multiply(cdga.getNumber());
+								outboundDetail.setPrice(outPrice);
+								outboundDetail.setTotalMoney(outTotalMoney);
+								outboundDetailMapper.addDetail(outboundDetail);
+								
+								stockDetail.setUsableNumber(stock_detail_usableNumber.subtract(cdga.getNumber()));
+								stockDetailMapper.updateStockDetail(stockDetail);
+								
+								stock.setUsableNumber(stock.getUsableNumber().subtract(cdga.getNumber()));
+								
+								if(stock.getUsableNumber().compareTo(BigDecimal.ZERO)==0) {
+									stock.setTotalMoney(new BigDecimal("0"));
+								}else {
+									BigDecimal after_totalMoney = stock.getTotalMoney().subtract(outTotalMoney);
+									BigDecimal after_costPrice = after_totalMoney.divide(stock.getUsableNumber(),4,BigDecimal.ROUND_HALF_UP);
+									stock.setCostPrice(after_costPrice);
+									stock.setTotalMoney(after_totalMoney);
+								}
+								stockMapper.updateStock(stock);
+								
+								JournalAccount journalAccount = new JournalAccount();
+								journalAccount.setId(UUID.randomUUID().toString());
+								journalAccount.setType(JournalAccountType.SELL);
+								journalAccount.setOrderDetailId(detail.getId());
+								journalAccount.setOrderCode(sell.getCode());
+								journalAccount.setStock(stock);
+								journalAccount.setCkNumber(cdga.getNumber());
+								journalAccount.setCkPrice(outPrice);
+								journalAccount.setCkTotalMoney(outTotalMoney);
+								journalAccount.setCtime(new Date());
+								journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+								journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+								journalAccountService.addJournalAccount(journalAccount);
+								
+								notOutNumber = notOutNumber.subtract(cdga.getNumber());
+								sellDetailMapper.updateNotOutNumber(sdetail.getId(),notOutNumber);
+							}
+							
+						}else {
+							throw new ZooException(ExceptionEnum.STOCK_DETAIL_NOT_FOUND);
+						}
+						
+					}else {
+						throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND);
+					}	
+				}
+			}
+			
+		}
+		
 		
 	}
 	public void inboundFromPurchase(String costId) {
@@ -329,5 +363,17 @@ public class CostService {
 			detailMapper.deleteDetailById(detail.getId());
 		}
 		costMapper.deleteCostById(id);
+	}
+	public void deleteCostFromSell(String id) {
+		List<CostDetail> details = detailMapper.getDetailByCostId(id);
+		for(CostDetail detail:details) {
+			//PurchaseDetail purchaseDetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
+			//BigDecimal notOutNumber = purchaseDetail.getNotOutNumber().add(detail.getNumber());
+					
+			//purchaseDetailMapper.updateNotOutNumber(detail.getDetailId(), notOutNumber);
+			detailMapper.deleteDetailById(detail.getId());
+		}
+		costMapper.deleteCostById(id);
+		
 	}
 }

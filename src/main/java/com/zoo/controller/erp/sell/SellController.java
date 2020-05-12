@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.sell.Sell;
 import com.zoo.service.erp.sell.SellService;
 import com.zoo.vo.RespBean;
@@ -65,8 +66,13 @@ public class SellController {
 		}
 	}
 	@PostMapping("startFlow")
-	public void startFlow(@RequestParam("id")String id) {
-		sellService.startProcess(id);
+	public RespBean startFlow(@RequestParam("id")String id) {
+		try {
+			sellService.startProcess(id);
+			return new RespBean("200","启动成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
+		}
 	}
 	
 	//作废订单

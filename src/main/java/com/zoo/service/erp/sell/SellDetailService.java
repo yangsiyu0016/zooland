@@ -1,5 +1,6 @@
 package com.zoo.service.erp.sell;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,39 @@ public class SellDetailService {
 	@Autowired
 	SpecParamMapper paramMapper;
 	public List<SellDetail> getSellDetailBySellId(String id) {
-		// TODO Auto-generated method stub
-		return detailMapper.getDetailBySellId(id);
+		List<SellDetail> details = detailMapper.getDetailBySellId(id);
+		List<String> built = new ArrayList<String>();
+		for(SellDetail detail:details) {
+			ProductSku sku = detail.getProductSku();
+			if(!built.contains(sku.getProduct().getId())) {
+				//通用规格参数处理
+				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
+				Map<String,String> map = new HashMap<String,String>();
+				JSONObject obj = JSONObject.fromObject(genericSpec);
+				Set<String> keyset = obj.keySet();
+				for(String key:keyset) {
+					SpecParam param = paramMapper.getParamById(key);
+					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
+				}
+				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
+				
+				
+				String ownSpec = sku.getOwnSpec();
+				 map = new HashMap<String,String>();
+				 obj  = JSONObject.fromObject(ownSpec);
+				keyset = obj.keySet();
+				for(String key:keyset) {
+					SpecParam param = paramMapper.getParamById(key);
+					map.put(param.getName(), obj.getString(key));
+				}
+				sku.setOwnSpec(map.toString());
+				
+				detail.setProductSku(sku);
+				built.add(sku.getProduct().getId());
+			}
+			
+		}
+		return details;
 	}
 	public List<SellDetail> getNotOutDetailBySellId(String sellId) {
 		List<SellDetail> details = detailMapper.getNotOutDetailBySellId(sellId);

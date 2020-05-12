@@ -49,4 +49,8 @@ public class CustomTaskService {
 		// TODO Auto-generated method stub
 		return taskMapper.getPurchaseTaskById(taskId);
 	}
+	public SellTask getSellTaskById(String taskId) {
+		// TODO Auto-generated method stub
+		return taskMapper.getSellTaskById(taskId);
+	}
 }

@@ -39,7 +39,8 @@
 			processInstanceId,
 			status,
 			companyId,
-			receivingId
+			receivingId,
+			receivingContext
 		)values(
 			#{sell.id},
 			#{sell.initDate},
@@ -51,11 +52,12 @@
 			#{sell.processInstanceId},
 			#{sell.status},
 			#{sell.companyId},
-			#{sell.receiving.id}
+			#{sell.receiving.id},
+			#{sell.receivingContext}
 		)
 	</insert>
 	<update id="updateSell">
-		update sell set initDate=#{sell.initDate},customerId=#{sell.customer.id},receivingId=#{sell.receiving.id} where id=#{sell.id}	
+		update sell set initDate=#{sell.initDate},customerId=#{sell.customer.id},receivingId=#{sell.receiving.id},receivingContext=#{sell.receivingContext} where id=#{sell.id}	
 	</update>
 	<update id="updateProcessInstanceId">
 		update sell set processInstanceId=#{processInstanceId} where id=#{id}

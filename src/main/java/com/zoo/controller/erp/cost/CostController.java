@@ -25,13 +25,13 @@ public class CostController {
 	public List<Cost> getCostByForeignKey(@RequestParam("foreignKey")String foreignKey){
 		return costService.getCostByForeignKey(foreignKey);
 	}
-	@PostMapping("addCost")
-	public RespBean addCost(@RequestBody Cost cost) {
+	@PostMapping("addCostFromSell")
+	public RespBean addCostFromSell(@RequestBody Cost cost) {
 		try {
 			costService.addCostFromSell(cost);
 			return new RespBean("200","添加成功");
-		} catch (Exception e) {
-			return new RespBean("500",e.getMessage());
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
 		}
 	}
 	@PostMapping("addCostFromPurchase")
@@ -47,6 +47,15 @@ public class CostController {
 	public RespBean deleteCostFromPurchase(@RequestParam("id")String id) {
 		try {
 			costService.deleteCostFromPurchase(id);
+			return new RespBean("200","删除成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
+	@DeleteMapping("deleteCostFromSell")
+	public RespBean deleteCostFromSell(@RequestParam("id")String id) {
+		try {
+			costService.deleteCostFromSell(id);
 			return new RespBean("200","删除成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());

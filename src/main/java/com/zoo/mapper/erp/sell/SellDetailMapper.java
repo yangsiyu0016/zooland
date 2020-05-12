@@ -1,5 +1,6 @@
 package com.zoo.mapper.erp.sell;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -20,6 +21,10 @@ public interface SellDetailMapper {
 	int updateDetail(@Param("detail")SellDetail detail);
 
 	int deleteDetailById(@Param("ids")String[] ids);
+
+	SellDetail getDetailById(@Param("id")String id);
+
+	int updateNotOutNumber(@Param("id")String id, @Param("notOutNumber")BigDecimal notOutNumber);
 	
 
 }

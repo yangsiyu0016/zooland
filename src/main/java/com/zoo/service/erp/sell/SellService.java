@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.util.StringUtil;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -61,6 +62,11 @@ public class SellService {
 		sell.setCuserId(LoginInterceptor.getLoginUser().getId());
 		sell.setCtime(new Date());
 		sell.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		sell.setReceivingContext(sell.getReceiving().getProvince().getName()+
+				sell.getReceiving().getCity().getName()+
+				sell.getReceiving().getCounty().getName()+
+				sell.getReceiving().getAddress()+" | "+
+				sell.getReceiving().getConsignee()+" | "+sell.getReceiving().getCellphone());
 		sellMapper.addSell(sell);
 		
 		for(SellDetail detail:sell.getDetails()) {
@@ -124,6 +130,9 @@ public class SellService {
 	}
 	public void startProcess(String id) {
 		Sell sell = this.getSellById(id);
+		if(StringUtil.isNotEmpty(sell.getProcessInstanceId())) {
+			throw new ZooException(ExceptionEnum.FLOWSTATED);
+		}
 		UserInfo user = LoginInterceptor.getLoginUser();
 		Map<String, Object> variables=new HashMap<String,Object>();
 		// 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
@@ -145,6 +154,12 @@ public class SellService {
 		
 	}
 	public int updateSell(Sell sell) {
+		sell.setReceivingContext(sell.getReceiving().getProvince().getName()+
+				sell.getReceiving().getCity().getName()+
+				sell.getReceiving().getCounty().getName()+
+				sell.getReceiving().getAddress()+" | "+
+				sell.getReceiving().getConsignee()+" | "+sell.getReceiving().getCellphone());
+
 		return sellMapper.updateSell(sell);
 		
 	}

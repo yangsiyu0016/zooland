@@ -64,6 +64,10 @@ public class TaskController {
 	public PurchaseTask getPurchaseTaskById(String taskId) {
 		return customTaskService.getPurchaseTaskById(taskId);
 	}
+	@GetMapping("getSellTaskById")
+	public SellTask getSellTaskById(String taskId) {
+		return customTaskService.getSellTaskById(taskId);
+	}
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {
