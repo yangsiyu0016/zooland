@@ -167,6 +167,12 @@ public class PurchaseService {
 		purchase.setAccountContext(purchase.getSupplierAccount().getBankNumber()+" | "
 					+purchase.getSupplierAccount().getBankName()+" | "
 					+purchase.getSupplierAccount().getAccountName());
+		List<Annex> annexs = purchase.getAnnexs();
+		for(Annex annex: annexs) {
+			annex.setForeignKey(purchase.getId());
+			//将业务id添加到附件得业务id字段
+			annexMapper.updateAnnexForeignKeyById(annex);
+		}
 		purchaseMapper.updatePurchase(purchase);
 	}
 

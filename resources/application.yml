@@ -19,6 +19,10 @@ spring:
       cluster-nodes: localhost:9300
   jackson:
     default-property-inclusion: non-null # 配置json处理时忽略空值
+  servlet:
+    multipart:
+      maxFileSize: -1
+      maxRequestSize: -1
 #mybatis:#  configuration:#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 zoo:
