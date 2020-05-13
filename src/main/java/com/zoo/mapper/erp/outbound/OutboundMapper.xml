@@ -24,4 +24,18 @@
 			#{outbound.cost.id}
 		)
 	</insert>
+	<select id="getOutboundsByPage" resultType="java.util.HashMap">
+		select o.code code, o.ctime ctime, sc.name name from outbound o 
+		left join 
+		(select s.id id, c.name name from sell s left join customer c on s.customerId = c.id) sc 
+		on 
+ 		o.foreignKey = sc.id order by ctime desc
+	</select>
+	<select id="getTotalCount" resultType="long">
+		select count(*) count from outbound o 
+		left join 
+		(select s.id id, c.name name from sell s left join customer c on s.customerId = c.id) sc 
+		on 
+ 		o.foreignKey = sc.id
+	</select>
 </mapper>
