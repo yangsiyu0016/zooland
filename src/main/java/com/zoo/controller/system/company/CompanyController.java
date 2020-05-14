@@ -10,12 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.model.system.company.Company;
 import com.zoo.service.system.company.CompanyService;
+import com.zoo.vo.RespBean;
 
 @RestController
 @RequestMapping("/company")
@@ -38,9 +41,18 @@ public class CompanyController {
 		return companyService.getAllCmpany();
 	}
 	@PostMapping("add")
-	public ResponseEntity<Void> add(Company company){
+	public ResponseEntity<Void> add(@RequestBody Company company){
 		companyService.addCompany(company);
 		
 		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+	@PutMapping("update")
+	public RespBean update(@RequestBody Company company) {
+		try {
+			companyService.updateCompany(company);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
 	}
 }

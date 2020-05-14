@@ -47,6 +47,15 @@ public class CompanyTypeController {
 		}
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
+	@PutMapping("update")
+	public RespBean update(CompanyType type) {
+		try {
+			companyTypeService.updateCompanyType(type);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
 	@PutMapping("/updateResource")
 	public RespBean updateResource(String typeId,String[] menuIds) {
 		try {

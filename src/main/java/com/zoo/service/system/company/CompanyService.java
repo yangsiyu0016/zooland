@@ -53,4 +53,8 @@ public class CompanyService {
 	      
 	      systemUserService.add(user);
 	}
+	public void updateCompany(Company company) {
+		companyMapper.updateCompany(company);
+		
+	}
 }

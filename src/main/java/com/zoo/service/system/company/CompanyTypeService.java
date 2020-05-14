@@ -63,4 +63,7 @@ public class CompanyTypeService {
 	public List<String> getResourceByTypeId(String typeId){
 		return companyTypeMapper.getResourceByTypeId(typeId);
 	}
+	public void updateCompanyType(CompanyType type) {
+		companyTypeMapper.updateCompanyType(type);
+	}
 }

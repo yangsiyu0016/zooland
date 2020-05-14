@@ -15,4 +15,5 @@ public interface CompanyMapper {
 	Company getCompanyById(@Param("id") String id);
 	int deleteCompanyById(@Param("id")String id);
 	int addCompany(@Param("company") Company company);
+	int updateCompany(@Param("company")Company company);
 }

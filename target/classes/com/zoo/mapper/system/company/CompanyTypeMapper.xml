@@ -50,6 +50,9 @@
 			#{menuId}
 		)
 	</insert>
+	<update id="updateCompanyType">
+		update company_type set name=#{type.name},description=#{type.description} where id=#{type.id}
+	</update>
 	<delete id="deleteResourceByTypeId">
 		delete from c_mt where companyTypeId=#{typeId}
 	</delete>

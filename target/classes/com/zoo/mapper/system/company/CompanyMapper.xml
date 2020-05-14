@@ -17,7 +17,7 @@
 		</association>
 	</resultMap>
 	<select id="getCompanyByPage" resultMap="BaseResultMap">
-		select * from company
+		select c.*,su.userName userName from company c left join system_user su on c.managerId=su.id
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
@@ -39,12 +39,14 @@
 		values(
 			#{company.id},
 			#{company.name},
-			#{company.companyTypeId},
+			#{company.companyType.id},
 			#{company.managerId},
 			#{company.description}
 		)
 	</insert>
-	
+	<update id="updateCompany">
+		update company set name=#{company.name},description=#{company.description} where id=#{company.id}
+	</update>
 	<delete id="deleteCompanyById">
 		delete from company where id=#{id}
 	</delete>

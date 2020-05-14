@@ -16,4 +16,5 @@ public interface CompanyTypeMapper {
 	int addResource(@Param("id") String id,@Param("companyTypeId") String companyTypeId,@Param("menuId") String menuId);
 	int deleteResourceByTypeId(@Param("typeId") String typeId);
 	Long getCountByCompanyIdAndMenuId(@Param("typeId") String typeId,@Param("menuId") String menuId);
+	int updateCompanyType(@Param("type")CompanyType type);
 }
