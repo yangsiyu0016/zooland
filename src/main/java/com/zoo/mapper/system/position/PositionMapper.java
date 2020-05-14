@@ -13,4 +13,5 @@ public interface PositionMapper {
 	Long getCount(@Param("companyId")String companyId);
 	int addPosition(@Param("position") Position position);
 	List<Position> getPositionByCondition(@Param("condition")Map<String, Object> condition);
+	int updatePosition(@Param("position")Position position);
 }

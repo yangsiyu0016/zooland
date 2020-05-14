@@ -1,0 +1,4 @@
+com\zoo\controller\annex\AnnexController.class
+com\zoo\mapper\annex\AnnexMapper.class
+com\zoo\service\annex\AnnexService.class
+com\zoo\model\annex\Annex.class

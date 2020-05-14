@@ -50,6 +50,7 @@ D:\eclipse-workspace6\zooland\src\main\java\com\zoo\mapper\system\menu\SystemMen
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\controller\system\company\CompanyTypeController.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\system\base\Express.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\controller\system\company\CompanyController.java
+D:\eclipse-workspace6\zooland\src\main\java\com\zoo\controller\annex\AnnexController.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\flow\SellTask.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\utils\CookieUtils.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\erp\product\SpecGroup.java
@@ -98,6 +99,7 @@ D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\erp\openingInventory
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\erp\warehouse\GoodsAllocationService.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\properties\JwtProperties.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\mapper\erp\outbound\OutboundMapper.java
+D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\annex\AnnexService.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\config\UploadProperties.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\erp\warehouse\StockService.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\config\MvcConfig.java
@@ -105,6 +107,7 @@ D:\eclipse-workspace6\zooland\src\main\java\com\zoo\listener\activiti\SellENDHan
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\controller\erp\openingInventory\OpeningInventoryDetailController.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\erp\purchase\PurchaseDetail.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\utils\OrderCodeHelper.java
+D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\annex\Annex.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\utils\JwtConstants.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\flow\BaseTask.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\erp\sell\SellDetail.java
@@ -178,6 +181,7 @@ D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\erp\product\ProductBra
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\erp\warehouse\StockDetailService.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\listener\activiti\SellKGHandler.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\model\flow\PurchaseTask.java
+D:\eclipse-workspace6\zooland\src\main\java\com\zoo\mapper\annex\AnnexMapper.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\vo\SearchRequest.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\controller\erp\cost\CostDetailGoodsAllocationController.java
 D:\eclipse-workspace6\zooland\src\main\java\com\zoo\service\erp\purchase\ContactService.java

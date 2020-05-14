@@ -48,4 +48,7 @@
 			#{position.companyId}
 			)
 	</insert>
+	<update id="updatePosition">
+		update position set name=#{position.name},code=#{position.code} where id=#{position.id}
+	</update>
 </mapper>

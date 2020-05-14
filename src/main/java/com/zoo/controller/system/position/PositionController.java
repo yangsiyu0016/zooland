@@ -7,12 +7,15 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.model.system.position.Position;
 import com.zoo.service.system.position.PositionService;
+import com.zoo.vo.RespBean;
 
 @RestController
 @RequestMapping("/position")
@@ -37,8 +40,24 @@ public class PositionController {
 		return positions;
 	}
 	@PostMapping("add")
-	public boolean add(Position position){
-		positionService.addPosition(position);
-		return true;	
+	public RespBean add(@RequestBody
+			 Position position){
+		try {
+			positionService.addPosition(position);
+			return new RespBean("200","保存成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+			
+	}
+	@PutMapping("update")
+	public RespBean update(@RequestBody Position position){
+		try {
+			positionService.updatePosition(position);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+			
 	}
 }

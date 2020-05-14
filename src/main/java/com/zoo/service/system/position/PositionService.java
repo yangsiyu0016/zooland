@@ -42,4 +42,8 @@ public class PositionService {
 		// TODO Auto-generated method stub
 		return positionMapper.getPositionByCondition(condition);
 	}
+	public void updatePosition(Position position) {
+		positionMapper.updatePosition(position);
+		
+	}
 }
