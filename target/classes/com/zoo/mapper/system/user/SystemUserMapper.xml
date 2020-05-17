@@ -8,6 +8,7 @@
         <result column="realName" property="realName" jdbcType="VARCHAR"/>
         <result column="userName" property="userName" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
         <result column="salt" property="salt" jdbcType="VARCHAR"/>
       	<collection column="id" property="positions" ofType="com.zoo.model.system.position.Position" select="getPositions">
       	
@@ -57,14 +58,16 @@
 			userName,
 			password,
 			salt,
-			companyId
+			companyId,
+			type
 		)values(
 			#{user.id},
 			#{user.realName},
 			#{user.userName},
 			#{user.password},
 			#{user.salt},
-			#{user.companyId}
+			#{user.companyId},
+			#{user.type}
 		)
 	</insert>
 	<insert id="addPosition">

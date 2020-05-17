@@ -34,6 +34,12 @@
 	<select id="getPositionByCondition" resultMap="BaseResultMap">
 		select * from position where companyId=#{condition.companyId} and code=#{condition.code}
 	</select>
+	<select id="getCountByPositionIdAndMenuId" resultType="Long">
+		select count(*) from p_m where positionId=#{positionId} and menuId=#{menuId}
+	</select>
+	<select id="getResourceByPositionId" resultType="String">
+		select menuId from p_m where positionId = #{positionId}
+	</select>
 	<insert id="addPosition">
 		insert into position (
 				id,
@@ -48,7 +54,22 @@
 			#{position.companyId}
 			)
 	</insert>
+	<insert id="addResource">
+		insert into p_m(
+			id,
+			positionId,
+			menuId
+		)
+		values(
+			#{id},
+			#{positionId},
+			#{menuId}
+		)
+	</insert>
 	<update id="updatePosition">
 		update position set name=#{position.name},code=#{position.code} where id=#{position.id}
 	</update>
+	<delete id="deleteResourceByPositionId">
+		delete from p_m where positionId=#{positionId}
+	</delete>
 </mapper>

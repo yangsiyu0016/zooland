@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.system.menu.SystemMenuMapper;
 import com.zoo.mapper.system.position.PositionMapper;
+import com.zoo.model.system.menu.SystemMenu;
 import com.zoo.model.system.position.Position;
 import com.zoo.model.system.user.UserInfo;
 
@@ -18,6 +21,8 @@ import com.zoo.model.system.user.UserInfo;
 public class PositionService {
 	@Autowired
 	PositionMapper positionMapper;
+	@Autowired
+	SystemMenuMapper menuMapper;
 	public List<Position> getPositionByPage(Integer page,Integer size){
 		int start = (page-1)*size;
 		UserInfo user = LoginInterceptor.getLoginUser();
@@ -44,6 +49,34 @@ public class PositionService {
 	}
 	public void updatePosition(Position position) {
 		positionMapper.updatePosition(position);
+		
+	}
+	public List<String> getResource(String positionId) {
+		return positionMapper.getResourceByPositionId(positionId);
+		
+	}
+	public void updateResource(String positionId, String[] menuIds) {
+		positionMapper.deleteResourceByPositionId(positionId);
+		for(String menuId:menuIds) {
+			String id = UUID.randomUUID().toString();
+			SystemMenu menu =menuMapper.getMenuById(menuId);
+			positionMapper.addResource(id, positionId, menuId);
+			if(!StringUtils.isBlank(menu.getParentId())) {
+				addParentMenu(positionId,menu.getParentId());
+			}
+		}
+		
+	}
+	private void addParentMenu(String positionId, String parentId) {
+		long count = positionMapper.getCountByPositionIdAndMenuId(positionId, parentId);
+		if(count==0) {
+			positionMapper.addResource(UUID.randomUUID().toString(), positionId, parentId);
+			SystemMenu menu = menuMapper.getMenuById(parentId);
+			if(!StringUtils.isBlank(menu.getParentId())) {
+				addParentMenu(positionId,menu.getParentId());
+			}
+		}
+		
 		
 	}
 }

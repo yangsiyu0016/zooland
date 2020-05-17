@@ -50,6 +50,7 @@ public class CompanyService {
 	      user.setUserName(company.getUserName());
 	      user.setPassword("123456");
 	      user.setCompanyId(companyId);
+	      user.setType("MANAGER");
 	      
 	      systemUserService.add(user);
 	}

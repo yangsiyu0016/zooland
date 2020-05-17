@@ -15,10 +15,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.PurchaseStatus;
-import com.zoo.controller.erp.constant.SellStatus;
-import com.zoo.model.erp.sell.Sell;
+
 import com.zoo.service.erp.purchase.PurchaseService;
-import com.zoo.service.erp.sell.SellService;
 import com.zoo.utils.ApplicationUtil;
 /**
  * 流程完成

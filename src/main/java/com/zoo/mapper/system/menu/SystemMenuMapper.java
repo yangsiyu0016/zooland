@@ -16,4 +16,7 @@ public interface SystemMenuMapper {
 	int deleteMenuById(@Param("id") String id);
 	Long getCountByParentId(@Param("parentId") String parentId);
 	
+	List<SystemMenu> getAdminMenu();
+	List<SystemMenu> getMenuByCompanyTypeId(@Param("companyTypeId")String companyTypeId);
+	List<SystemMenu> getMenuByPositionId(@Param("positionId")String positionId);
 }

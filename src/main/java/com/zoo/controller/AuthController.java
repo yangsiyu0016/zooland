@@ -1,5 +1,7 @@
 package com.zoo.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -33,21 +35,33 @@ public class AuthController {
     private JwtProperties props;
 	@Autowired
 	SystemUserService systemUserService;
+	@SuppressWarnings("unchecked")
 	@PostMapping("auth")
-	public ResponseEntity<SystemUser> auth(
+	public Map<String,Object> auth(
 			@RequestParam("username") String username,
 			@RequestParam("password") String password,
 			HttpServletRequest request,
 			HttpServletResponse response){
-		Map<String,Object> map = systemUserService.login(username,password);
-		String token = map.get("token").toString();
-		SystemUser user = (SystemUser) map.get("user");
-		if(StringUtils.isBlank(token)) {
-			throw new ZooException(ExceptionEnum.USERNAME_OR_PASSWORD_ERROR);
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		
+		try {
+			Map<String,Object> map = systemUserService.login(username,password);
+			String token = map.get("token").toString();
+			SystemUser user = (SystemUser) map.get("user");
+			if(StringUtils.isBlank(token)) {
+				throw new ZooException(ExceptionEnum.USERNAME_OR_PASSWORD_ERROR);
+			}
+			//将Token写入cookie中
+			CookieUtils.newBuilder(response).httpOnly().maxAge(props.getCookieMaxAge()).request(request).build(props.getCookieName(), token);
+			resultMap.put("status", 200);
+			resultMap.put("user", user);
+			resultMap.put("allowPath", (List<String>)map.get("allowPath"));
+		} catch (ZooException e) {
+			resultMap.put("status", 500);
+			resultMap.put("msg",e.getExceptionEnum().message());
 		}
-		//将Token写入cookie中
-        CookieUtils.newBuilder(response).httpOnly().maxAge(props.getCookieMaxAge()).request(request).build(props.getCookieName(), token);
-		return ResponseEntity.ok(user);
+		
+        return resultMap;
 	}
 	/**
      * 验证用户信息

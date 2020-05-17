@@ -39,6 +39,10 @@ public class PositionController {
 		List<Position> positions = positionService.getAllPositons();
 		return positions;
 	}
+	@GetMapping("getResource")
+	public List<String> getResource(String positionId){
+		return positionService.getResource(positionId);
+	}
 	@PostMapping("add")
 	public RespBean add(@RequestBody
 			 Position position){
@@ -59,5 +63,14 @@ public class PositionController {
 			return new RespBean("500",e.getMessage());
 		}
 			
+	}
+	@PutMapping("/updateResource")
+	public RespBean updateResource(String positionId,String[] menuIds) {
+		try {
+			positionService.updateResource(positionId, menuIds);
+			return new RespBean("success","操作成功");
+		} catch (Exception e) {
+			return new RespBean("error",e.getMessage());
+		}
 	}
 }

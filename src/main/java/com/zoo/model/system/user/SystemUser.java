@@ -18,4 +18,5 @@ public class SystemUser {
 	private String salt;
 	private String companyId;
 	private List<Position> positions;
+	private String type;
 }

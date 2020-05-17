@@ -1,5 +1,6 @@
 package com.zoo.service.system.user;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.system.company.CompanyMapper;
+import com.zoo.mapper.system.menu.SystemMenuMapper;
 import com.zoo.mapper.system.user.SystemUserMapper;
+import com.zoo.model.system.company.Company;
+import com.zoo.model.system.menu.SystemMenu;
 import com.zoo.model.system.position.Position;
 import com.zoo.model.system.user.SystemUser;
 import com.zoo.model.system.user.UserInfo;
@@ -28,6 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 public class SystemUserService {
 	@Autowired
 	SystemUserMapper systemUserMapper;
+	@Autowired
+	CompanyMapper companyMapper;
+	@Autowired
+	SystemMenuMapper menuMapper;
 	@Autowired
     private JwtProperties props;
 	public Map<String,Object> login(String username,String password) {
@@ -45,6 +54,31 @@ public class SystemUserService {
 			//生成Token
 			String token = JwtUtils.generateToken(userInfo, props.getPrivateKey(), props.getExpire());
 			resultMap.put("token", token);
+			
+			List<String> allowPath = new ArrayList<String>();
+			if(user.getType().equals("ADMIN")) {
+				List<SystemMenu> menuList =  menuMapper.getAdminMenu();
+				
+				for(SystemMenu menu:menuList) {
+					allowPath.add(menu.getPath());
+				}
+				
+			}else if(user.getType().equals("MANAGER")) {
+				Company company = companyMapper.getCompanyById(user.getCompanyId());
+				List<SystemMenu> menuList = menuMapper.getMenuByCompanyTypeId(company.getCompanyType().getId());
+				for(SystemMenu menu:menuList) {
+					allowPath.add(menu.getPath());
+				}
+			}else {
+				List<Position> positions = user.getPositions();
+				for(Position position:positions) {
+					List<SystemMenu> menuList = menuMapper.getMenuByPositionId(position.getId());
+					for(SystemMenu menu:menuList) {
+						if(!allowPath.contains(menu.getPath())) allowPath.add(menu.getPath());
+					}
+				}
+			}
+			resultMap.put("allowPath", allowPath);
 			return resultMap;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -77,6 +111,7 @@ public class SystemUserService {
 	}
 	public void add(SystemUser user) {
 		if(StringUtils.isBlank(user.getId())) user.setId(UUID.randomUUID().toString());
+		user.setType("NORMAL");
 	    if(StringUtils.isBlank(user.getPassword())) {
 	    	user.setPassword("123456");
 	    }

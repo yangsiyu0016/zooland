@@ -3,16 +3,16 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://rm-2ze7z11s8c03zn2pg3o.mysql.rds.aliyuncs.com:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    #url: jdbc:mysql://rm-2ze89p9068qadm19ibo.mysql.rds.aliyuncs.com:3306/mjnb?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     url: jdbc:mysql://localhost:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
-    #password: zooland_007
+    #password: Zooland_007
     password: root
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
   activiti:
-    database-schema-update: true    check-process-definitions: false
+    database-schema-update: update    check-process-definitions: false
   
   data:
     elasticsearch:      cluster-name: elasticsearch

@@ -14,4 +14,8 @@ public interface PositionMapper {
 	int addPosition(@Param("position") Position position);
 	List<Position> getPositionByCondition(@Param("condition")Map<String, Object> condition);
 	int updatePosition(@Param("position")Position position);
+	int deleteResourceByPositionId(@Param("positionId")String positionId);
+	int addResource(@Param("id")String id, @Param("positionId")String positionId, @Param("menuId")String menuId);
+	long getCountByPositionIdAndMenuId(@Param("positionId")String positionId, @Param("menuId")String menuId);
+	List<String> getResourceByPositionId(@Param("positionId")String positionId);
 }

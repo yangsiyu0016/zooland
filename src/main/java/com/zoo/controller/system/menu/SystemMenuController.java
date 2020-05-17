@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,16 +42,25 @@ public class SystemMenuController {
 		return ResponseEntity.ok(menus);
 	}
 	@PostMapping("addMenu")
-	public ResponseEntity<Void> addMenu(SystemMenu menu){
-		systemMenuService.addMenu(menu);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	public RespBean addMenu(@RequestBody SystemMenu menu){
+		try {
+			systemMenuService.addMenu(menu);
+			return new RespBean("200","添加成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+
 	}
 	@PutMapping("update")
-	public RespBean update(SystemMenu menu) {
-		if(systemMenuService.updateMenu(menu)==1) {
-			return new RespBean("success","更新成功");
+	public RespBean update(@RequestBody SystemMenu menu) {
+		try {
+			systemMenuService.updateMenu(menu);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
 		}
-		return new RespBean("error","更新失败");
+			
+		
 	}
 	@DeleteMapping("/del/{id}")
 	public RespBean delMenu(@PathVariable String id) {

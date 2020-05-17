@@ -127,6 +127,7 @@
     	SELECT DISTINCT
 			m1.`id`,
         	m1.`url`,
+        	m1.title,
         	m1.`path`,
         	m1.`component`,
         	m1.`iconCls`,
@@ -139,12 +140,13 @@
 			LEFT JOIN c_mt cmt ON cmt.companyTypeId=ct.id 
 			LEFT JOIN system_menu m1 ON cmt.menuId = m1.id
 		WHERE
-			m1.parentId ='d4582b80-7831-47cf-844b-3a4f754807af' AND c.id=#{companyId}
+			(m1.parentId ='' or m1.parentId is null) AND c.id=#{companyId}
     </select>
     <select id="getCompanySubNodes" resultMap = "companyMenuMap">
 		SELECT DISTINCT
 			m1.`id`,
         	m1.`url`,
+        	m1.title,
         	m1.`path`,
         	m1.`component`,
         	m1.`iconCls`,
@@ -159,6 +161,15 @@
 		WHERE
 			m1.parentId =#{id} AND c.id=#{companyId}
 			
+	</select>
+	<select id="getAdminMenu" resultMap="BaseResultMap2">
+		select * from system_menu where type='ADMIN' or type='BOTH'
+	</select>
+	<select id="getMenuByCompanyTypeId" resultMap="BaseResultMap2">
+		select sm.*  from c_mt cmt left join system_menu sm on cmt.menuId=sm.id where cmt.companyTypeId=#{companyTypeId}
+	</select>
+	<select id="getMenuByPositionId" resultMap="BaseResultMap2">
+		select sm.* from p_m pm left join system_menu sm on pm.menuId = sm.id where pm.positionId=#{positionId}
 	</select>
     <insert id="addMenu">
     	insert into system_menu (
