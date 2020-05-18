@@ -10,12 +10,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.activiti.engine.repository.Deployment;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,8 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.zoo.model.annex.Annex;
 import com.zoo.service.annex.AnnexService;
 import com.zoo.vo.RespBean;
-
-import net.sf.json.JSONObject;
 
 @RestController
 @RequestMapping("/annex")
@@ -77,7 +73,7 @@ public class AnnexController {
 				return map;
 			} catch (Exception e) {
 				// TODO: handle exception
-				map.put("status", "200");
+				map.put("status", "500");
 				map.put("msg", e.getMessage());
 				return map;
 			}
