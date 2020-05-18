@@ -38,16 +38,16 @@
 		) values (
 			#{detail.id},
 			#{detail.panDianId},
-			#{detail.skuId},
+			#{detail.productSku.id},
 			#{detail.type},
 			#{detail.number},
-			#{detail.goodsAllocationId},
+			#{detail.goodsAllocation.id},
 			#{detail.ctime},
 			#{detail.costPrice},
 			#{detail.totalMoney},
 			#{detail.description},
 			#{detail.occupyStock},
-			#{detail.occupyStockNumber},
+			#{detail.occupyStockNumber}
 		)
 	</insert>
 	

@@ -12,7 +12,7 @@
 		select * from area where  parentId =#{id}
 	</select>
 	<select id="getTreeData" resultMap="BaseResult">
-		select * from area where parentId =0
+		select * from area where parentId ='0' or parentId is null
 	</select>
 	<select id="getDataByParentId" resultMap="BaseResult">
 		select * from area where parentId=#{parentId}

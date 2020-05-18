@@ -22,10 +22,10 @@ public interface InventoryCheckMapper {
 	public InventoryCheck getInventoryCheckById(@Param("id") String id);
 	
 	//添加数据
-	public void addInventoryCheck(@Param("InventoryCheck") InventoryCheck inventoryCheck);
+	public void addInventoryCheck(@Param("inventoryCheck") InventoryCheck inventoryCheck);
 	
 	//修改数据
-	public int updateInventoryCheck(@Param("InventoryCheck") InventoryCheck inventoryCheck);
+	public int updateInventoryCheck(@Param("inventoryCheck") InventoryCheck inventoryCheck);
 	
 	//更改流程id
 	public int updateProcessInstanceId(@Param("id") String id,@Param("processInstanceId")String processInstanceId);

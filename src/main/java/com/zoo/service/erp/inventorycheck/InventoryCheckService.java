@@ -54,12 +54,12 @@ public class InventoryCheckService {
 	IdentityService identityService;
 	
 	//分页查询
-	public List<InventoryCheck> getInventoryCheckByPage(Integer page, Integer size, String cuserId) {
+	public List<InventoryCheck> getInventoryCheckByPage(Integer page, Integer size) {
 		int start = (page - 1) * size;
 		
-		String companyId = LoginInterceptor.getLoginUser().getCompanyId();
+		UserInfo uinfo = LoginInterceptor.getLoginUser();
 		
-		List<InventoryCheck> inventoryChecks = inventoryCheckMapper.getInventoryCheckByPage(start, size, companyId, cuserId);
+		List<InventoryCheck> inventoryChecks = inventoryCheckMapper.getInventoryCheckByPage(start, size, uinfo.getCompanyId(), uinfo.getId());
 		
 		return inventoryChecks;
 		
@@ -85,7 +85,7 @@ public class InventoryCheckService {
 		ic.setId(id);
 		if("AUTO".equals(ic.getCodeGeneratorType())) {
 			try {
-				ic.setCode(OrderCodeHelper.GenerateId("QC"));
+				ic.setCode(OrderCodeHelper.GenerateId("PD"));
 			} catch (Exception e) {
 				// TODO: handle exception
 				throw new ZooException(ExceptionEnum.GENER_CODE_ERROR);

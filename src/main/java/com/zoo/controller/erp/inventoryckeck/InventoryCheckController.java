@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,7 @@ public class InventoryCheckController {
 	public Map<String, Object> getInventoryCheck_self(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		List<InventoryCheck> ics = inventoryCheckService.getInventoryCheckByPage(page, size, LoginInterceptor.getLoginUser().getId());
+		List<InventoryCheck> ics = inventoryCheckService.getInventoryCheckByPage(page, size);
 		Long count = inventoryCheckService.getCount(LoginInterceptor.getLoginUser().getId());
 		
 		map.put("ics", ics);

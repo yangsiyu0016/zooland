@@ -21,11 +21,11 @@
 		<if test="companyId != null">
 			and companyId = #{companyId}
 		</if>
-		<if test="cuserId ! = null">
+		<if test="cuserId!= null">
 			and cuserId = #{cuserId}
 		</if>
 		<if test="start != null and size != null">
-			limit #{start}, {size}
+			limit #{start}, #{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="Long">
@@ -65,7 +65,7 @@
 			#{inventoryCheck.status},
 			#{inventoryCheck.ctime},
 			#{inventoryCheck.etime},
-			#{inventoryCheck.processInstanceId},
+			#{inventoryCheck.processInstanceId}
 		)
 	</insert>
 	<update id="updateInventoryCheck">
