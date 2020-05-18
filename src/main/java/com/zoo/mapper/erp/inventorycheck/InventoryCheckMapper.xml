@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.inventorycheck.InventoryCheckMapper">
+	<resultMap type="com.zoo.model.erp.inventorycheck.InventoryCheck" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="initDate" property="initDate"/>
+		<result column="code" property="code"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="companyId" property="companyId"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="status" property="status"/>
+		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.inventorycheck.InventoryCheckDetailMapper.getDetailByInventoryCheckId"></collection>
+	</resultMap>
+	<select id="getInventoryCheckByPage" resultMap="BaseResultMap">
+		select * from pan_dian where 1=1 
+		<if test="companyId != null">
+			and companyId = #{companyId}
+		</if>
+		<if test="cuserId ! = null">
+			and cuserId = #{cuserId}
+		</if>
+		<if test="start != null and size != null">
+			limit #{start}, {size}
+		</if>
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from pan_dian where 1=1 
+		<if test="companyId != null">
+			and companyId = #{companyId}
+		</if>
+		<if test="cuserId != null">
+			and cuserId = #{cuserId}
+		</if>
+	</select>
+	<select id="getInventoryCheckById" resultMap="BaseResultMap">
+		select * from pan_dian where 1=1 
+		<if test="id != null">
+			and id = #{id}
+		</if>
+	</select>
+	<insert id="addInventoryCheck">
+		insert into pan_dian(
+			id,
+			code,
+			initDate,
+			warehouseId,
+			cuserId,
+			companyId,
+			status,
+			ctime,
+			etime,
+			processInstanceId
+		) values(
+			#{inventoryCheck.id},
+			#{inventoryCheck.code},
+			#{inventoryCheck.initDate},
+			#{inventoryCheck.warehouse.id},
+			#{inventoryCheck.cuserId},
+			#{inventoryCheck.companyId},
+			#{inventoryCheck.status},
+			#{inventoryCheck.ctime},
+			#{inventoryCheck.etime},
+			#{inventoryCheck.processInstanceId},
+		)
+	</insert>
+	<update id="updateInventoryCheck">
+		update pan_dian set initDate = #{inventoryCheck.initDate} where id = #{inventoryCheck.id}
+	</update>
+	<update id="updateProcessInstanceId">
+		update pan_dian set processInstanceId = #{processInstanceId}  where id = #{id}
+	</update>
+	<update id="updateInventoryCheckStatus">
+		update pan_dian set status = #{condition.status} 
+		<if test="condition.etime!=null">
+			,etime = #{condition.etime} 
+		</if>
+		where id = #{condition.id} 
+	</update>
+</mapper>
