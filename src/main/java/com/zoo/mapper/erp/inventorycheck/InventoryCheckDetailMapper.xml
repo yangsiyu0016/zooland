@@ -52,7 +52,7 @@
 	</insert>
 	
 	<update id="updateDetail">
-		update pan_dian_detail set skuId=#{detail.productSku.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
+		update pan_dian_detail set type=#{detail.type}, skuId=#{detail.productSku.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
 	</update>
 	
 	<update id="updatePrice">
