@@ -47,7 +47,7 @@ public class InventoryCheckCKZGCompleteHandler implements TaskListener{
 		
 		condition = new HashMap<String,Object>();
 		condition.put("id", ic.getId());
-		condition.put("status", InventoryCheckStatus.KG);
+		condition.put("status", InventoryCheckStatus.CW);
 		
 		inventoryCheckService.updateInventoryCheckStatus(condition);
 	}
