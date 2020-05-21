@@ -56,14 +56,14 @@ public class SystemUserService {
 			resultMap.put("token", token);
 			
 			List<String> allowPath = new ArrayList<String>();
-			if(user.getType().equals("ADMIN")) {
+			if("ADMIN".equals(user.getType())) {
 				List<SystemMenu> menuList =  menuMapper.getAdminMenu();
 				
 				for(SystemMenu menu:menuList) {
 					allowPath.add(menu.getPath());
 				}
 				
-			}else if(user.getType().equals("MANAGER")) {
+			}else if("MANAGER".equals(user.getType())) {
 				Company company = companyMapper.getCompanyById(user.getCompanyId());
 				List<SystemMenu> menuList = menuMapper.getMenuByCompanyTypeId(company.getCompanyType().getId());
 				for(SystemMenu menu:menuList) {

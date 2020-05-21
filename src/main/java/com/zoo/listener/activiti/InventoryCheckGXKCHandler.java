@@ -49,7 +49,7 @@ public class InventoryCheckGXKCHandler implements TaskListener{
 		Map<String,Object> condition = new HashMap<String,Object>();
 		
 		condition.put("companyId", systemUser.getCompanyId());
-		condition.put("code", "KG");
+		condition.put("code", "CW");
 		
 		List<Position> list = positionService.getPositionByCondition(condition);
 		List<String> groupIds = new ArrayList<String>();
