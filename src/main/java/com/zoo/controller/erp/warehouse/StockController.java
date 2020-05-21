@@ -27,4 +27,9 @@ public class StockController {
 		map.put("count", count);
 		return map;
 	}
+	@GetMapping("getStock")
+	public Stock getStock(@RequestParam("skuId") String skuId,@RequestParam("warehouseId")String warehouseId) {
+		Stock stock = stockService.getStock(skuId, warehouseId);
+		return stock;
+	}
 }

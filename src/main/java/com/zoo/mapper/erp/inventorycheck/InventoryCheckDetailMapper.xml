@@ -19,7 +19,30 @@
 		
 	</resultMap>
 	<select id="getDetailByInventoryCheckId" resultMap="BaseResultMap">
-		select * from pan_dian_detail where panDianId = #{id}
+		select 
+			detail.id,
+			detail.type,
+			detail.skuId,
+			detail.goodsAllocationId,
+			detail.panDianId,
+			detail.number,
+			detail.ctime,
+			detail.description,
+			detail.occupyStock,
+			detail.occupyStockNumber,
+			CASE detail.costPrice
+			WHEN detail.costPrice is NOT NULL THEN detail.costPrice
+			Else s.costPrice
+			end costPrice,
+			CASE detail.totalMoney
+			WHEN detail.totalMoney is NOT NULL THEN detail.totalMoney
+			Else s.costPrice*detail.number
+			END totalMoney,
+			s.costPrice currentCostPrice,
+			s.costPrice*detail.number currentTotalMoney
+		from pan_dian_detail detail left join pan_dian pd on detail.panDianId=pd.id 
+									left join stock s on (s.skuId = detail.skuId and s.warehouseId = pd.warehouseId)
+		where detail.panDianId = #{id}
 	</select>
 	<insert id="addDetail">
 		insert into pan_dian_detail(

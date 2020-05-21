@@ -19,10 +19,14 @@ public class ZooException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ExceptionEnum exceptionEnum;
-
+	private String msg;
     public ZooException(ExceptionEnum exceptionEnum) {
         this.exceptionEnum = exceptionEnum;
     }
+
+	public ZooException(String msg) {
+		this.msg = msg;
+	}
 
 
 }

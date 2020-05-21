@@ -112,6 +112,7 @@ public class OpeningInventoryCWCompleteHandler implements TaskListener {
 			journalAccount.setCtime(new Date());
 			journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
 			journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			 
 			journalAccountService.addJournalAccount(journalAccount);
 		}
 	

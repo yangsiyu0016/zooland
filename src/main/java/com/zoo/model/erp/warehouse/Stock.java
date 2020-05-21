@@ -1,6 +1,7 @@
 package com.zoo.model.erp.warehouse;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.zoo.model.erp.product.ProductSku;
 
@@ -15,5 +16,5 @@ public class Stock {
 	private BigDecimal lockedNumber;
 	private BigDecimal costPrice;
 	private BigDecimal totalMoney;
-	
+	private List<StockDetail> details;
 }

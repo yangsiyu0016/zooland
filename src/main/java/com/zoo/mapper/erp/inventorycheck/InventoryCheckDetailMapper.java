@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import com.zoo.model.erp.inventorycheck.InventoryCheckDetail;
-import com.zoo.model.erp.openingInventory.OpeningInventoryDetail;
 
 @Component
 public interface InventoryCheckDetailMapper {

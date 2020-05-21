@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.erp.inventorycheck.InventoryCheck;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
@@ -82,5 +83,15 @@ public class InventoryCheckController {
 		
 		inventoryCheckService.doCallBackFlow(id);
 		
+	}
+	@PostMapping("checkStock")
+	public RespBean checkStock(@RequestBody InventoryCheck check) {
+		try {
+			inventoryCheckService.checkStock(check);
+			return new RespBean("200","");
+		} catch (ZooException e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMsg());
+		}
 	}
 }

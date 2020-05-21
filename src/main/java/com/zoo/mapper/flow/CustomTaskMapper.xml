@@ -361,6 +361,117 @@
 		WHERE 1=1
 	
 	</select>
+	<select id="getInventoryCheckTask" resultType="com.zoo.model.flow.InventoryCheckTask">
+    	SELECT DISTINCT
+	    	t.ID_ id,
+	    	t.NAME_ name,
+	    	t.CREATE_TIME_ createTime,
+	    	t.ASSIGNEE_ assignee,
+	    	t.FORM_KEY_ formKey,
+	    	TIMESTAMPDIFF(MINUTE,t.CREATE_TIME_,NOW()) stateTime,
+	    	code,
+	    	originatorName,
+	    	assigneeName,
+	    	businessKey
+	    	
+	    FROM(
+		    SELECT
+		    	ART.*,
+		    	pd.code,
+		    	su.realName originatorName,
+		    	su2.realName assigneeName,
+		    	detail.skuId skuId,
+		    	ARE.BUSINESS_KEY_ businessKey
+		    FROM
+		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
+		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
+								LEFT JOIN pan_dian pd ON ARE.BUSINESS_KEY_=pd.id		    					
+		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+								LEFT JOIN pan_dian_detail detail ON detail.panDianId=pd.id
+		    WHERE 
+		    	ART.ASSIGNEE_ =#{userId} 
+		    	AND ARP.KEY_='inventoryCheck'
+		    	
+		    UNION ALL
+		    
+		    SELECT
+		    	ART.*,
+		    	pd.code,
+		    	su.realName originatorName,
+		    	su2.realName assigneeName,
+		    	detail.skuId skuId,
+		    	ARE.BUSINESS_KEY_ businessKey
+		    FROM 
+		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
+		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
+		    					LEFT JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_=ART.ID_
+		    					LEFT JOIN pan_dian pd ON ARE.BUSINESS_KEY_=pd.id
+		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+								LEFT JOIN pan_dian_detail detail ON detail.panDianId=pd.id
+		    WHERE
+		    	ART.ASSIGNEE_ IS NULL
+		    	AND I.TYPE_='candidate'
+		    	AND (I.USER_ID_=#{userId} OR I.GROUP_ID_ IN(SELECT up.positionId FROM system_user su LEFT JOIN u_p up ON su.id=up.userId WHERE su.id=#{userId}))
+				AND ARP.KEY_='inventoryCheck'
+			) t
+		WHERE 1=1 
+		ORDER BY t.CREATE_TIME_ DESC 
+		<if test="start!=null and size!=null">
+			LIMIT #{start},#{size} 
+		</if>
+    </select>
+    <select id="getInventoryCheckTaskCount" resultType="long" >
+	    SELECT 
+	    	count(DISTINCT t.ID_)
+	    FROM(
+		    SELECT
+		    	ART.*,
+		    	pd.code,
+		    	su.realName originatorName,
+		    	su2.realName assigneeName,
+		    	detail.skuId skuId
+		    FROM
+		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
+		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
+								LEFT JOIN pan_dian pd ON ARE.BUSINESS_KEY_=pd.id		    					
+		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+								LEFT JOIN pan_dian_detail detail ON detail.panDianId=pd.id
+		    WHERE 
+		    	ART.ASSIGNEE_ =#{userId} 
+		    	AND ARP.KEY_='inventoryCheck'
+		    	
+		    UNION ALL
+		    
+		    SELECT
+		    	ART.*,
+		    	pd.code,
+		    	su.realName originatorName,
+		    	su2.realName assigneeName,
+		    	detail.skuId skuId
+		    FROM 
+		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
+		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
+		    					LEFT JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_=ART.ID_
+		    					LEFT JOIN pan_dian pd ON ARE.BUSINESS_KEY_=pd.id	
+		    					LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+								LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+								LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+								LEFT JOIN pan_dian_detail detail ON detail.panDianId=pd.id
+		    WHERE
+		    	ART.ASSIGNEE_ IS NULL
+		    	AND I.TYPE_='candidate'
+		    	AND (I.USER_ID_=#{userId} OR I.GROUP_ID_ IN(SELECT up.positionId FROM system_user su LEFT JOIN u_p up ON su.id=up.userId WHERE su.id=#{userId}))
+				AND ARP.KEY_='inventoryCheck'
+			) t
+		WHERE 1=1
+	
+	</select>
 	<select id="getOpeningInventoryTaskById" resultType="com.zoo.model.flow.OpeningInventoryTask">
     	SELECT 
     		ART.ID_ id,
@@ -419,6 +530,28 @@
 	    	ARE.BUSINESS_KEY_ businessKey
     	FROM ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_  AND ARE.BUSINESS_KEY_ IS NOT NULL
     		LEFT JOIN sell s ON ARE.BUSINESS_KEY_=s.id
+    		LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
+    		LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
+    		LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id
+    	
+    	WHERE ART.ID_=#{taskId} 
+    		
+    </select>
+    <select id="getInventoryCheckTaskById" resultType="com.zoo.model.flow.InventoryCheckTask">
+    	SELECT 
+    		ART.ID_ id,
+	    	ART.NAME_ name,
+	    	ART.TASK_DEF_KEY_ taskKey,
+	    	ART.CREATE_TIME_ createTime,
+	    	ART.ASSIGNEE_ assignee,
+	    	ART.FORM_KEY_ formKey,
+	    	TIMESTAMPDIFF(MINUTE,ART.CREATE_TIME_,NOW()) stateTime,
+	    	pd.code,
+	    	su.realName originatorName,
+	    	su2.realName assigneeName,
+	    	ARE.BUSINESS_KEY_ businessKey
+    	FROM ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_  AND ARE.BUSINESS_KEY_ IS NOT NULL
+    		LEFT JOIN pan_dian pd ON ARE.BUSINESS_KEY_=pd.id
     		LEFT JOIN ACT_RU_IDENTITYLINK ARI ON ARI.PROC_INST_ID_= ART.PROC_INST_ID_ AND ARI.TYPE_='starter' 
     		LEFT JOIN system_user su ON ARI.USER_ID_ = su.id
     		LEFT JOIN system_user su2 ON ART.ASSIGNEE_=su2.id

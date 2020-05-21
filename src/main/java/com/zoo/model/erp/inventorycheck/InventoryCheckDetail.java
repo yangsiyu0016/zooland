@@ -26,4 +26,7 @@ public class InventoryCheckDetail {
 	private int occupyStock;//是否占用库存
 	private BigDecimal occupyStockNumber;//占用库存数量
 	
+	private BigDecimal currentCostPrice;//当前库存成本价
+	private BigDecimal currentTotalMoney;//当前总成本
+	
 }

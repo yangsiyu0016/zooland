@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.flow.CustomTaskMapper;
+import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
@@ -41,6 +42,14 @@ public class CustomTaskService {
 		// TODO Auto-generated method stub
 		return taskMapper.getPurchaseTaskCount(LoginInterceptor.getLoginUser().getId());
 	}
+	public List<InventoryCheckTask> getInventoryCheckTask(Integer page, Integer size) {
+		Integer start = (page-1)*size;
+		return taskMapper.getInventoryCheckTask(start,size,LoginInterceptor.getLoginUser().getId());
+	}
+	public long getInventoryCheckTaskCount() {
+		// TODO Auto-generated method stub
+		return taskMapper.getInventoryCheckTaskCount(LoginInterceptor.getLoginUser().getId());
+	}
 	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
 		// TODO Auto-generated method stub
 		return taskMapper.getOpeningInventoryTaskById(taskId);
@@ -52,5 +61,9 @@ public class CustomTaskService {
 	public SellTask getSellTaskById(String taskId) {
 		// TODO Auto-generated method stub
 		return taskMapper.getSellTaskById(taskId);
+	}
+	public InventoryCheckTask getInventoryCheckTaskById(String taskId) {
+		// TODO Auto-generated method stub
+		return taskMapper.getInventoryCheckTaskById(taskId);
 	}
 }

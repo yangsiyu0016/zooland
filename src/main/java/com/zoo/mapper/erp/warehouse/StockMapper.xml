@@ -9,6 +9,7 @@
 		<result column="lockedNumber" property="lockedNumber" />
 		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>		
 		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.warehouse.StockDetailMapper.getDetailsByStockId"></collection>
 	</resultMap>
 	<select id="getStockByPage" resultMap="BaseResultMap">
 		select s.* from stock s left join warehouse w on s.warehouseId=w.id  where w.companyId=#{companyId} 

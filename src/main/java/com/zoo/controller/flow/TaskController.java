@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
@@ -56,6 +58,21 @@ public class TaskController {
 		map.put("count", count);
 		return map;
 	}
+	/**
+	 * 获取盘点流程任务
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	@GetMapping("getInventoryCheckTask")
+	public Map<String,Object> getInventoryCheckTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<InventoryCheckTask> tasks = customTaskService.getInventoryCheckTask(page, size);
+		long count = customTaskService.getInventoryCheckTaskCount();
+		map.put("tasks", tasks);
+		map.put("count", count);
+		return map;
+	}
 	@GetMapping("getOpeningInventoryTaskById")
 	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
 		return customTaskService.getOpeningInventoryTaskById(taskId);
@@ -67,6 +84,10 @@ public class TaskController {
 	@GetMapping("getSellTaskById")
 	public SellTask getSellTaskById(String taskId) {
 		return customTaskService.getSellTaskById(taskId);
+	}
+	@GetMapping("getInventoryCheckTaskById")
+	public InventoryCheckTask getInventoryCheckTaskById(String taskId) {
+		return customTaskService.getInventoryCheckTaskById(taskId);
 	}
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId) {
@@ -89,9 +110,10 @@ public class TaskController {
 			Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
 			taskService.addComment(taskId, processInstanceId, comment);
 			taskService.complete(taskId,variables);
-			return new RespBean("200","签收成功");
-		} catch (Exception e) {
-			return new RespBean("500","签收失败");
+			
+			return new RespBean("200","办理成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
 		}
 	}
 	public static void main(String[] args) {

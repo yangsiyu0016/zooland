@@ -1,5 +1,6 @@
 package com.zoo.service.erp.inventorycheck;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,10 +25,14 @@ import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.inventorycheck.InventoryCheckDetailMapper;
 import com.zoo.mapper.erp.inventorycheck.InventoryCheckMapper;
 import com.zoo.mapper.erp.product.SpecParamMapper;
+import com.zoo.mapper.erp.warehouse.StockDetailMapper;
+import com.zoo.mapper.erp.warehouse.StockMapper;
 import com.zoo.model.erp.inventorycheck.InventoryCheck;
 import com.zoo.model.erp.inventorycheck.InventoryCheckDetail;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
+import com.zoo.model.erp.warehouse.Stock;
+import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.utils.OrderCodeHelper;
 
@@ -51,7 +56,10 @@ public class InventoryCheckService {
 	
 	@Autowired
 	IdentityService identityService;
-	
+	@Autowired
+	StockMapper stockMapper;
+	@Autowired
+	StockDetailMapper stockDetailMapper;
 	//分页查询
 	public List<InventoryCheck> getInventoryCheckByPage(Integer page, Integer size) {
 		int start = (page - 1) * size;
@@ -189,5 +197,50 @@ public class InventoryCheckService {
 			}
 		}
 		return ic;
+	}
+	public void updateMoney(String id,BigDecimal costPrice,BigDecimal totalMoney) {
+		detailMapper.updatePrice(id, costPrice, totalMoney);
+	}
+	public void checkStock(InventoryCheck check) {
+		
+		String warehouseId = check.getWarehouse().getId();
+		List<InventoryCheckDetail> details = check.getDetails();
+		for(InventoryCheckDetail detail:details) {
+			
+			this.updateMoney(detail.getId(),detail.getCostPrice(),detail.getTotalMoney());
+			
+			
+			String skuId = detail.getProductSku().getId();
+			//1、查询库存
+			Stock stock = stockMapper.getStock(skuId, warehouseId);
+			
+			if(stock!=null) {
+				if(detail.getType().equals("LOSSES")) {//盘亏
+					if(stock.getUsableNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {//小于库存数
+						throw new ZooException(detail.getProductSku().getProduct().getName()+detail.getProductSku().getOwnSpec()+":库存不足");
+					}else {
+						StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), detail.getGoodsAllocation().getId());
+						if(stockDetail==null) {
+							throw new ZooException(detail.getProductSku().getProduct().getName()+
+									detail.getProductSku().getOwnSpec()+":货位("+detail.getGoodsAllocation().getName()+")库存不存在");
+						}else {
+							if(stockDetail.getUsableNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {//小于货位库存数
+								throw new ZooException(detail.getProductSku().getProduct().getName()+
+										detail.getProductSku().getOwnSpec()+":货位("+detail.getGoodsAllocation().getName()+")库存不足");
+							}
+						}
+					}
+				}else {//盘盈
+					
+				}
+			}else {//无库存
+				if(detail.getType().equals("LOSSES")) {//盘亏
+					throw new ZooException(detail.getProductSku().getProduct().getName()+detail.getProductSku().getOwnSpec()+":没有库存");
+				}else {//盘盈
+					
+				}
+			}
+		}
+		
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="myProcess" name="My process" isExecutable="true">
-    <startEvent id="startevent1" name="Start"></startEvent>
+  <process id="inventoryCheck" name="盘点流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start" activiti:initiator="applyUserId"></startEvent>
     <userTask id="inventorycheckckzg" name="仓库主管人员审核">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.InventoryCheckCKZGHandler"></activiti:taskListener>
@@ -9,7 +9,7 @@
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="inventorycheckckzg"></sequenceFlow>
-    <userTask id="inventorycheckkg" name="更新库存">
+    <userTask id="inventorycheckkg" name="财务记账">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.InventoryCheckGXKCHandler"></activiti:taskListener>
         <activiti:taskListener event="complete" class="com.zoo.listener.activiti.InventoryCheckGXKCCompleteHandler"></activiti:taskListener>
@@ -19,8 +19,8 @@
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow3" sourceRef="inventorycheckkg" targetRef="endevent1"></sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
-    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_inventoryCheck">
+    <bpmndi:BPMNPlane bpmnElement="inventoryCheck" id="BPMNPlane_inventoryCheck">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="180.0" y="280.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
