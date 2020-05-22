@@ -102,7 +102,75 @@ public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 				journalAccountService.addJournalAccount(journalAccount);
 				
 				
-			}else {
+			}else {//盘盈
+				
+				if(stock != null) {//如果库存存在
+					//变化后库存成本总额
+					BigDecimal after_money = stock.getTotalMoney().add(detail.getTotalMoney());
+					//变化后可用库存
+					BigDecimal after_usableNumber = stock.getUsableNumber().add(detail.getNumber());
+					//变化后总库存
+					BigDecimal after_totalNumber = after_usableNumber.add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber());
+					
+					//变化后成本价
+					BigDecimal after_costPrice = stock.getCostPrice();
+					if(after_totalNumber.compareTo(BigDecimal.ZERO)==0) {
+						after_money = new BigDecimal("0");
+					}else {
+						after_costPrice = after_money.divide(after_totalNumber,4,BigDecimal.ROUND_HALF_UP);
+					}
+					
+					stock.setCostPrice(after_costPrice);
+					stock.setTotalMoney(after_money);
+					stock.setUsableNumber(after_usableNumber);
+					
+					stockService.updateStock(stock);
+					if(stockDetail != null) {//如果货位存在
+						//更新货位库存数量
+						stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(detail.getNumber()));
+						stockDetailService.updateStockDetail(stockDetail);
+						stockDetailService.updateStockDetail(stockDetail);
+					}else {//如果货位不存在
+						stockDetail = new StockDetail();
+						stockDetail.setId(UUID.randomUUID().toString());
+						stockDetail.setStockId(stock.getId());
+						stockDetail.setGoodsAllocation(detail.getGoodsAllocation());
+						stockDetail.setUsableNumber(detail.getNumber());
+						stockDetailService.addStockDetail(stockDetail);
+					}
+				}else {//不存在
+					stock = new Stock();
+					stock.setId(UUID.randomUUID().toString());
+					stock.setUsableNumber(detail.getNumber());
+					stock.setCostPrice(detail.getCostPrice());
+					stock.setTotalMoney(detail.getNumber().multiply(detail.getCostPrice()));
+					stock.setProductSku(detail.getProductSku());
+					stock.setWarehouse(check.getWarehouse());
+					stockService.addStock(stock);
+					
+					stockDetail = new StockDetail();
+					stockDetail.setId(UUID.randomUUID().toString());
+					stockDetail.setStockId(stock.getId());
+					stockDetail.setGoodsAllocation(detail.getGoodsAllocation());
+					stockDetail.setUsableNumber(detail.getNumber());
+					stockDetailService.addStockDetail(stockDetail);
+				}
+				
+				//库存变化
+				JournalAccount journalAccount = new JournalAccount();
+				journalAccount.setId(UUID.randomUUID().toString());
+				journalAccount.setType(JournalAccountType.OVERFLOW);
+				journalAccount.setOrderDetailId(detail.getId());
+				journalAccount.setOrderCode(check.getCode());
+				journalAccount.setStock(stock);
+				journalAccount.setRkNumber(detail.getNumber());
+				journalAccount.setRkPrice(detail.getCostPrice());
+				journalAccount.setRkTotalMoney(detail.getTotalMoney());
+				journalAccount.setCtime(new Date());
+				journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+				journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+				 
+				journalAccountService.addJournalAccount(journalAccount);
 				
 			}	
 		}
