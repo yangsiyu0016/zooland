@@ -165,7 +165,55 @@ public class ProductService {
 	} 
 	private void saveSku(Product product) {
 		List<ProductSku> skuList = product.getSkus();
-		for(ProductSku sku:skuList) {
+		if(skuList.size()>0) {
+			for(ProductSku sku:skuList) {
+				sku.setId(UUID.randomUUID().toString());
+				sku.setProductId(product.getId());
+				
+				/**生成编码开始**/
+				// 得到一个NumberFormat的实例  
+		        NumberFormat nf = NumberFormat.getInstance(); 
+		        String code = "";
+		        String initCode = product.getCode();
+		        Map<String,Object> condition = new HashMap<String,Object>();
+		        
+
+		        
+		        condition.put("initCode", initCode);
+				condition.put("type", GeneratorCodeType.SKU);
+				condition.put("companyId", LoginInterceptor.getLoginUser().getCompanyId());
+				GeneratorCode generatorCode = generatorCodeMapper.getGeneratorCodeByCondition(condition);
+				
+				if(generatorCode!=null){
+					int number =generatorCode.getNumber();
+					// 设置是否使用分组  
+			        nf.setGroupingUsed(false);  
+			        // 设置最大整数位数  
+			        nf.setMaximumIntegerDigits(4);  
+			        // 设置最小整数位数  
+			        nf.setMinimumIntegerDigits(4); 
+			        code = (initCode+=nf.format(number+1));
+			        condition = new HashMap<String,Object>();
+			        condition.put("id", generatorCode.getId());
+			        condition.put("number", number+1);
+			        generatorCodeMapper.updateNumber(condition);
+				}else{
+					generatorCode = new GeneratorCode();
+					generatorCode.setId(UUID.randomUUID().toString());
+					generatorCode.setType(GeneratorCodeType.SKU);
+					generatorCode.setNumber(1);
+					generatorCode.setInitCode(initCode);
+					generatorCode.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+					generatorCodeMapper.insertGeneratorCode(generatorCode);
+					
+					code = (initCode+="0001");
+				}
+				sku.setCode(code);
+				/**生成编码结束**/
+				skuMapper.addSku(sku);
+			}
+		}else {
+			ProductSku sku = new ProductSku();
 			sku.setId(UUID.randomUUID().toString());
 			sku.setProductId(product.getId());
 			
@@ -211,6 +259,7 @@ public class ProductService {
 			/**生成编码结束**/
 			skuMapper.addSku(sku);
 		}
+		
 	}
 
 }
