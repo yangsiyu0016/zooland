@@ -99,19 +99,36 @@ public class TaskController {
 		}
 	}
 	@PostMapping("complete")
-	public RespBean complete(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment) {
+	public RespBean complete(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea) {
 		try {
 			Map<String, Object> variables = new HashMap<String, Object>();
-			if(StringUtils.isNotBlank(comment)){
-				variables.put("comment", comment);
+			if(!"".equals(idea) && idea != null) {
+				variables.put("msg", idea);
+				
+				if(StringUtils.isNotBlank(comment)){
+					variables.put("comment", comment);
+				}
+				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+				String processInstanceId=task.getProcessInstanceId();
+				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+				taskService.addComment(taskId, processInstanceId, comment);
+				taskService.complete(taskId,variables);
+				
+			}else {
+				if(StringUtils.isNotBlank(comment)){
+					variables.put("comment", comment);
+				}
+				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+				String processInstanceId=task.getProcessInstanceId();
+				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+				taskService.addComment(taskId, processInstanceId, comment);
+				taskService.complete(taskId,variables);
 			}
-			Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
-			String processInstanceId=task.getProcessInstanceId();
-			Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
-			taskService.addComment(taskId, processInstanceId, comment);
-			taskService.complete(taskId,variables);
-			
-			return new RespBean("200","办理成功");
+			if("UNAGREE".equals(idea)) {
+				return new RespBean("200", "办理已驳回");
+			}else {
+				return new RespBean("200", "办理成功");
+			}
 		} catch (ZooException e) {
 			return new RespBean("500",e.getExceptionEnum().message());
 		}

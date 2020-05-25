@@ -9,7 +9,9 @@ import java.util.UUID;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
@@ -31,7 +33,7 @@ import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.utils.ApplicationUtil;
 
 @Component("inventoryCheckGXKCCompleteHandler")
-public class InventoryCheckGXKCCompleteHandler implements TaskListener{
+public class InventoryCheckGXKCCompleteHandler implements ExecutionListener{
 	private ProcessEngine processEngine;
 	private StockService stockService;
 	private StockDetailService stockDetailService;
@@ -43,10 +45,10 @@ public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void notify(DelegateTask delegateTask) {
+	public void notify( DelegateExecution execution) {
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
 		stockService = (StockService)ApplicationUtil.getBean("stockService");
 		stockDetailService = (StockDetailService)ApplicationUtil.getBean("stockDetailService");
