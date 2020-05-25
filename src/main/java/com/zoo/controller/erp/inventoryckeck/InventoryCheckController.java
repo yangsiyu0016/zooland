@@ -3,7 +3,6 @@ package com.zoo.controller.erp.inventoryckeck;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +91,17 @@ public class InventoryCheckController {
 		} catch (ZooException e) {
 			// TODO: handle exception
 			return new RespBean("500", e.getMsg());
+		}
+	}
+	
+	@GetMapping("reject")
+	public RespBean reject(@RequestParam("taskId") String taskId, @RequestParam("msg") String msg) {
+		try {
+			inventoryCheckService.reject(taskId, msg);
+			return new RespBean("200", "驳回成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
 		}
 	}
 }

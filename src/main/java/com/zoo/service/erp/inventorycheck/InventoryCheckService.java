@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.activiti.bpmn.model.Task;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +162,12 @@ public class InventoryCheckService {
 		runtimeService.deleteProcessInstance(ic.getProcessInstanceId(), "待定");
 	}
 	
+	//驳回
+	public void reject(String taskId, String msg) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 /*-----------------------------------------------------------------------------------------------*/	
 	
 	//创建规格参数信息
@@ -243,4 +251,6 @@ public class InventoryCheckService {
 		}
 		
 	}
+
+	
 }
