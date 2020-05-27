@@ -31,6 +31,15 @@ public class AreaService {
 		//生成uuid
 		String uuidStr = UUID.randomUUID().toString();
 		area.setId(uuidStr);
+		area.setLeaf(true);
+		if(area.getParentId()==null) {
+			area.setParentId("0");
+			
+		} else {
+			this.updateLeaf(area.getParentId(), false);
+		}
+		
+		
 		areaMapper.addArea(area);
 		return area;
 	}
@@ -44,5 +53,7 @@ public class AreaService {
 		System.out.println(area);
 		areaMapper.updateArea(area);
 	}
-	
+	public void updateLeaf(String id,Boolean leaf) {
+		areaMapper.updateLeaf(id, leaf);
+	}
 }

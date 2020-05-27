@@ -26,5 +26,6 @@ public interface AreaMapper {
 	 * 修改区域数据功能
 	 * @param area
 	 */
-	void updateArea(@Param("area") Area area);
+	int updateArea(@Param("area") Area area);
+	int updateLeaf(@Param("id")String id,@Param("leaf") Boolean leaf);
 }
