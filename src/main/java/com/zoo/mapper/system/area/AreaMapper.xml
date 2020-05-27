@@ -45,4 +45,7 @@
 		</set>
 		where id=#{area.id}
 	</update>
+	<update id="updateLeaf">
+		update area set leaf = #{leaf} where id=#{id}
+	</update>
 </mapper>
