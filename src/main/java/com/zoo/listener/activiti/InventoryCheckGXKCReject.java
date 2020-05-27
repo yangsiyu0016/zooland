@@ -25,7 +25,7 @@ public class InventoryCheckGXKCReject implements TaskListener{
 	 */
 	private static final long serialVersionUID = 1L;
 
-private ProcessEngine processEngine;
+	private ProcessEngine processEngine;
 	
 	
 	private InventoryCheckService inventoryCheckService;
@@ -39,10 +39,10 @@ private ProcessEngine processEngine;
 			ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 			String key = result.getBusinessKey();
 			InventoryCheck ic = inventoryCheckService.getInventoryCheckById(key);
-			
+			//delegateTask.setAssignee(ic.getCuserId());
 			Map<String,Object> condition = new HashMap<String,Object>();
 			
-			
+			delegateTask.addCandidateUser(ic.getCuserId());
 			condition = new HashMap<String,Object>();
 			condition.put("id", ic.getId());
 			condition.put("status", InventoryCheckStatus.REJECT);

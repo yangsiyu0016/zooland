@@ -33,7 +33,7 @@ import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.utils.ApplicationUtil;
 
 @Component("inventoryCheckGXKCCompleteHandler")
-public class InventoryCheckGXKCCompleteHandler implements ExecutionListener{
+public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 	private ProcessEngine processEngine;
 	private StockService stockService;
 	private StockDetailService stockDetailService;
@@ -45,10 +45,10 @@ public class InventoryCheckGXKCCompleteHandler implements ExecutionListener{
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void notify( DelegateExecution execution) {
+	public void notify( DelegateTask delegateTask) {
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
 		stockService = (StockService)ApplicationUtil.getBean("stockService");
 		stockDetailService = (StockDetailService)ApplicationUtil.getBean("stockDetailService");

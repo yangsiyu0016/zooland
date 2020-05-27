@@ -41,7 +41,10 @@ public class InventoryCheckController {
 	
 	@GetMapping("getIcById")
 	public InventoryCheck getIcById(@RequestParam("id") String id) {
-		return inventoryCheckService.getInventoryCheckById(id);
+		InventoryCheck inventoryCheck = inventoryCheckService.getInventoryCheckById(id);
+	
+		
+		return inventoryCheck;
 	}
 	
 	@PostMapping("add")
@@ -94,14 +97,35 @@ public class InventoryCheckController {
 		}
 	}
 	
-	@GetMapping("reject")
-	public RespBean reject(@RequestParam("taskId") String taskId, @RequestParam("msg") String msg) {
+	@GetMapping("reset")
+	public RespBean reject(@RequestParam("id") String id) {
 		try {
-			inventoryCheckService.reject(taskId, msg);
+			inventoryCheckService.reset(id);
 			return new RespBean("200", "驳回成功");
 		} catch (Exception e) {
 			// TODO: handle exception
 			return new RespBean("500", e.getMessage());
 		}
 	}
+	
+	@GetMapping("destory")
+	public RespBean destory(@RequestParam("id") String id) {
+		
+		try {
+			inventoryCheckService.destory(id);
+			return new RespBean("200", "作废完成");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+		
+	}
+	
+	/*
+	 * //查看是否能够取回
+	 * 
+	 * @GetMapping("isReception") public Map<String, Object>
+	 * isReception(@RequestParam("id") String id) { Map<String, Object> map =
+	 * inventoryCheckService.isReception(id); return map; }
+	 */
 }

@@ -21,6 +21,7 @@ import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
+import com.zoo.service.erp.inventorycheck.InventoryCheckService;
 import com.zoo.service.flow.CustomTaskService;
 import com.zoo.vo.RespBean;
 
@@ -31,6 +32,10 @@ public class TaskController {
 	CustomTaskService customTaskService;
 	@Autowired
 	TaskService taskService;
+	
+	@Autowired
+	InventoryCheckService inventoryCheckService;
+	
 	@GetMapping("getPurchaseTask")
 	public Map<String,Object> getPurchaseTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -93,6 +98,13 @@ public class TaskController {
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {
 			taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
+			Map<String, Object> condition = new HashMap<String, Object>();
+			Map<String, Object> variables = taskService.getVariables(taskId);
+			String string = variables.get("CODE").toString().substring(0, 2);
+			if("PD".equals(string)) {
+				
+				inventoryCheckService.updateInventoryCheckIsClaimed(variables);
+			}
 			return new RespBean("200","签收成功");
 		} catch (Exception e) {
 			return new RespBean("500","签收失败");
@@ -129,6 +141,66 @@ public class TaskController {
 			}else {
 				return new RespBean("200", "办理成功");
 			}
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
+		}
+	}
+	
+	//驳回
+	@PostMapping("reject")
+	public RespBean reject(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea) {
+		try {
+			Map<String, Object> variables = new HashMap<String, Object>();
+			if(!"".equals(idea) && idea != null) {
+				variables.put("msg", idea);
+				
+				if(StringUtils.isNotBlank(comment)){
+					variables.put("comment", comment);
+				}
+				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+				String processInstanceId=task.getProcessInstanceId();
+				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+				taskService.addComment(taskId, processInstanceId, comment);
+				taskService.complete(taskId,variables);
+				
+			}else {
+				if(StringUtils.isNotBlank(comment)){
+					variables.put("comment", comment);
+				}
+				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+				String processInstanceId=task.getProcessInstanceId();
+				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+				taskService.addComment(taskId, processInstanceId, comment);
+				taskService.complete(taskId,variables);
+			}
+			if("UNAGREE".equals(idea)) {
+				return new RespBean("200", "办理已驳回");
+			}else {
+				return new RespBean("200", "办理成功");
+			}
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
+		}
+	}
+	//作废
+	@PostMapping("destory")
+	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id) {
+		try {
+			Map<String, Object> variables = new HashMap<String, Object>();
+			if(!"".equals(idea) && idea != null) {
+				variables.put("msg", idea);
+				
+				if(StringUtils.isNotBlank(comment)){
+					variables.put("comment", comment);
+				}
+				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+				String processInstanceId=task.getProcessInstanceId();
+				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+				taskService.addComment(taskId, processInstanceId, comment);
+				taskService.complete(taskId,variables);
+			}	
+			inventoryCheckService.destory(id);
+			return new RespBean("200", "订单已作废");
 		} catch (ZooException e) {
 			return new RespBean("500",e.getExceptionEnum().message());
 		}

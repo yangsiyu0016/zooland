@@ -7,5 +7,6 @@ public class InventoryCheckStatus {
 	public static final String FINISHED = "FINISHED";
 	public static final String ZGSH = "ZGSH";//主管审核
 	public static final String REJECT = "REJECT";//订单调整
+	public static final String DESTROY = "DESTROY";//作废
 	
 }
