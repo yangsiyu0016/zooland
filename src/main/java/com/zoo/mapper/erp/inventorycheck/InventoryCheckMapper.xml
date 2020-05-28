@@ -12,6 +12,7 @@
 		<result column="companyId" property="companyId"/>
 		<result column="processInstanceId" property="processInstanceId"/>
 		<result column="status" property="status"/>
+		<result column="isClaimed" property="isClaimed"/>
 		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.inventorycheck.InventoryCheckDetailMapper.getDetailByInventoryCheckId"></collection>
@@ -76,9 +77,15 @@
 	</update>
 	<update id="updateInventoryCheckStatus">
 		update pan_dian set status = #{condition.status} 
+		<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+		</if>
 		<if test="condition.etime!=null">
 			,etime = #{condition.etime} 
 		</if>
 		where id = #{condition.id} 
+	</update>
+	<update id="updateInventoryCheckIsClaimed">
+		update pan_dian set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
 	</update>
 </mapper>

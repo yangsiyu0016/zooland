@@ -9,18 +9,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.Task;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Attachment;
+import org.activiti.engine.task.IdentityLink;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zoo.controller.erp.constant.InventoryCheckStatus;
+import com.zoo.controller.erp.constant.PurchaseStatus;
+import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
@@ -162,10 +171,21 @@ public class InventoryCheckService {
 		runtimeService.deleteProcessInstance(ic.getProcessInstanceId(), "待定");
 	}
 	
-	//驳回
-	public void reject(String taskId, String msg) {
+	//取回
+	public void reset(String id) {
 		// TODO Auto-generated method stub
+		InventoryCheck check = this.getInventoryCheckById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", InventoryCheckStatus.WTJ);
+		condition.put("isClaimed", "N");//设置是否签收
+		inventoryCheckMapper.updateInventoryCheckStatus(condition);
 		
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(check.getProcessInstanceId(), "待定");
+		
+		inventoryCheckMapper.updateProcessInstanceId(id, null);
 	}
 	
 /*-----------------------------------------------------------------------------------------------*/	
@@ -251,6 +271,42 @@ public class InventoryCheckService {
 		}
 		
 	}
+
+	/**
+	 * 更改是否签收
+	 * @param variables
+	 */
+	public void updateInventoryCheckIsClaimed(Map<String, Object> variables) {
+		Map<String, Object> condition = new HashMap<String, Object>();
+		// TODO Auto-generated method stub
+		
+		condition.put("code", variables.get("CODE"));
+		condition.put("isClaimed", "Y");
+		
+		inventoryCheckMapper.updateInventoryCheckIsClaimed(condition );
+	}
+
+	//作废订单
+	public void destory(String id) {
+		// TODO Auto-generated method stub
+		Map<String,Object> condition = new HashMap<String,Object>();
+		InventoryCheck check = inventoryCheckMapper.getInventoryCheckById(id);
+		
+		//更新订单表现状态
+		condition.put("id", id);
+		condition.put("status", InventoryCheckStatus.DESTROY);
+		condition.put("etime", new Date());
+		inventoryCheckMapper.updateInventoryCheckStatus(condition);
+		
+		//设置可取回表示
+		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
+		isClaimedCondition.put("code", check.getCode());
+		isClaimedCondition.put("isClaimed", "Y");
+		inventoryCheckMapper.updateInventoryCheckIsClaimed(isClaimedCondition);
+		
+	}
+
+	
 
 	
 }

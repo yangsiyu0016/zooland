@@ -29,5 +29,6 @@ public class InventoryCheck {
 	private Warehouse warehouse;
 	private String codeGeneratorType;//单号生成方式
 	private List<InventoryCheckDetail> details;
+	private String isClaimed;//是否被签收过
 	
 }

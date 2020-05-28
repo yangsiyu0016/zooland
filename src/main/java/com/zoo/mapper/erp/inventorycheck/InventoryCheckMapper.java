@@ -32,4 +32,7 @@ public interface InventoryCheckMapper {
 	
 	//更改订单状态
 	public int updateInventoryCheckStatus(@Param("condition")Map<String, Object> condition);
+	
+	//更改订单是否被签收
+	public int updateInventoryCheckIsClaimed(@Param("condition")Map<String, Object> condition);
 }
