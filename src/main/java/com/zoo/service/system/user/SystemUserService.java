@@ -67,6 +67,7 @@ public class SystemUserService {
 				Company company = companyMapper.getCompanyById(user.getCompanyId());
 				List<SystemMenu> menuList = menuMapper.getMenuByCompanyTypeId(company.getCompanyType().getId());
 				for(SystemMenu menu:menuList) {
+					System.out.println(menu);
 					allowPath.add(menu.getPath());
 				}
 			}else {

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.model.erp.sell.Sell;
 import com.zoo.model.erp.sell.SellDetail;
-import com.zoo.service.erp.sell.SellDetailService;
 import com.zoo.service.erp.sell.SellService;
 import com.zoo.utils.ApplicationUtil;
 /**
@@ -36,17 +35,17 @@ public class SellCWCompleteHandler implements TaskListener {
 
 	private ProcessEngine processEngine;
 	private SellService sellService;
-	private SellDetailService sellDetailService;
+	//private SellDetailService sellDetailService;
 	@Override
 	public void notify(DelegateTask delegateTask) {
 		processEngine=(ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		sellService = (SellService) ApplicationUtil.getBean("sellService");
-		sellDetailService = (SellDetailService) ApplicationUtil.getBean("sellDetailService");
+		//sellDetailService = (SellDetailService) ApplicationUtil.getBean("sellDetailService");
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String key = pi.getBusinessKey();
 		Sell sell= sellService.getSellById(key);
-		List<SellDetail> details = sellDetailService.getSellDetailBySellId(sell.getId());
+		List<SellDetail> details =sell.getDetails(); //sellDetailService.getSellDetailBySellId(sell.getId());
 		List<String> warehouseIdList = new ArrayList<String>();
 		for(SellDetail detail:details){
 			if(!warehouseIdList.contains(detail.getWarehouse().getId())) warehouseIdList.add(detail.getWarehouse().getId());
