@@ -301,7 +301,7 @@ public class InventoryCheckService {
 		//设置可取回表示
 		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
 		isClaimedCondition.put("code", check.getCode());
-		isClaimedCondition.put("isClaimed", "Y");
+		isClaimedCondition.put("isClaimed", "N");
 		inventoryCheckMapper.updateInventoryCheckIsClaimed(isClaimedCondition);
 		
 	}
