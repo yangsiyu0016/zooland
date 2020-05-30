@@ -7,5 +7,6 @@ public class SellStatus {
 	public static final String OUT = "OUT";
 	public static final String FINISHED = "FINISHED";
 	public static final String DESTROY = "DESTROY";
+	public static final String REJECT = "REJECT";
 
 }

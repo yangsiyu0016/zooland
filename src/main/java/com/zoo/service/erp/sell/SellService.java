@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.util.StringUtil;
+import com.zoo.controller.erp.constant.InventoryCheckStatus;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -178,5 +179,28 @@ public class SellService {
 		
 		sellMapper.updateProcessInstanceId(id, null);
 		
+		//设置是否被签收表示
+		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
+		isClaimedCondition.put("code", sell.getCode());
+		isClaimedCondition.put("isClaimed", "N");
+		
+		sellMapper.updateSellIsClaimed(isClaimedCondition);
 	}
+	//流程取回
+	public void reset(String id) {
+		// TODO Auto-generated method stub
+		Sell sell = this.getSellById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", InventoryCheckStatus.WTJ);
+		condition.put("isClaimed", "N");//设置是否签收
+		sellMapper.updateSellStatus(condition);
+		
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+		
+		sellMapper.updateProcessInstanceId(id, null);
+	}
+	
 }

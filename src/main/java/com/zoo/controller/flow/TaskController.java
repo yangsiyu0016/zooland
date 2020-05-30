@@ -22,6 +22,7 @@ import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
+import com.zoo.service.erp.sell.SellService;
 import com.zoo.service.flow.CustomTaskService;
 import com.zoo.vo.RespBean;
 
@@ -35,6 +36,9 @@ public class TaskController {
 	
 	@Autowired
 	InventoryCheckService inventoryCheckService;
+	
+	@Autowired
+	private SellService sellService;
 	
 	@GetMapping("getPurchaseTask")
 	public Map<String,Object> getPurchaseTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
@@ -184,7 +188,7 @@ public class TaskController {
 	}
 	//作废
 	@PostMapping("destory")
-	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id) {
+	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id, @RequestParam("code") String code) {
 		try {
 			Map<String, Object> variables = new HashMap<String, Object>();
 			if(!"".equals(idea) && idea != null) {
@@ -199,7 +203,11 @@ public class TaskController {
 				taskService.addComment(taskId, processInstanceId, comment);
 				taskService.complete(taskId,variables);
 			}	
-			inventoryCheckService.destory(id);
+			if("PD".equals(code)) {
+				inventoryCheckService.destory(id);
+			}else if ("XS".equals(code)) {
+				sellService.destroy(id);
+			}
 			return new RespBean("200", "订单已作废");
 		} catch (ZooException e) {
 			return new RespBean("500",e.getExceptionEnum().message());

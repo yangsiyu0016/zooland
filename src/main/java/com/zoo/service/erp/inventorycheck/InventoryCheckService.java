@@ -298,7 +298,7 @@ public class InventoryCheckService {
 		condition.put("etime", new Date());
 		inventoryCheckMapper.updateInventoryCheckStatus(condition);
 		
-		//设置可取回表示
+		//设置是否被签收表示
 		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
 		isClaimedCondition.put("code", check.getCode());
 		isClaimedCondition.put("isClaimed", "N");
