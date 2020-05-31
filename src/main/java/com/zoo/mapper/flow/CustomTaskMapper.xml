@@ -476,6 +476,7 @@
     	SELECT 
     		ART.ID_ id,
 	    	ART.NAME_ name,
+	    	ART.TASK_DEF_KEY_ taskKey,
 	    	ART.CREATE_TIME_ createTime,
 	    	ART.ASSIGNEE_ assignee,
 	    	ART.FORM_KEY_ formKey,

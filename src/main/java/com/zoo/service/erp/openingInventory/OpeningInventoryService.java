@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zoo.controller.erp.constant.OpeningInventoryStatus;
+import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
@@ -27,6 +28,7 @@ import com.zoo.model.erp.openingInventory.OpeningInventory;
 import com.zoo.model.erp.openingInventory.OpeningInventoryDetail;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
+import com.zoo.model.erp.sell.Sell;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.utils.OrderCodeHelper;
 
@@ -151,5 +153,46 @@ public class OpeningInventoryService {
 	public int updateOpeningInventory(OpeningInventory oi) {
 		return openingInventoryMapper.updateOpeningInventory(oi);
 		
+	}
+	public void updateOpeningInventoryIsClaimed(Map<String, Object> variables) {
+		// TODO Auto-generated method stub
+		openingInventoryMapper.updateOpeningInventoryIsClaimed(variables);
+	}
+	public void destroy(String id) {
+		// TODO Auto-generated method stub
+		OpeningInventory openingInventory = openingInventoryMapper.getOpeningInventoryById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", OpeningInventoryStatus.DESTROY);
+		condition.put("etime", new Date());
+		openingInventoryMapper.updateOpeningInventoryStatus(condition);
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(openingInventory.getProcessInstanceId(), "待定");
+		
+		openingInventoryMapper.updateProcessInstanceId(id, null);
+		
+		//设置是否被签收表示
+		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
+		isClaimedCondition.put("code", openingInventory.getCode());
+		isClaimedCondition.put("isClaimed", "N");
+		
+		openingInventoryMapper.updateOpeningInventoryIsClaimed(isClaimedCondition);
+	}
+	//流程取回
+	public void reset(String id) {
+		// TODO Auto-generated method stub
+		OpeningInventory openingInventory = this.getOpeningInventoryById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", OpeningInventoryStatus.WTJ);
+		condition.put("isClaimed", "N");//设置是否签收
+		openingInventoryMapper.updateOpeningInventoryStatus(condition);
+		
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(openingInventory.getProcessInstanceId(), "待定");
+		
+		openingInventoryMapper.updateProcessInstanceId(id, null);
 	}
 }

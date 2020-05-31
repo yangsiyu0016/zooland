@@ -192,7 +192,7 @@ public class SellService {
 		Sell sell = this.getSellById(id);
 		Map<String,Object> condition = new HashMap<String, Object>();
 		condition.put("id", id);
-		condition.put("status", InventoryCheckStatus.WTJ);
+		condition.put("status", SellStatus.WTJ);
 		condition.put("isClaimed", "N");//设置是否签收
 		sellMapper.updateSellStatus(condition);
 		
@@ -202,5 +202,11 @@ public class SellService {
 		
 		sellMapper.updateProcessInstanceId(id, null);
 	}
+	public void updateSellIsClaimed(Map<String, Object> variables) {
+		// TODO Auto-generated method stub
+		sellMapper.updateSellIsClaimed(variables);
+	}
+	
+	
 	
 }

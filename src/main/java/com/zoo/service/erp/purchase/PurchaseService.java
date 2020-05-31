@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.util.StringUtil;
+import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.controller.erp.constant.PurchaseStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -27,6 +28,7 @@ import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.model.annex.Annex;
+import com.zoo.model.erp.openingInventory.OpeningInventory;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
@@ -186,6 +188,35 @@ public class PurchaseService {
 		//删除流程实例
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(),"待定");
+		
+		purchaseMapper.updateProcessInstanceId(id, null);
+		
+		//设置是否被签收表示
+		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
+		isClaimedCondition.put("code", purchase.getCode());
+		isClaimedCondition.put("isClaimed", "N");
+		
+		purchaseMapper.updatePurchaseIsClaimed(isClaimedCondition);
+	}
+
+	public void updatePurchaseIsClaimed(Map<String, Object> variables) {
+		// TODO Auto-generated method stub
+		purchaseMapper.updatePurchaseIsClaimed(variables);
+	}
+	
+	//流程取回
+	public void reset(String id) {
+		// TODO Auto-generated method stub
+		Purchase purchase = this.getPurchaseById(id);
+		Map<String,Object> condition = new HashMap<String, Object>();
+		condition.put("id", id);
+		condition.put("status", PurchaseStatus.WTJ);
+		condition.put("isClaimed", "N");//设置是否签收
+		purchaseMapper.updatePurchaseStatus(condition);
+		
+		//删除流程
+		RuntimeService runtimeService = processEngine.getRuntimeService();
+		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(), "待定");
 		
 		purchaseMapper.updateProcessInstanceId(id, null);
 	}

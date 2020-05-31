@@ -30,5 +30,6 @@ public class OpeningInventory {
 	private String status;
 	private String codeGeneratorType;
 	private List<OpeningInventoryDetail> details;
+	private String isClaimed;
 	
 }
