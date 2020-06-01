@@ -23,5 +23,6 @@ public interface SellMapper {
 	int deleteSellById(@Param("ids")String[] ids);
 
 	int updateSell(@Param("sell")Sell sell);
-
+	////更改订单是否被签收
+	void updateSellIsClaimed(@Param("condition")Map<String, Object> condition);
 }

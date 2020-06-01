@@ -9,6 +9,7 @@
 		<result column="initDate" property="initDate"/>
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
+		<result column="isClaimed" property="isClaimed"/>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="receivingId" property="receiving" select="com.zoo.mapper.crm.customer.ReceivingMapper.getReceivingById"></association>
@@ -67,6 +68,9 @@
 			sell 
 		SET 
 			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+			</if>
 			<if test="condition.etime!=null">
 				,etime = #{condition.etime} 
 			</if> 
@@ -79,4 +83,7 @@
             #{id}
         </foreach>
 	</delete>
+	<update id="updateSellIsClaimed">
+		update sell set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
+	</update>
 </mapper>

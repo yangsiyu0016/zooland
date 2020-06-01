@@ -73,4 +73,15 @@ public class OpeningInventoryController {
 	public void destroy(@RequestParam("id")String id) {
 		//功能未确定，暂时不识现
 	}
+	//取回
+	@GetMapping("reset")
+	public RespBean reject(@RequestParam("id") String id) {
+		try {
+			oiService.reset(id);
+			return new RespBean("200", "取回成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
 }

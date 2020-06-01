@@ -31,4 +31,5 @@ public class Purchase {
 	private SupplierAccount supplierAccount;
 	private String accountContext;
 	private List<Annex> annexs;
+	private String isClaimed;
 }

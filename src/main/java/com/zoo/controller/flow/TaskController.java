@@ -22,6 +22,9 @@ import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
+import com.zoo.service.erp.openingInventory.OpeningInventoryService;
+import com.zoo.service.erp.purchase.PurchaseService;
+import com.zoo.service.erp.sell.SellService;
 import com.zoo.service.flow.CustomTaskService;
 import com.zoo.vo.RespBean;
 
@@ -35,6 +38,15 @@ public class TaskController {
 	
 	@Autowired
 	InventoryCheckService inventoryCheckService;
+	
+	@Autowired
+	private SellService sellService;
+	
+	@Autowired
+	private PurchaseService purchaseService;
+	
+	@Autowired
+	private OpeningInventoryService openingInventoryService;
 	
 	@GetMapping("getPurchaseTask")
 	public Map<String,Object> getPurchaseTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
@@ -98,12 +110,16 @@ public class TaskController {
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {
 			taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
-			Map<String, Object> condition = new HashMap<String, Object>();
 			Map<String, Object> variables = taskService.getVariables(taskId);
 			String string = variables.get("CODE").toString().substring(0, 2);
 			if("PD".equals(string)) {
-				
 				inventoryCheckService.updateInventoryCheckIsClaimed(variables);
+			}else if ("XS".equals(string)) {
+				sellService.updateSellIsClaimed(variables);
+			}else if ("CG".equals(string)) {
+				purchaseService.updatePurchaseIsClaimed(variables);
+			}else if ("QC".equals(string)) {
+				openingInventoryService.updateOpeningInventoryIsClaimed(variables);
 			}
 			return new RespBean("200","签收成功");
 		} catch (Exception e) {
@@ -184,7 +200,7 @@ public class TaskController {
 	}
 	//作废
 	@PostMapping("destory")
-	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id) {
+	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id, @RequestParam("code") String code) {
 		try {
 			Map<String, Object> variables = new HashMap<String, Object>();
 			if(!"".equals(idea) && idea != null) {
@@ -199,7 +215,15 @@ public class TaskController {
 				taskService.addComment(taskId, processInstanceId, comment);
 				taskService.complete(taskId,variables);
 			}	
-			inventoryCheckService.destory(id);
+			if("PD".equals(code)) {
+				inventoryCheckService.destory(id);
+			}else if ("XS".equals(code)) {
+				sellService.destroy(id);
+			}else if ("CG".equals(code)) {
+				purchaseService.destroy(id);
+			}else if ("QC".equals(code)) {
+				openingInventoryService.destroy(id);
+			}
 			return new RespBean("200", "订单已作废");
 		} catch (ZooException e) {
 			return new RespBean("500",e.getExceptionEnum().message());

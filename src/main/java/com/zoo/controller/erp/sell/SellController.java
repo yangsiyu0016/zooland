@@ -74,7 +74,17 @@ public class SellController {
 			return new RespBean("500",e.getExceptionEnum().message());
 		}
 	}
-	
+	//取回
+	@GetMapping("reset")
+	public RespBean reject(@RequestParam("id") String id) {
+		try {
+			sellService.reset(id);
+			return new RespBean("200", "驳回成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
 	//作废订单
 	@PostMapping("destroy")
 	public RespBean destroy(@RequestParam("id") String id) {

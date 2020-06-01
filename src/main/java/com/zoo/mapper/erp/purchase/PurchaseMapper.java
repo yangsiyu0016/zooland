@@ -25,4 +25,5 @@ public interface PurchaseMapper {
 
 	int updatePurchase(@Param("purchase")Purchase purchase);
 	
+	void updatePurchaseIsClaimed(@Param("condition")Map<String, Object> condition);
 }
