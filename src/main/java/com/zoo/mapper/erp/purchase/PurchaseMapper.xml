@@ -9,6 +9,7 @@
 		<result column="initDate" property="initDate"/>
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
+		<result column="isClaimed" property="isClaimed"/>
 		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="accountId" property="supplierAccount" select="com.zoo.mapper.erp.purchase.SupplierAccountMapper.getSupplierAccountById"></association>
@@ -73,11 +74,17 @@
 			purchase 
 		SET 
 			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+			</if>
 			<if test="condition.etime!=null">
 				,etime = #{condition.etime} 
 			</if> 
 			 
 		WHERE id = #{condition.id}
+	</update>
+	<update id="updatePurchaseIsClaimed">
+		update purchase set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
 	</update>
 	<delete id="deletePurchaseById">
 		delete from sell where id in 

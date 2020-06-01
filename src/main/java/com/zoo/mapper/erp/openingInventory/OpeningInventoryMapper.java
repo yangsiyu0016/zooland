@@ -17,4 +17,5 @@ public interface OpeningInventoryMapper {
 	int updateProcessInstanceId(@Param("id") String id,@Param("processInstanceId")String processInstanceId);
 	public int updateOpeningInventoryStatus(@Param("condition")Map<String, Object> condition);
 	int updateOpeningInventory(@Param("oi")OpeningInventory oi);
+	int updateOpeningInventoryIsClaimed(@Param("condition")Map<String, Object> condition);
 }

@@ -30,5 +30,5 @@ public class Sell {
 	private String companyId;
 	private SystemUser cuser;
 	private String receivingContext;
-	
+	private String isClaimed;
 }

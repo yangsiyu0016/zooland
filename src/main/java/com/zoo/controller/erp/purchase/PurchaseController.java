@@ -75,4 +75,16 @@ public class PurchaseController {
 	public Purchase getPurchaseById(@PathVariable String id) {
 		return purchaseService.getPurchaseById(id);
 	}
+	
+	//取回
+	@GetMapping("reset")
+	public RespBean reject(@RequestParam("id") String id) {
+		try {
+			purchaseService.reset(id);
+			return new RespBean("200", "驳回成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
 }
