@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.util.StringUtil;
-import com.zoo.controller.erp.constant.InventoryCheckStatus;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;

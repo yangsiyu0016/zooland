@@ -31,4 +31,9 @@ public class Sell {
 	private SystemUser cuser;
 	private String receivingContext;
 	private String isClaimed;
+	
+	private String receivableType;//付款方式
+	private String freightType;//运费类型 YES:包邮 NO：不包邮
+	
+	private String description;//备注
 }
