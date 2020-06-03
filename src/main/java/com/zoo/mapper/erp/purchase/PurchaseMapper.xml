@@ -84,7 +84,7 @@
 		WHERE id = #{condition.id}
 	</update>
 	<update id="updatePurchaseIsClaimed">
-		update purchase set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
+		update purchase set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
 	</update>
 	<delete id="deletePurchaseById">
 		delete from sell where id in 

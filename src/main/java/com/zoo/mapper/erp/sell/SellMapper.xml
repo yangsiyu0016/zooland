@@ -84,6 +84,6 @@
         </foreach>
 	</delete>
 	<update id="updateSellIsClaimed">
-		update sell set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
+		update sell set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
 	</update>
 </mapper>

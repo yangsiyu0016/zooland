@@ -280,7 +280,7 @@ public class InventoryCheckService {
 		Map<String, Object> condition = new HashMap<String, Object>();
 		// TODO Auto-generated method stub
 		
-		condition.put("code", variables.get("CODE"));
+		condition.put("id", variables.get("id"));
 		condition.put("isClaimed", "Y");
 		
 		inventoryCheckMapper.updateInventoryCheckIsClaimed(condition );

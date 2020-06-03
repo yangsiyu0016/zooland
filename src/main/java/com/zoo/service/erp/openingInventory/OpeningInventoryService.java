@@ -156,7 +156,12 @@ public class OpeningInventoryService {
 	}
 	public void updateOpeningInventoryIsClaimed(Map<String, Object> variables) {
 		// TODO Auto-generated method stub
-		openingInventoryMapper.updateOpeningInventoryIsClaimed(variables);
+		Map<String, Object> condition = new HashMap<String, Object>();
+		// TODO Auto-generated method stub
+		
+		condition.put("id", variables.get("id"));
+		condition.put("isClaimed", "Y");
+		openingInventoryMapper.updateOpeningInventoryIsClaimed(condition);
 	}
 	public void destroy(String id) {
 		// TODO Auto-generated method stub
