@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.statistics.SellStatisticsMapper">
+
+	<select id="page" resultType="com.zoo.model.erp.statistics.SellStatistics" parameterType="map">
+		SELECT 
+			dd.id, 
+			dd.number, 
+			dd.price, 
+			dd.totalMoney, 
+			dd.notOutNumber, 
+			dd.code, dd.ctime, 
+			dd.status, 
+			dd.customerName, 
+			dd.genericSpec, 
+			dd.specialSpec, 
+			dd.productName, 
+			pt.name, 
+			dd.ownSpec, 
+			dd.companyId, 
+			dd.initDate 
+		FROM 
+			(SELECT team.*, pro.name productName, pro.typeId, prod.genericSpec, prod.specialSpec FROM (
+			SELECT 
+				pdp.*,
+				sup.name customerName,
+				sku.productId,
+				sku.ownSpec 
+			FROM 
+			(SELECT  pd.id,
+				pd.skuId,
+				pd.number, 
+				pd.price, 
+				pd.totalMoney, 
+				pd.notOutNumber, 
+				p.code,  
+				p.customerId,
+				p.ctime,
+				p.cuserId,
+				p.status,
+				p.companyId,
+				p.initDate
+			FROM 
+				sell_detail pd 
+			LEFT JOIN 
+				sell p 
+			ON
+			 pd.sellId = p.id ) pdp 
+			LEFT JOIN 
+				customer sup
+			ON
+			pdp.customerId = sup.id
+			LEFT JOIN product_sku sku ON pdp.skuId = sku.id
+			) team
+			LEFT JOIN product pro ON team.productId = pro.id 
+			LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
+			LEFT JOIN product_type pt ON dd.typeId = pt.id
+			WHERE dd.companyId = #{companyId} 
+			ORDER BY ctime DESC
+			<if test="start!=null and size!=null">
+				limit #{start},#{size}
+			</if>
+	</select>
+	<select id="getCount" resultType="long">
+		SELECT 
+			count(*) count
+		FROM 
+			(SELECT team.*, pro.name productName, pro.typeId, prod.genericSpec, prod.specialSpec FROM (
+			SELECT 
+				pdp.*,
+				sup.name customerName,
+				sku.productId,
+				sku.ownSpec 
+			FROM 
+			(SELECT  pd.id,
+				pd.skuId,
+				pd.number, 
+				pd.price, 
+				pd.totalMoney, 
+				pd.notOutNumber, 
+				p.code,  
+				p.customerId,
+				p.ctime,
+				p.cuserId,
+				p.status,
+				p.companyId,
+				p.initDate
+			FROM 
+				sell_detail pd 
+			LEFT JOIN 
+				sell p 
+			ON
+			 pd.sellId = p.id ) pdp 
+			LEFT JOIN 
+				customer sup
+			ON
+			pdp.customerId = sup.id
+			LEFT JOIN product_sku sku ON pdp.skuId = sku.id
+			) team
+			LEFT JOIN product pro ON team.productId = pro.id 
+			LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
+			LEFT JOIN product_type pt ON dd.typeId = pt.id
+			WHERE dd.companyId = #{companyId}
+	</select>
+</mapper>
