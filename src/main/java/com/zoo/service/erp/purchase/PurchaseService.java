@@ -201,7 +201,12 @@ public class PurchaseService {
 
 	public void updatePurchaseIsClaimed(Map<String, Object> variables) {
 		// TODO Auto-generated method stub
-		purchaseMapper.updatePurchaseIsClaimed(variables);
+		Map<String, Object> condition = new HashMap<String, Object>();
+		// TODO Auto-generated method stub
+		
+		condition.put("id", variables.get("id"));
+		condition.put("isClaimed", "Y");
+		purchaseMapper.updatePurchaseIsClaimed(condition);
 	}
 	
 	//流程取回

@@ -203,7 +203,10 @@ public class SellService {
 	}
 	public void updateSellIsClaimed(Map<String, Object> variables) {
 		// TODO Auto-generated method stub
-		sellMapper.updateSellIsClaimed(variables);
+		Map<String, Object> condition = new HashMap<String, Object>();
+		condition.put("id", variables.get("id"));
+		condition.put("isClaimed", "Y");
+		sellMapper.updateSellIsClaimed(condition);
 	}
 	
 	

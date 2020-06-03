@@ -6,7 +6,10 @@ import java.util.Map;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
+import org.activiti.engine.runtime.DataObject;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -107,20 +110,9 @@ public class TaskController {
 		return customTaskService.getInventoryCheckTaskById(taskId);
 	}
 	@PostMapping("claim")
-	public RespBean claim(@RequestParam("taskId")String taskId) {
+	public RespBean claim(@RequestParam("taskId")String taskId, @RequestParam("id") String id) {
 		try {
-			taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
-			Map<String, Object> variables = taskService.getVariables(taskId);
-			String string = variables.get("CODE").toString().substring(0, 2);
-			if("PD".equals(string)) {
-				inventoryCheckService.updateInventoryCheckIsClaimed(variables);
-			}else if ("XS".equals(string)) {
-				sellService.updateSellIsClaimed(variables);
-			}else if ("CG".equals(string)) {
-				purchaseService.updatePurchaseIsClaimed(variables);
-			}else if ("QC".equals(string)) {
-				openingInventoryService.updateOpeningInventoryIsClaimed(variables);
-			}
+			taskService.claim(taskId, id);
 			return new RespBean("200","签收成功");
 		} catch (Exception e) {
 			return new RespBean("500","签收失败");

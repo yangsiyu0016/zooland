@@ -86,6 +86,6 @@
 		where id = #{condition.id} 
 	</update>
 	<update id="updateInventoryCheckIsClaimed">
-		update pan_dian set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
+		update pan_dian set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
 	</update>
 </mapper>

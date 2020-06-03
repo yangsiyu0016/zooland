@@ -85,6 +85,6 @@
 		WHERE id = #{condition.id}
 	</update>
 	<update id="updateOpeningInventoryIsClaimed">
-		update opening_inventory set isClaimed = #{condition.isClaimed} where code = #{condition.code} 
+		update opening_inventory set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
 	</update>
 </mapper>
