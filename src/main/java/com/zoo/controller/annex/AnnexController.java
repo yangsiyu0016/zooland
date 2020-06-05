@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.zoo.model.annex.Annex;
 import com.zoo.service.annex.AnnexService;
 import com.zoo.vo.RespBean;
+
+import net.sf.json.JSONObject;
 
 @RestController
 @RequestMapping("/annex")
@@ -40,13 +43,36 @@ public class AnnexController {
 	
 	@Autowired
 	private AnnexService annexService;
-	
+	@PutMapping("add")
+	public Map<String,Object> addAnnex(@RequestBody Annex annex){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			annex = annexService.addAnnex(annex);
+			resultMap.put("status", 200);
+			resultMap.put("annex", annex);
+		} catch (Exception e) {
+			resultMap.put("status", 500);
+			resultMap.put("msg", e.getMessage());
+		}
+		return resultMap;
+	}
 	//上传功能
 	@PostMapping("upload")
-	public Map<String, Object> upload(@RequestParam("file") MultipartFile file) {
+	public Map<String, Object> upload(@RequestParam("body")String body,@RequestParam("file") MultipartFile file) {
 		Map<String,Object> map = new HashMap<String, Object>();
 			try {
+				
+				JSONObject object = JSONObject.fromObject(body);
+				String title = (String) object.get("title");
+				
+				
+				
 				String fileName = file.getOriginalFilename();
+				//获取文件的后缀名
+				String suffix = fileName.substring(fileName.lastIndexOf("."));
+				
+				fileName = UUID.randomUUID().toString()+suffix;
+				
 				//获取title
 				//拼接下载url
 				String url = downloadIp;
@@ -61,12 +87,15 @@ public class AnnexController {
 					file.transferTo(uploadFile);
 				}
 				Annex annex = new Annex();
-				String annexId = UUID.randomUUID().toString();
-				annex.setId(annexId);
-				annex.setTitle(fileName);
+				//String annexId = UUID.randomUUID().toString();
+				//annex.setId(annexId);
+				annex.setFileName(fileName);
+				annex.setSuffix(suffix.substring(1));
+				annex.setSize(file.getSize()/1024+"KB");
+				annex.setTitle(title);
 				annex.setUrl(url);
 				annex.setUtime(new Date());
-				annexService.addAnnex(annex);
+				//annexService.addAnnex(annex);
 				map.put("annex", annex);
 				map.put("status", "200");
 				map.put("msg", "上传成功");
@@ -82,14 +111,14 @@ public class AnnexController {
 	
 	//下载功能
 	@GetMapping("download")
-	public void downloadAnnexFile(@RequestParam("title") String title, HttpServletResponse response, HttpServletRequest request) {
+	public void downloadAnnexFile(@RequestParam("fileName") String fileName, HttpServletResponse response, HttpServletRequest request) {
 		OutputStream os = null;
 
         InputStream is= null;
         
         String projectPath = System.getProperty("user.dir");//获取当前项目路径
 		//拼接上传路径
-		String uploadUrl = projectPath + "/src/annexFile/" + title;
+		String uploadUrl = projectPath + "/src/annexFile/" + fileName;
         try {
 			
         	// 取得输出流
@@ -103,13 +132,13 @@ public class AnnexController {
         	//response.setHeader("Content-Disposition", "attachment;filename="+ new String(title.getBytes("utf-8"),"ISO-8859-1"));
         	String userAgent = request.getHeader("User-Agent");//获取浏览器名（IE/Chome/firefox）
         	if (userAgent.contains("firefox")) {    
-        		title = new String(title.getBytes("UTF-8"), "ISO8859-1"); // firefox浏览器    
+        		fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1"); // firefox浏览器    
         	} else if (userAgent.contains("CHROME")) {    
-        		title = new String(title.getBytes("UTF-8"), "ISO8859-1");// 谷歌    
+        		fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");// 谷歌    
         	} else {    
-        		title = URLEncoder.encode(title, "UTF-8");// IE浏览器    
+        		fileName = URLEncoder.encode(fileName, "UTF-8");// IE浏览器    
         	}
-        	response.setHeader("Content-Disposition", "attachment;filename="+ title);
+        	response.setHeader("Content-Disposition", "attachment;filename="+ fileName);
         	//读取流
         	File f = new File(uploadUrl);
         	is = new FileInputStream(f);
@@ -140,17 +169,8 @@ public class AnnexController {
 	@PostMapping("delete")
 	public RespBean delAnnexFile(@RequestBody Annex annex) {
 		try {
-			int delNum = annexService.delAnnexById(annex.getId());
-			String projectPath = System.getProperty("user.dir");//获取当前项目路径
-			//拼接上传路径
-			String uploadUrl = projectPath + "/src/annexFile/" + annex.getTitle();
-			boolean isDel = new File(uploadUrl).delete();
-			if (isDel) {
-				return new RespBean("200", "删除成功");
-			}else {
-				return new RespBean("000", "未删除");
-			}
-			
+			annexService.delAnnexFile(annex);
+			return new RespBean("200", "删除成功");
 		} catch (Exception e) {
 			// TODO: handle exception
 			return new RespBean("500", e.getMessage());

@@ -23,9 +23,11 @@ import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.sell.SellDetailMapper;
 import com.zoo.mapper.erp.sell.SellMapper;
+import com.zoo.model.annex.Annex;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.sell.Sell;
@@ -48,6 +50,8 @@ public class SellService {
 	IdentityService identityService;
 	@Autowired
 	ProcessEngine processEngine;
+	@Autowired
+	AnnexMapper annexMapper;
 	public void addSell(Sell sell) {
 		String id = UUID.randomUUID().toString();
 		sell.setId(id);
@@ -74,6 +78,11 @@ public class SellService {
 			detail.setSellId(id);
 			detail.setCtime(new Date());
 			detailMapper.addDetail(detail);
+		}
+		for(Annex annex:sell.getAnnexs()) {
+			annex.setId(UUID.randomUUID().toString());
+			annex.setForeignKey(sell.getId());
+			annexMapper.addAnnex(annex);
 		}
 	}
 	public List<Sell> getSellByPage(Integer page, Integer size) {

@@ -6,10 +6,7 @@ import java.util.Map;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
-import org.activiti.engine.impl.persistence.entity.VariableInstance;
-import org.activiti.engine.runtime.DataObject;
 import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -112,7 +109,7 @@ public class TaskController {
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId, @RequestParam("id") String id) {
 		try {
-			taskService.claim(taskId, id);
+			customTaskService.claim(taskId, id);
 			return new RespBean("200","签收成功");
 		} catch (Exception e) {
 			return new RespBean("500","签收失败");

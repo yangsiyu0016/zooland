@@ -1,15 +1,15 @@
 package com.zoo.service.annex;
 
-import java.text.SimpleDateFormat;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.pagehelper.util.StringUtil;
 import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.model.annex.Annex;
 
@@ -34,10 +34,22 @@ public class AnnexService {
 			return annexMapper.delAnnexById(id);
 		}
 		//添加上传文件信息
-		public void addAnnex(Annex annex) {
+		public Annex addAnnex(Annex annex) {
 			annex.setId(UUID.randomUUID().toString());
-			annex.setUtime(new Date());
+			//annex.setUtime(new Date());
 			annexMapper.addAnnex(annex);
+			return annex;
+		}
+		public void delAnnexFile(Annex annex) {
+			if(StringUtil.isNotEmpty(annex.getId())) {
+				annexMapper.delAnnexById(annex.getId());
+			}
+			String projectPath = System.getProperty("user.dir");//获取当前项目路径
+			
+			//拼接上传路径
+			String uploadUrl = projectPath + "/src/annexFile/" + annex.getFileName();
+			new File(uploadUrl).delete();
+			
 		}
 	
 }

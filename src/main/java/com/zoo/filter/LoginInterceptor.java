@@ -29,6 +29,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
     	String url = request.getRequestURI();
     	if(url.equals("/auth")) return true;
+    	if(url.equals("/annex/download")) return true;
     	//if(url.equals("/product/uploadImage")) return true;
         //查询Token
         String token = CookieUtils.getCookieValue(request, props.getCookieName());

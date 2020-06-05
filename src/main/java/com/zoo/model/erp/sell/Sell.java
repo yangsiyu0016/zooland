@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zoo.model.annex.Annex;
 import com.zoo.model.crm.Customer;
 import com.zoo.model.crm.Receiving;
 import com.zoo.model.system.user.SystemUser;
@@ -23,6 +24,9 @@ public class Sell {
 	private Date etime;
 	private String cuserId;
 	private List<SellDetail> details;
+	
+	private List<Annex> annexs;
+	
 	private String codeGeneratorType;
 	private String status;
 	private Receiving receiving;
