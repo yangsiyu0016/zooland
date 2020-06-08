@@ -23,10 +23,13 @@ public class SellStatistics {
 	private String genericSpec;//通用参数
 	private String specialSpec;//特殊参数
 	private String productName;//产品名称
-	private String name;//产品类型
+	private String name;//产品类型名称
+	private String parentName;//产品类型父级
+	private String productType;//产品类型
 	private String ownSpec;
 	private String companyId;
 	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
-	private Date initDate;//下单日期
+	private Date initDate;//下单日期,
+	private String type;
 	
 }

@@ -41,7 +41,7 @@ public class SellStatisticsService {
 		
 		for(SellStatistics ps: list) {
 			SellStatistics buildSpec = this.buildSpec(ps);
-			
+			ps.setProductType(ps.getParentName() + "/" + ps.getName());
 			retList.add(buildSpec);
 		}
 		Long count = sellStatisticsMapper.getCount(info.getCompanyId());

@@ -16,6 +16,7 @@ import com.zoo.mapper.erp.statistics.PurchaseStatisticsMapper;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.statistics.PurchaseStatistics;
+import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.model.system.user.UserInfo;
 
 import net.sf.json.JSONObject;
@@ -44,7 +45,7 @@ public class PurchaseStatisticsService {
 		
 		for(PurchaseStatistics ps: list) {
 			PurchaseStatistics buildSpec = this.buildSpec(ps);
-			
+			ps.setProductType(ps.getName());
 			retList.add(buildSpec);
 		}
 		map.put("purchaseStatisticses", retList);
@@ -78,6 +79,37 @@ public class PurchaseStatisticsService {
 		
 		
 		return ps;
+	}
+
+	/**
+	 * 查询
+	 * @param searchData
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	public Map<String, Object> search(SearchData searchData) {
+		// TODO Auto-generated method stub
+		Integer start = (searchData.getPage() - 1) * searchData.getSize();
+		
+		HashMap<String,Object> map = new HashMap<String, Object>();
+		
+		UserInfo userInfo = LoginInterceptor.getLoginUser();
+		
+		List<PurchaseStatistics> list = purchaseStatisticsMapper.search(searchData, start, searchData.getSize(), userInfo.getCompanyId());
+		
+		Long count = purchaseStatisticsMapper.getSearchCount(searchData, userInfo.getCompanyId());
+		
+		List<PurchaseStatistics> retList = new ArrayList<PurchaseStatistics>();
+		
+		for(PurchaseStatistics ps: list) {
+			PurchaseStatistics buildSpec = this.buildSpec(ps);
+			ps.setProductType(ps.getName());
+			retList.add(buildSpec);
+		}
+		map.put("purchaseStatisticses", retList);
+		map.put("count", count);
+		return map;
 	}
 	
 }

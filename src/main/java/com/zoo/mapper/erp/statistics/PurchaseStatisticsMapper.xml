@@ -17,7 +17,8 @@
 		dd.genericSpec, 
 		dd.specialSpec, 
 		dd.productName, 
-		pt.name, 
+		pt.name,
+		pt.parentName, 
 		dd.ownSpec, 
 		dd.companyId,
 		dd.initDate  
@@ -56,7 +57,7 @@
 		) team
 		LEFT JOIN product pro ON team.productId = pro.id 
 		LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
-		LEFT JOIN product_type pt ON dd.typeId = pt.id
+		LEFT JOIN (SELECT pt1.id, pt1.name, pt2.name parentName FROM product_type pt1 LEFT JOIN product_type pt2 ON pt2.id = pt1.parentId) pt ON dd.typeId = pt.id
 		WHERE dd.companyId = #{companyId}
 		ORDER BY 
 			ctime desc	
@@ -101,7 +102,140 @@
 		) team
 		LEFT JOIN product pro ON team.productId = pro.id 
 		LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
-		LEFT JOIN product_type pt ON dd.typeId = pt.id
+		LEFT JOIN (SELECT pt1.id, pt1.name, pt2.name parentName FROM product_type pt1 LEFT JOIN product_type pt2 ON pt2.id = pt1.parentId) pt ON dd.typeId = pt.id
 		WHERE dd.companyId = #{companyId}
+	</select>
+	
+	<!-- 查询 -->
+	<select id="search" resultType="com.zoo.model.erp.statistics.PurchaseStatistics" parameterType="map">
+		SELECT 
+		dd.id, 
+		dd.number, 
+		dd.price, 
+		dd.totalMoney, 
+		dd.notInNumber, 
+		dd.code, dd.ctime, 
+		dd.status, 
+		dd.supplierName, 
+		dd.genericSpec, 
+		dd.specialSpec, 
+		dd.productName, 
+		pt.name,
+		pt.parentName, 
+		dd.ownSpec, 
+		dd.companyId,
+		dd.initDate  
+		FROM 
+		(SELECT team.*, pro.name productName, pro.typeId, prod.genericSpec, prod.specialSpec FROM (
+		SELECT 
+			pdp.*,
+			sup.supplierName,
+			sku.productId,
+			sku.ownSpec 
+		FROM 
+		(SELECT  pd.id,
+			pd.skuId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+		 pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+		pdp.supplierId = sup.id
+		LEFT JOIN product_sku sku ON pdp.skuId = sku.id
+		) team
+		LEFT JOIN product pro ON team.productId = pro.id 
+		LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
+		LEFT JOIN (SELECT pt1.id, pt1.name, pt2.name parentName FROM product_type pt1 LEFT JOIN product_type pt2 ON pt2.id = pt1.parentId) pt ON dd.typeId = pt.id
+		WHERE dd.companyId = #{companyId} 
+		<if test="searchData.productSkuId != null">
+			and dd.skuId = #{searchData.productSkuId} 
+		</if>
+		<if test="searchData.code != null">
+			and dd.code like concat('%', #{searchData.code}, '%')  
+		</if>
+		<if test="searchData.supplierName != null">
+			and dd.supplierName like concat('%', #{searchData.supplierName},'%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
+			<![CDATA[and dd.initDate > #{searchData.startDate} and dd.initDate < #{searchData.endDate}]]> 
+		</if>
+		ORDER BY 
+			ctime desc	
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	
+	<!-- 查询总条数 -->
+	<select id="getSearchCount" resultType="long">
+		SELECT 
+		count(*)  
+		FROM 
+		(SELECT team.*, pro.name productName, pro.typeId, prod.genericSpec, prod.specialSpec FROM (
+		SELECT 
+			pdp.*,
+			sup.supplierName,
+			sku.productId,
+			sku.ownSpec 
+		FROM 
+		(SELECT  pd.id,
+			pd.skuId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+		 pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+		pdp.supplierId = sup.id
+		LEFT JOIN product_sku sku ON pdp.skuId = sku.id
+		) team
+		LEFT JOIN product pro ON team.productId = pro.id 
+		LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
+		LEFT JOIN (SELECT pt1.id, pt1.name, pt2.name parentName FROM product_type pt1 LEFT JOIN product_type pt2 ON pt2.id = pt1.parentId) pt ON dd.typeId = pt.id
+		WHERE dd.companyId = #{companyId} 
+		<if test="searchData.productSkuId != null">
+			and dd.skuId = #{searchData.productSkuId} 
+		</if>
+		<if test="searchData.code != null">
+			and dd.code like concat('%, '#{searchData.code}, '%') 
+		</if>
+		<if test="searchData.supplierName != null">
+			and dd.supplierName like ('%', #{searchData.supplierName}, '%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate}  -->
+			<![CDATA[and dd.initDate > #{searchData.startDate} and dd.initDate < #{searchData.endDate}]]>
+		</if>
 	</select>
 </mapper>

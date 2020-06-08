@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,15 @@ public class ProductSkuController {
 		long count = skuService.getCount(key);
 		map.put("skus", skus);
 		map.put("count",count);
+		return map;
+	}
+	
+	@GetMapping("getProductSkuByProductId")
+	public Map<String, Object> getProductSkuByProductId(@RequestParam("productId") String productId) {
+		List<ProductSku> list = skuService.getProductByProductId(productId);
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("skus", list);
+		
 		return map;
 	}
 	

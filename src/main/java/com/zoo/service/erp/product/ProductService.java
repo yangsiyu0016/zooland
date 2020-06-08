@@ -93,6 +93,8 @@ public class ProductService {
 	public Long getCount() {
 		return productMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
 	}
+
+	
 	public void addProduct(Product product) {
 		product.setId(UUID.randomUUID().toString());
 		product.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
