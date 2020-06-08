@@ -12,5 +12,6 @@ public interface JournalAccountMapper {
 	List<JournalAccount> getJournalAccountByPage(@Param("start")Integer start,@Param("size")Integer size,@Param("companyId") String companyId);
 	long getCount(@Param("companyId")String companyId);
 	int addJournalAccount(@Param("ja")JournalAccount ja);
+	int deleteByOrderDetailId(@Param("orderDetailId")String orderDetailId);
 
 }

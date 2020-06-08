@@ -51,5 +51,9 @@ public class AnnexService {
 			new File(uploadUrl).delete();
 			
 		}
+		public int delAnnexByForeignKey(String foreignKey) {
+			return annexMapper.delAnnexByForeignKey(foreignKey);
+			
+		}
 	
 }

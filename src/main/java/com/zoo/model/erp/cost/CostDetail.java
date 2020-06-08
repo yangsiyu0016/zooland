@@ -14,6 +14,8 @@ public class CostDetail {
 	private String costId;
 	private ProductSku productSku;
 	private BigDecimal number = new BigDecimal("0");
+	private BigDecimal price = new BigDecimal("0");
+	private BigDecimal totalMoney = new BigDecimal("0");
 	private Warehouse warehouse;
 	private List<CostDetailGoodsAllocation> cdgas;
 	

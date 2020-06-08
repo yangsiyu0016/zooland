@@ -1,6 +1,7 @@
 package com.zoo.model.erp.outbound;
 
 import java.util.Date;
+import java.util.List;
 
 import com.zoo.model.erp.cost.Cost;
 import com.zoo.model.erp.warehouse.Warehouse;
@@ -17,4 +18,5 @@ public class Outbound {
 	private Date ctime;
 	private String type;
 	private Cost cost;
+	private List<OutboundDetail> details;
 }

@@ -21,4 +21,5 @@ public interface AnnexMapper {
 	
 	//根据主键id修改annex表得业务id
 	public void updateAnnexForeignKeyById(@Param("annex") Annex annex);
+	public int delAnnexByForeignKey(@Param("foreignKey")String foreignKey);
 }

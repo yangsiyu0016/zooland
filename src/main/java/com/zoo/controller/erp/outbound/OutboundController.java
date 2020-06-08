@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zoo.service.erp.outbound.OutBoundService;
+import com.zoo.service.erp.outbound.OutboundService;
 
 @RestController
 @RequestMapping("/erp/outbound")
 public class OutboundController {
 
 	@Autowired
-	private OutBoundService outBoundService;
+	private OutboundService outBoundService;
 	
 	@RequestMapping("page")
 	public Map<String, Object> getOutboundsByPage(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {

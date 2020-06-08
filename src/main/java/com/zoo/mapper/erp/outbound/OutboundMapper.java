@@ -13,4 +13,6 @@ public interface OutboundMapper {
 	int addOutbound(@Param("outbound")Outbound outbound);
 	List<Map<String, Object>> getOutboundsByPage(@Param("start") Integer start, @Param("size") Integer size);
 	Long getTotalCount();
+	int deleteByCostId(@Param("costId")String costId);
+	Outbound getOutboundByCostId(@Param("costId")String costId);
 }

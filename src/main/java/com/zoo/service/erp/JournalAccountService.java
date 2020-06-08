@@ -74,5 +74,9 @@ public class JournalAccountService {
 	public int addJournalAccount(JournalAccount journalAccount) {
 		return jaMapper.addJournalAccount(journalAccount);		
 	}
+	public int deleteByOrderDetailId(String orderDetailId) {
+		return jaMapper.deleteByOrderDetailId(orderDetailId);
+		
+	}
 
 }

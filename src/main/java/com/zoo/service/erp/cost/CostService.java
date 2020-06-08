@@ -51,6 +51,7 @@ import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.erp.warehouse.Warehouse;
 import com.zoo.service.erp.JournalAccountService;
+import com.zoo.service.erp.outbound.OutboundService;
 
 import net.sf.json.JSONObject;
 
@@ -65,6 +66,8 @@ public class CostService {
 	SellMapper sellMapper;
 	@Autowired
 	OutboundMapper outboundMapper;
+	@Autowired
+	OutboundService outboundService;
 	@Autowired
 	StockMapper stockMapper;
 	@Autowired
@@ -172,8 +175,14 @@ public class CostService {
 			}else {
 				detail.setId(UUID.randomUUID().toString());
 				detail.setCostId(cost.getId());
-				detailMapper.addCostDetail(detail);
 				
+				
+				Stock stock = stockMapper.getStock(detail.getProductSku().getId(), outbound.getWarehouse().getId());
+				
+				detail.setPrice(stock.getCostPrice());
+				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
+				
+				detailMapper.addCostDetail(detail);
 				for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
 					cdga.setId(UUID.randomUUID().toString());
 					cdga.setCostDetailId(detail.getId());
@@ -188,7 +197,7 @@ public class CostService {
 					outboundDetail.setOrderDetailId(detail.getDetailId());
 					outboundDetail.setOutboundId(outbound.getId());
 					
-					Stock stock = stockMapper.getStock(detail.getProductSku().getId(), outbound.getWarehouse().getId());
+					
 					
 					if(stock!=null) {
 						StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), cdga.getGoodsAllocation().getId());
@@ -365,15 +374,48 @@ public class CostService {
 		costMapper.deleteCostById(id);
 	}
 	public void deleteCostFromSell(String id) {
-		List<CostDetail> details = detailMapper.getDetailByCostId(id);
-		for(CostDetail detail:details) {
-			//PurchaseDetail purchaseDetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
-			//BigDecimal notOutNumber = purchaseDetail.getNotOutNumber().add(detail.getNumber());
-					
-			//purchaseDetailMapper.updateNotOutNumber(detail.getDetailId(), notOutNumber);
+		Cost cost = costMapper.getCostById(id);
+		//List<CostDetail> details = detailMapper.getDetailByCostId(id);
+		for(CostDetail detail:cost.getDetails()) {
+			//更新未发货数量
+			SellDetail sellDetail = sellDetailMapper.getDetailById(detail.getDetailId());
+			sellDetailMapper.updateNotOutNumber(detail.getDetailId(), sellDetail.getNotOutNumber().add(detail.getNumber()));
+			
+			Stock stock = stockMapper.getStock(detail.getProductSku().getId(), cost.getWarehouse().getId());
+			//更新货位数量
+			for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
+				StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), cdga.getGoodsAllocation().getId());
+				stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(cdga.getNumber()));
+				stockDetailMapper.updateStockDetail(stockDetail);
+				costDetailGoodsAllocationMapper.deleteCostDetailGoodsAllocationById(cdga.getId());
+			}
+			//更新库存数量
+			stock.setUsableNumber(stock.getUsableNumber().add(detail.getNumber()));
+			stock.setTotalMoney(stock.getTotalMoney().add(detail.getTotalMoney()));
+			stock.setCostPrice(stock.getTotalMoney().divide(stock.getUsableNumber(),4,BigDecimal.ROUND_HALF_UP));
+			
+			stockMapper.updateStock(stock);
+			
+			//删除明细
+			journalAccountService.deleteByOrderDetailId(detail.getId());
+			
+			//删除出库单
+			outboundService.deleteByCostId(id);
+			
 			detailMapper.deleteDetailById(detail.getId());
 		}
 		costMapper.deleteCostById(id);
+		
+	}
+	public void deleteByForeignKey(String sellId) {
+		List<Cost> costs = costMapper.getCostByForeignKey(sellId);
+		for(Cost cost:costs) {
+			List<CostDetail> details = cost.getDetails();
+			for(CostDetail detail:details) {
+				detailMapper.deleteDetailById(detail.getId());
+			}
+			costMapper.deleteCostById(cost.getId());
+		}
 		
 	}
 }

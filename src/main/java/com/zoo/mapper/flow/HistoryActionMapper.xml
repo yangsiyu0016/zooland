@@ -27,7 +27,7 @@
 		act_hi_actinst aha LEFT JOIN act_hi_comment ahc on aha.TASK_ID_ = ahc.TASK_ID_
 
 	WHERE 
-		aha.PROC_INST_ID_=#{processInstanceId} AND aha.ACT_TYPE_!='parallelGateway' 
+		aha.PROC_INST_ID_=#{processInstanceId} AND aha.ACT_TYPE_!='parallelGateway' AND aha.ACT_TYPE_!='exclusiveGateway'
 		
 		
 	ORDER BY actType desc,stime desc

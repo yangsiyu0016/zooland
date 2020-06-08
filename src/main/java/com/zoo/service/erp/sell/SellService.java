@@ -28,11 +28,14 @@ import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.sell.SellDetailMapper;
 import com.zoo.mapper.erp.sell.SellMapper;
 import com.zoo.model.annex.Annex;
+import com.zoo.model.erp.cost.Cost;
 import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.sell.Sell;
 import com.zoo.model.erp.sell.SellDetail;
 import com.zoo.model.system.user.UserInfo;
+import com.zoo.service.annex.AnnexService;
+import com.zoo.service.erp.cost.CostService;
 import com.zoo.utils.OrderCodeHelper;
 
 import net.sf.json.JSONObject;
@@ -52,6 +55,10 @@ public class SellService {
 	ProcessEngine processEngine;
 	@Autowired
 	AnnexMapper annexMapper;
+	@Autowired
+	CostService costService;
+	@Autowired
+	AnnexService annexService;
 	public void addSell(Sell sell) {
 		String id = UUID.randomUUID().toString();
 		sell.setId(id);
@@ -97,7 +104,12 @@ public class SellService {
 	public void deleteSellById(String ids) {
 		String[] split = ids.split(",");
 		for(String sellId:split) {
+			//删除产品详情
 			detailMapper.deleteDetailBySellId(sellId);
+			//删除物流信息
+			costService.deleteByForeignKey(sellId);
+			//删除附件
+			annexService.delAnnexByForeignKey(sellId);
 		}
 		sellMapper.deleteSellById(split);
 		
@@ -182,10 +194,14 @@ public class SellService {
 		condition.put("etime", new Date());
 		sellMapper.updateSellStatus(condition);
 		//删除流程
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+		if(StringUtil.isNotEmpty(sell.getProcessInstanceId())) {
+			RuntimeService runtimeService = processEngine.getRuntimeService();
+			runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+			sellMapper.updateProcessInstanceId(id, null);
+		}
 		
-		sellMapper.updateProcessInstanceId(id, null);
+		
+		
 		
 		//设置是否被签收表示
 		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
@@ -193,6 +209,14 @@ public class SellService {
 		isClaimedCondition.put("isClaimed", "N");
 		
 		sellMapper.updateSellIsClaimed(isClaimedCondition);
+		//删除物流信息
+		List<Cost> costs = costService.getCostByForeignKey(id);
+		for(Cost cost:costs) {
+			costService.deleteCostFromSell(cost.getId());
+		}
+		//for(Annex annex:sell.getAnnexs()) {
+		//	annexService.delAnnexFile(annex);
+		//}
 	}
 	//流程取回
 	public void reset(String id) {

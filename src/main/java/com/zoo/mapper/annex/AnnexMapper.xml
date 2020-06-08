@@ -44,6 +44,9 @@
 	<delete id="delAnnexById">
 		delete from annex where id = #{id}
 	</delete>
+	<delete id="delAnnexByForeignKey">
+		delete from annex where foreignKey = #{foreignKey}
+	</delete>
 	<update id="updateAnnexForeignKeyById">
 		update annex set foreignKey = #{annex.foreignKey} where id = #{annex.id}
 	</update>

@@ -17,13 +17,17 @@
 			costId,
 			detailId,
 			skuId,
-			number
+			number,
+			price,
+			totalMoney
 		)values(
 			#{detail.id},
 			#{detail.costId},
 			#{detail.detailId},
 			#{detail.productSku.id},
-			#{detail.number}
+			#{detail.number},
+			#{detail.price},
+			#{detail.totalMoney}
 		)
 	</insert>
 	<delete id="deleteDetailById">

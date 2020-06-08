@@ -8,16 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
 import com.zoo.mapper.erp.outbound.OutboundMapper;
+import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.utils.Date2StringUtils;
 
 @Service
 @Transactional
-public class OutBoundService {
+public class OutboundService {
 	
 	@Autowired
 	private OutboundMapper outboundMapper;
-	
+	@Autowired
+	private OutboundDetailMapper outboundDetailMapper;
 	public List<Map<String, Object>> getOutboundsByPage(@Param("page") Integer page, @Param("size") Integer size) {
 		Integer start = (page -1) * size;
 		List<Map<String,Object>> list = outboundMapper.getOutboundsByPage(start, size);
@@ -29,5 +32,11 @@ public class OutBoundService {
 	
 	public Long getTotalCount() {
 		return outboundMapper.getTotalCount();
+	}
+	
+	public void deleteByCostId(String costId) {
+		Outbound outbound = outboundMapper.getOutboundByCostId(costId);
+		outboundDetailMapper.deleteByOutboundId(outbound.getId());
+		outboundMapper.deleteByCostId(costId);
 	}
 }

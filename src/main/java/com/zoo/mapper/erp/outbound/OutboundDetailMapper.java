@@ -8,4 +8,6 @@ import com.zoo.model.erp.outbound.OutboundDetail;
 @Component
 public interface OutboundDetailMapper {
 	int addDetail(@Param("detail")OutboundDetail detail);
+
+	int deleteByOutboundId(@Param("outboundId")String outboundId);
 }
