@@ -30,7 +30,7 @@
 		aha.PROC_INST_ID_=#{processInstanceId} AND aha.ACT_TYPE_!='parallelGateway' AND aha.ACT_TYPE_!='exclusiveGateway'
 		
 		
-	ORDER BY actType desc,stime desc
+	ORDER BY stime desc,actType desc
 </select>
     
 </mapper>

@@ -188,19 +188,20 @@ public class SellService {
 		// TODO Auto-generated method stub
 		
 		Sell sell = sellMapper.getSellById(id);
+		String status = sell.getStatus();
 		Map<String,Object> condition = new HashMap<String, Object>();
 		condition.put("id", id);
 		condition.put("status", SellStatus.DESTROY);
 		condition.put("etime", new Date());
 		sellMapper.updateSellStatus(condition);
 		//删除流程
-		if(StringUtil.isNotEmpty(sell.getProcessInstanceId())) {
+		if(StringUtil.isNotEmpty(sell.getProcessInstanceId())&&!status.equals(SellStatus.WTJ)&&!status.equals(SellStatus.FINISHED)) {
 			RuntimeService runtimeService = processEngine.getRuntimeService();
 			runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
-			sellMapper.updateProcessInstanceId(id, null);
+			
 		}
 		
-		
+		sellMapper.updateProcessInstanceId(id, null);
 		
 		
 		//设置是否被签收表示
@@ -212,7 +213,7 @@ public class SellService {
 		//删除物流信息
 		List<Cost> costs = costService.getCostByForeignKey(id);
 		for(Cost cost:costs) {
-			costService.deleteCostFromSell(cost.getId());
+			costService.deleteCostFromSell(cost.getId(),"DESTROY");
 		}
 		//for(Annex annex:sell.getAnnexs()) {
 		//	annexService.delAnnexFile(annex);
