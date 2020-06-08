@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.product.ProductDetailMapper;
 import com.zoo.mapper.erp.product.ProductMapper;
@@ -21,6 +22,7 @@ import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.ProductType;
 import com.zoo.model.erp.product.SpecParam;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 @Service
@@ -49,6 +51,7 @@ public class ProductSkuService {
 		// TODO Auto-generated method stub
 		return skuMapper.getCount(key, LoginInterceptor.getLoginUser().getCompanyId());
 	}
+	
 	private List<ProductSku> buildGenericSpec(List<ProductSku> skus){
 		List<String> built = new ArrayList<String>();
 		for(ProductSku sku:skus) {
@@ -69,6 +72,39 @@ public class ProductSkuService {
 		}
 		return skus;
 	}
+	
+	public List<ProductSku> getProductByProductId(String productId) {
+		List<ProductSku> list = skuMapper.getSkuByProductId(productId);
+		
+		ProductSku sku = list.get(0);
+		String spec = sku.getProduct().getProductDetail().getSpecialSpec();
+		JSONObject object = JSONObject.fromObject(spec);
+		Set<String> keySet = object.keySet();
+		Map<String,Object> map = new HashMap<String, Object>();
+		for(String key: keySet) {
+			SpecParam param = paramMapper.getParamById(key);
+			map.put(param.getName(), object.getString(key));
+		}
+		JSONObject fromObject = JSONObject.fromObject(map);
+		String string = fromObject.toString();
+		sku.getProduct().getProductDetail().setSpecialSpec(string);
+		
+		for(ProductSku sku1: list) {
+			String ownSpec = sku1.getOwnSpec();
+			Map<String,String> map1 = new HashMap<String,String>();
+			JSONObject obj  = JSONObject.fromObject(sku1.getOwnSpec());
+			Set<String> keyset = obj.keySet();
+			for(String key:keyset) {
+				SpecParam param = paramMapper.getParamById(key);
+				map1.put(param.getName(), obj.getString(key));
+			}
+			JSONObject fromObject2 = JSONObject.fromObject(map1);
+			String string2 = fromObject2.toString();
+			sku1.setOwnSpec(string2);
+		}
+		return list;
+	}
+	
 	private List<ProductSku>  buildSpecAndTypeName(List<ProductSku> skus) {
 		for(ProductSku sku:skus) {
 			//System.out.println(sku.getId());
@@ -99,4 +135,5 @@ public class ProductSkuService {
 		}
 		return name;
 	}
+	
 }
