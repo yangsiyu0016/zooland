@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.aftersales.returnorder.ReturnOrderMapper">
+	<resultMap type="com.zoo.model.erp.aftersales.returnorder.ReturnOrder" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="initDate" property="initDate"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="status" property="status"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="isClaimed" property="isClaimed"/>
+		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
+		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
+		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.returnorder.ReturnOrderDetailMapper.getDetailByReturnOrderId"></association>
+	</resultMap>
+	
+	<select id="getReturnOrderByPage" resultMap="BaseResultMap">
+		select * from return_order where companyId = #{companyId}
+		<if test="start != null and size != null">
+			limit #{start} , #{size}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="long">
+		select count(*) from return_order where companyId=#{companyId}
+	</select>
+	
+	<select id="getReturnOrderById" resultMap="BaseResultMap">
+	
+		select * from return_order where id=#{id}
+	</select>
+	
+	<insert id="addReturnOrder">
+		insert into return_order (
+			id,
+			code,
+			initDate,
+			processInstanceId,
+			status,
+			ctime,	
+			etime,
+			supplierId,
+			customerId,
+			cuserId,
+			companyId,
+			processInstanceId,
+			isClaimed
+		) values(
+			#{returnOrder.id},
+			#{returnOrder.code},
+			#{returnOrder.initDate},
+			#{returnOrder.processInstanceId},
+			#{returnOrder.status},
+			#{returnOrder.ctime},
+			#{returnOrder.etime},
+			#{returnOrder.supplier.id},
+			#{returnOrder.customer.id},
+			#{returnOrder.cuser.id},
+			#{returnOrder.companyId},
+			#{returnOrder.processInstanceId},
+			#{returnOrder.isClaimed}
+		)
+	</insert>
+	
+	<update id="updateReturnOrder">
+		update return_order set 
+			initDate=#{returnOrder.initDate},
+			supplierId=#{returnOrder.supplierId},
+			customerId=#{returnOrder.customerId} 
+		where id = #{returnOrder.id}
+	</update>
+	
+	<update id="updateProcessInstanceId">
+		update return_order set processInstanceId=#{processInstanceId} where id=#{id}
+	</update>
+	
+	<update id="updateReturnOrderStatus">
+		UPDATE 
+			return_order 
+		SET 
+			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+				,isClaimed = #{condition.isClaimed} 
+			</if>
+			<if test="condition.etime!=null">
+				,etime = #{condition.etime} 
+			</if> 
+			 
+		WHERE id = #{condition.id}
+	</update>
+	
+	<update id="updateReturnOrderIsClaimed">
+		update return_order set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
+	</update>
+	
+	<delete id="deleteReturnOrderById">
+		delete from return_order where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+	
+</mapper>

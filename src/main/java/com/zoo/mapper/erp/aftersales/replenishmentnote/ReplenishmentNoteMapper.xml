@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.aftersales.replenishmentnote.ReplenishmentNoteMapper">
+
+	<resultMap type="com.zoo.model.erp.aftersales.changeorder.ChangeOrder" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="initDate" property="initDate"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="status" property="status"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="isClaimed" property="isClaimed"/>
+		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
+		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
+		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.replenishmentnote.ReplenishmentNoteDetailMapper.getDetailByReplenishmentNoteId"></association>
+	</resultMap>
+	
+	<select id="getReplenishmentNoteByPage" resultMap="BaseResultMap">
+		select * from replenishment_note where companyId = #{companyId}
+		<if test="start != null and size != null">
+			limit #{start} , #{size}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="long">
+		select count(*) from replenishment_note where companyId=#{companyId}
+	</select>
+	
+	<select id="getReplenishmentNoteById" resultMap="BaseResultMap">
+	
+		select * from replenishment_note where id=#{id}
+	</select>
+	
+	<insert id="addReplenishmentNote">
+		insert into replenishment_note (
+			id,
+			code,
+			initDate,
+			processInstanceId,
+			status,
+			ctime,
+			etime,
+			supplierId,
+			customerId,
+			cuserId,
+			companyId,
+			processInstanceId,
+			isClaimed
+		) values(
+			#{replenishmentNote.id},
+			#{replenishmentNote.code},
+			#{replenishmentNote.initDate},
+			#{replenishmentNote.processInstanceId},
+			#{replenishmentNote.status},
+			#{replenishmentNote.ctime},
+			#{replenishmentNote.etime},
+			#{replenishmentNote.supplier.id},
+			#{replenishmentNote.customer.id},
+			#{replenishmentNote.cuser.id},
+			#{replenishmentNote.companyId},
+			#{replenishmentNote.processInstanceId},
+			#{replenishmentNote.isClaimed}
+		)
+	</insert>
+	
+	<update id="updateReplenishmentNote">
+		update replenishment_note set 
+			initDate=#{replenishmentNote.initDate},
+			supplierId=#{replenishmentNote.supplierId},
+			customerId=#{replenishmentNote.customerId} 
+		where id = #{replenishmentNote.id}
+	</update>
+	
+	<update id="updateProcessInstanceId">
+		update replenishment_note set processInstanceId=#{processInstanceId} where id=#{id}
+	</update>
+	
+	<update id="updateReplenishmentNoteStatus">
+		UPDATE 
+			replenishment_note 
+		SET 
+			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+				,isClaimed = #{condition.isClaimed} 
+			</if>
+			<if test="condition.etime!=null">
+				,etime = #{condition.etime} 
+			</if> 
+			 
+		WHERE id = #{condition.id}
+	</update>
+	
+	<update id="updateReplenishmentNoteIsClaimed">
+		update replenishment_note set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
+	</update>
+	
+	<delete id="deleteReplenishmentNoteById">
+		delete from replenishment_note where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+	
+</mapper>
