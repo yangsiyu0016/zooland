@@ -32,6 +32,7 @@ import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.system.user.UserInfo;
+import com.zoo.service.annex.AnnexService;
 import com.zoo.utils.OrderCodeHelper;
 
 import net.sf.json.JSONObject;
@@ -53,7 +54,8 @@ public class PurchaseService {
 	SpecParamMapper paramMapper;
 	@Autowired
 	AnnexMapper annexMapper;
-	
+	@Autowired
+	AnnexService annexService;
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
@@ -221,6 +223,20 @@ public class PurchaseService {
 		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(), "待定");
 		
 		purchaseMapper.updateProcessInstanceId(id, null);
+	}
+
+	public void deletePurchaseById(String ids) {
+		String[] split = ids.split(",");
+		for(String purchaseId:split) {
+			//删除产品详情
+			detailMapper.deleteDetailByPurchaseId(purchaseId);
+			//删除物流信息
+			//costService.deleteByForeignKey(sellId);
+			//删除附件
+			annexService.delAnnexByForeignKey(purchaseId);
+		}
+		purchaseMapper.deletePurchaseById(split);
+		
 	}
 
 }

@@ -373,8 +373,15 @@ public class CostService {
 		}
 		costMapper.deleteCostById(id);
 	}
-	public void deleteCostFromSell(String id) {
+	/**
+	 * 
+	 * @param id
+	 * @param type 删除或作废
+	 */
+	public void deleteCostFromSell(String id,String type) {
+		
 		Cost cost = costMapper.getCostById(id);
+		Sell sell =sellMapper.getSellById(cost.getForeignKey());
 		//List<CostDetail> details = detailMapper.getDetailByCostId(id);
 		for(CostDetail detail:cost.getDetails()) {
 			//更新未发货数量
@@ -397,12 +404,30 @@ public class CostService {
 			stockMapper.updateStock(stock);
 			
 			//删除明细
-			journalAccountService.deleteByOrderDetailId(detail.getId());
+			//journalAccountService.deleteByOrderDetailId(detail.getId());
 			
 			//删除出库单
 			outboundService.deleteByCostId(id);
 			
 			detailMapper.deleteDetailById(detail.getId());
+			
+			JournalAccount journalAccount = new JournalAccount();
+			journalAccount.setId(UUID.randomUUID().toString());
+			if(type.equals("DESTROY")) {
+				journalAccount.setType(JournalAccountType.SELLDESTROY);
+			}else if(type.equals("DELETE")) {
+				journalAccount.setType(JournalAccountType.SELLDETAILDELETE);
+			}
+			journalAccount.setOrderDetailId(detail.getId());
+			journalAccount.setOrderCode(sell.getCode());
+			journalAccount.setStock(stock);
+			journalAccount.setRkNumber(detail.getNumber());
+			journalAccount.setRkPrice(detail.getPrice());
+			journalAccount.setRkTotalMoney(detail.getTotalMoney());
+			journalAccount.setCtime(new Date());
+			journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+			journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			journalAccountService.addJournalAccount(journalAccount);
 		}
 		costMapper.deleteCostById(id);
 		

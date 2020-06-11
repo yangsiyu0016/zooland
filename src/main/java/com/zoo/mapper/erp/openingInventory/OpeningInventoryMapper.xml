@@ -22,9 +22,7 @@
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
-		<if test="cuserId!=null">
-			and cuserId = #{cuserId}
-		</if>
+		
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>

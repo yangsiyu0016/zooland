@@ -55,7 +55,7 @@ public class CostController {
 	@DeleteMapping("deleteCostFromSell")
 	public RespBean deleteCostFromSell(@RequestParam("id")String id) {
 		try {
-			costService.deleteCostFromSell(id);
+			costService.deleteCostFromSell(id,"DELETE");
 			return new RespBean("200","删除成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());

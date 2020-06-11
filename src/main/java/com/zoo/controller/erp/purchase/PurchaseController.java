@@ -52,6 +52,15 @@ public class PurchaseController {
 			return new RespBean("500",e.getMessage());
 		}
 	}
+	@RequestMapping(value = "{ids}",method=RequestMethod.DELETE)
+	public RespBean deletePurchaseById(@PathVariable String ids) {
+		try {
+			purchaseService.deletePurchaseById(ids);
+			return new RespBean("200","删除成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
 	@PostMapping("startFlow")
 	public RespBean startFlow(@RequestParam("id")String id) {
 		

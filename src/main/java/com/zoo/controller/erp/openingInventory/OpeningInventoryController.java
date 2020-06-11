@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.erp.openingInventory.OpeningInventory;
 import com.zoo.service.erp.openingInventory.OpeningInventoryService;
@@ -70,8 +70,14 @@ public class OpeningInventoryController {
 	}
 	//作废功能
 	@PostMapping("destroy")
-	public void destroy(@RequestParam("id")String id) {
-		//功能未确定，暂时不识现
+	public RespBean destroy(@RequestParam("id")String id) {
+		try {
+			oiService.destroy(id);
+			return new RespBean("200", "作废成功");
+		} catch (ZooException e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getExceptionEnum().message());
+		}
 	}
 	//取回
 	@GetMapping("reset")
