@@ -32,4 +32,10 @@ public class Purchase {
 	private String accountContext;
 	private List<Annex> annexs;
 	private String isClaimed;
+	
+	
+	private String paymentType;//付款方式
+	private String freightType;//运费类型 YES:包邮 NO：不包邮
+	
+	private String description;//备注
 }

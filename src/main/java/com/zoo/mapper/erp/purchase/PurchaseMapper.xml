@@ -42,7 +42,10 @@
 			status,
 			companyId,
 			accountId,
-			accountContext
+			accountContext,
+			paymentType,
+			freightType,
+			description
 		)values(
 			#{purchase.id},
 			#{purchase.initDate},
@@ -55,7 +58,10 @@
 			#{purchase.status},
 			#{purchase.companyId},
 			#{purchase.supplierAccount.id},
-			#{purchase.accountContext}
+			#{purchase.accountContext},
+			#{purchase.paymentType},
+			#{purchase.freightType},
+			#{purchase.description}
 		)
 	</insert>
 	<update id="updatePurchase">
@@ -63,7 +69,10 @@
 			initDate=#{purchase.initDate},
 			supplierId=#{purchase.supplier.id},
 			accountId=#{purchase.supplierAccount.id},
-			accountContext=#{purchase.accountContext}
+			accountContext=#{purchase.accountContext},
+			paymentType=#{purchase.paymentType},
+			freightType=#{purchase.freightType},
+			description=#{purchase.description}
 		where id=#{purchase.id}
 	</update>
 	<update id="updateProcessInstanceId">
@@ -87,7 +96,7 @@
 		update purchase set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
 	</update>
 	<delete id="deletePurchaseById">
-		delete from sell where id in 
+		delete from purchase where id in 
 		<foreach collection="ids" separator="," open="(" close=")" item="id">
             #{id}
         </foreach>
