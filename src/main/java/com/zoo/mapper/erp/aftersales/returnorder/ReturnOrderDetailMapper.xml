@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.aftersales.returnorder.ReturnOrderDetailMapper">
+	<resultMap type="com.zoo.model.erp.aftersales.returnorder.ReturnOrderDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="returnOrderId" property="returnOrderId"/>
+		<result column="type" property="type"/>
+		<result column="number" property="number"/>
+		<result column="costPrice" property="costPrice"/>
+		<result column="totalMoney" property="totalMoney"/>
+		<result column="ctime" property="ctime"/>
+		<result column="reason" property="reason"/>
+		<result column="problemDescription" property="problemDescription"/>
+		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+	</resultMap>
+	
+	<select id="getDetailByReturnOrderId"  resultMap="BaseResultMap">
+		select * from return_order_datial where returnOrderId= #{returnOrderId}
+	</select>
+	
+	<select id="getDetailById"  resultMap="BaseResultMap">
+		select * from return_order_datial where id= #{id}
+	</select>
+	
+	<insert id="addDetail">
+		insert into return_order_datial (
+			id,
+			returnOrderId,
+			skuId,
+			type,
+			number,
+			costPrice,
+			totalMoney,
+			ctime,
+			reason,
+			problemDescription
+		)values(
+			#{detail.id},
+			#{detail.returnOrderId},
+			#{detail.productSku.id},
+			#{detail.type},
+			#{detail.number},
+			#{detail.costPrice},
+			#{detail.totalMoney},
+			#{detail.ctime},
+			#{detail.reason},
+			#{detail.problemDescription}
+		)
+	</insert>
+	
+	<update id="updateDetail">
+		update return_order_datial set	
+			skuId=#{detail.productSku.id},
+			number=#{detail.number},
+			costPrice=#{detail.costPrice},
+			totalMoney=#{detail.totalMoney},
+			ctime=#{detail.ctime},
+			reason=#{detail.reason},
+			problemDescription=#{detail.problemDescription} 
+		where id=#{detail.id}
+	</update>
+	
+	<update id="updateNumberById">
+		update return_order_datial set 
+			number=#{number},
+			costPrice=#{costPrice},
+			totalMoney=#{totalMoney} 
+		where id=#{id}
+	</update>
+	
+	<delete id="deleteDetailByReturnOrderId">
+		delete from return_order_datial where returnOrderId=#{returnOrderId}
+	</delete>
+	
+	<delete id="deleteDetailById">
+		delete from return_order_datial where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+	
+</mapper>

@@ -12,4 +12,6 @@ public interface SystemParameterDirectoryMapper {
 	List<SystemParameterDirectory> getTreeData(@Param("companyId")String companyId);
 	List<SystemParameterDirectory> getDirectoryList(@Param("companyId")String companyId);
 	int addDirectory(@Param("directory")SystemParameterDirectory directory);
+	int update(@Param("directory") SystemParameterDirectory directory);
+	int delete(@Param("id") String id);
 }

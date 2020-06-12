@@ -11,4 +11,6 @@ import com.zoo.model.system.parameter.SystemParameter;
 public interface SystemParameterMapper {
 	List<SystemParameter> getParameterList(@Param("companyId")String companyId);
 	int addParameter(@Param("parameter")SystemParameter parameter);
+	void update(@Param("parameter") SystemParameter parameter);
+	int delete(@Param("id") String id);
 }
