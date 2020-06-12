@@ -28,4 +28,15 @@ public class SystemParameterService {
 		parameter.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		parameterMapper.addParameter(parameter);
 	}
+
+	public void update(SystemParameter parameter) {
+		// TODO Auto-generated method stub
+		parameterMapper.update(parameter);
+	}
+
+	public void delete(String id) {
+		// TODO Auto-generated method stub
+		parameterMapper.delete(id);
+		
+	}
 }

@@ -47,4 +47,13 @@
 				#{directory.companyId}
 			)
 	</insert>
+	<update id="update">
+		update system_parameter_directory set 
+			name=#{directory.name},
+			orderNumber=#{directory.orderNumber},
+		where id=#{parameter.id}
+	</update>
+	<delete id="delete">
+		delete from system_parameter_directory where id=#{id}
+	</delete>
 </mapper>

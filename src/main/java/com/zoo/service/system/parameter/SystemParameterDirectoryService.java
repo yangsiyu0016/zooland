@@ -33,4 +33,11 @@ public class SystemParameterDirectoryService {
 		directory.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		directoryMapper.addDirectory(directory);
 	}
+	public void update(SystemParameterDirectory directory) {
+		// TODO Auto-generated method stub
+		directoryMapper.update(directory);
+	}
+	public void delete(String id) {
+		directoryMapper.delete(id);
+	}
 }

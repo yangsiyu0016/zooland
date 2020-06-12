@@ -36,4 +36,16 @@
 			)
 		
 	</insert>
+	<update id="update">
+		update system_parameter set 
+			name=#{parameter.name},
+			code=#{parameter.code},
+			description=#{parameter.description},
+			parameterDirectoryId=#{parameter.parameterDirectory.id} 
+		where id=#{parameter.id}
+	</update>
+	
+	<delete id="delete">
+		delete from system_parameter where id=#{id}
+	</delete>
 </mapper>
