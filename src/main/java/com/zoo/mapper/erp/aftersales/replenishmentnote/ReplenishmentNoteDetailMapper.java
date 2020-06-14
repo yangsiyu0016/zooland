@@ -34,14 +34,14 @@ public interface ReplenishmentNoteDetailMapper {
 	 * 添加数据
 	 * @param datail
 	 */
-	void addDetail(@Param("detail") ReplenishmentNoteDetail datail);
+	void addDetail(@Param("detail") ReplenishmentNoteDetail detail);
 	
 	/**
 	 * 修改数据
 	 * @param datail
 	 * @return
 	 */
-	int updateDetail(@Param("detail") ReplenishmentNoteDetail datail);
+	int updateDetail(@Param("detail") ReplenishmentNoteDetail detail);
 	
 	/**
 	 * 根据换货单id删除数据
