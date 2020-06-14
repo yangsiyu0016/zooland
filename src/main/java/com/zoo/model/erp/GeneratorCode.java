@@ -8,6 +8,8 @@ public class GeneratorCode {
 	private String prefix;
 	private int length;
 	private int number;
+	private String dateStr;//日期参数值
+	private String dateValue;//日期值
 	private String companyId;
 	
 }

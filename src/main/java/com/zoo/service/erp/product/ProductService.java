@@ -52,7 +52,7 @@ public class ProductService {
 	@Autowired
 	GeneratorCodeMapper generatorCodeMapper;
 	@Autowired
-	SystemParameterService systemParamterService;
+	SystemParameterService systemParameterService;
 	
 	@Value("${sourceIp}")
 	private String sourceIp;
@@ -112,7 +112,7 @@ public class ProductService {
 		product.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		product.setCtime(new Date());
 		
-		String parameterValue = systemParamterService.getValueByCode("c00001");
+		String parameterValue = systemParameterService.getValueByCode("c00001");
 		String code = CodeGenerator.getInstance().generator(parameterValue);
 		product.setCode(code);
 		
