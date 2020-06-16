@@ -13,11 +13,13 @@
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
 		<result column="isClaimed" property="isClaimed"/>
+		<result column="reason" property="reason"/>
+		<result column="problemDescription" property="problemDescription"/>
 		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
-		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.changeorder.ChangeOrderDetailMapper.getDetailByChangeOrderId"></association>
-		
+		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.aftersales.changeorder.ChangeOrderDetailMapper.getDetailByChangeOrderId"></collection>
 	</resultMap>
 	
 	<select id="getChangeOrderByPage" resultMap="BaseResultMap">
@@ -49,8 +51,10 @@
 			customerId,
 			cuserId,
 			companyId,
-			processInstanceId,
-			isClaimed
+			isClaimed,
+			reason,
+			problemDescription,
+			expressId
 		) values(
 			#{changeOrder.id},
 			#{changeOrder.code},
@@ -63,8 +67,10 @@
 			#{changeOrder.customer.id},
 			#{changeOrder.cuserId},
 			#{changeOrder.companyId},
-			#{changeOrder.processInstanceId},
-			#{changeOrder.isClaimed}
+			#{changeOrder.isClaimed},
+			#{changeOrder.reason},
+			#{changeOrder.problemDescription},
+			#{changeOrder.express.id}
 		)
 	</insert>
 	
@@ -72,7 +78,10 @@
 		update change_order set 
 			initDate=#{changeOrder.initDate},
 			supplierId=#{changeOrder.supplier.id},
-			customerId=#{changeOrder.customer.id} 
+			customerId=#{changeOrder.customer.id},
+			reason=#{changeOrder.reason},
+			problemDescription=#{changeOrder.problemDescription},
+			expressId=#{changeOrder.express.id}
 		where id = #{changeOrder.id}
 	</update>
 	

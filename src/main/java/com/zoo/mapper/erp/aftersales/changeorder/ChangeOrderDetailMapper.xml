@@ -12,7 +12,7 @@
 		<result column="reason" property="reason"/>
 		<result column="problemDescription" property="problemDescription"/>
 		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
-		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
+		
 	</resultMap>
 	
 	<select id="getDetailByChangeOrderId"  resultMap="BaseResultMap">
@@ -30,20 +30,14 @@
 			skuId,
 			type,
 			number,
-			ctime,
-			reason,
-			problemDescription,
-			expressId
+			ctime
 		)values(
 			#{detail.id},
 			#{detail.changeOrderId},
 			#{detail.productSku.id},
 			#{detail.type},
 			#{detail.number},
-			#{detail.ctime},
-			#{detail.reason},
-			#{detail.problemDescription},
-			#{detail.express.id}
+			#{detail.ctime}
 		)
 	</insert>
 	
@@ -51,10 +45,7 @@
 		update change_order_detail set	
 			skuId=#{detail.productSku.id},
 			number=#{detail.number},
-			ctime=#{detail.ctime},
-			reason=#{detail.reason},
-			problemDescription=#{detail.problemDescription},
-			expressId=#{detail.express.id} 
+			ctime=#{detail.ctime} 
 		where id=#{detail.id}
 	</update>
 	

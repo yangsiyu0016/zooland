@@ -34,10 +34,7 @@
 			number,
 			costPrice,
 			totalMoney,
-			ctime,
-			reason,
-			problemDescription,
-			expressId
+			ctime
 		)values(
 			#{detail.id},
 			#{detail.returnOrderId},
@@ -46,10 +43,7 @@
 			#{detail.number},
 			#{detail.costPrice},
 			#{detail.totalMoney},
-			#{detail.ctime},
-			#{detail.reason},
-			#{detail.problemDescription},
-			#{detail.express.id}
+			#{detail.ctime}
 		)
 	</insert>
 	
@@ -59,10 +53,7 @@
 			number=#{detail.number},
 			costPrice=#{detail.costPrice},
 			totalMoney=#{detail.totalMoney},
-			ctime=#{detail.ctime},
-			reason=#{detail.reason},
-			problemDescription=#{detail.problemDescription},
-			expressId=#{detail.express.id}  
+			ctime=#{detail.ctime} 
 		where id=#{detail.id}
 	</update>
 	

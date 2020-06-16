@@ -85,7 +85,7 @@ public class ReplenishmentNoteDetailService {
 		List<String> built = new ArrayList<String>();
 		
 		for(ReplenishmentNoteDetail detail: list) {
-			ProductSku sku = detail.getSku();
+			ProductSku sku = detail.getProductSku();
 			
 			if(!built.contains(sku.getProduct().getId())) {
 				//通用规格参数
@@ -110,7 +110,7 @@ public class ReplenishmentNoteDetailService {
 				}
 				sku.setOwnSpec(map.toString());
 				
-				detail.setSku(sku);
+				detail.setProductSku(sku);
 				built.add(sku.getProduct().getId());
 			}
 		}

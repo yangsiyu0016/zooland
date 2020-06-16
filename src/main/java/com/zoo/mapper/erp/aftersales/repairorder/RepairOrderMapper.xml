@@ -12,10 +12,12 @@
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
 		<result column="isClaimed" property="isClaimed"/>
+		<result column="reason" property="reason"/>
 		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
-		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.repairorder.RepairOrderMapper.getDetailByRepairOrderId"></association>
+		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.aftersales.repairorder.RepairOrderDetailMapper.getDetailByRepairOrderId"></collection>
 	</resultMap>
 	
 	<select id="getRepairOrderByPage" resultMap="BaseResultMap">
@@ -47,8 +49,9 @@
 			customerId,
 			cuserId,
 			companyId,
-			processInstanceId,
-			isClaimed
+			isClaimed,
+			reason,
+			expressId
 		) values(
 			#{repairOrder.id},
 			#{repairOrder.code},
@@ -59,10 +62,11 @@
 			#{repairOrder.etime},
 			#{repairOrder.supplier.id},
 			#{repairOrder.customer.id},
-			#{repairOrder.cuser.id},
+			#{repairOrder.cuserId},
 			#{repairOrder.companyId},
-			#{repairOrder.processInstanceId},
-			#{repairOrder.isClaimed}
+			#{repairOrder.isClaimed},
+			#{repairOrder.reason},
+			#{repairOrder.express.id}
 		)
 	</insert>
 	
@@ -70,7 +74,9 @@
 		update repair_order set 
 			initDate=#{repairOrder.initDate},
 			supplierId=#{repairOrder.supplier.id},
-			customerId=#{repairOrder.customer.id} 
+			customerId=#{repairOrder.customer.id},
+			reason=#{repairOrder.reason},
+			expressId=#{repairOrder.express.id}   
 		where id = #{repairOrder.id}
 	</update>
 	

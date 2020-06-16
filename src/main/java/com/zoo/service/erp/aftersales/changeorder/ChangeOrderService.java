@@ -119,7 +119,7 @@ public class ChangeOrderService {
 		ChangeOrder order = changeOrderMapper.getChangeOrderById(id);
 		List<String> built = new ArrayList<String>();
 		for(ChangeOrderDetail detail: order.getDetails()) {
-			ProductSku sku = detail.getSku();
+			ProductSku sku = detail.getProductSku();
 			if(!built.contains(sku.getProduct().getId())) {
 				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
 				Map<String,String> map = new HashMap<String, String>();
@@ -141,7 +141,7 @@ public class ChangeOrderService {
 				}
 				sku.setOwnSpec(ownSpec);
 				
-				detail.setSku(sku);
+				detail.setProductSku(sku);
 				built.add(sku.getProduct().getId());
 			}
 		}

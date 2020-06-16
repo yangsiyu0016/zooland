@@ -8,11 +8,14 @@
 		<result column="repairOrderId" property="repairOrderId"/>
 		<result column="type" property="type"/>
 		<result column="number" property="number"/>
+		<result column="problemDescription" property="problemDescription"/>
+		<result column="repairResult" property="repairResult"/>
+		<result column="materialCost" property="materialCost"/>
+		<result column="manHourFee" property="manHourFee"/>
 		<result column="ctime" property="ctime"/>
-		<result column="reason" property="reason"/>
 		<result column="problemDescription" property="problemDescription"/>
 		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
-		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
+		
 	</resultMap>
 	
 	<select id="getDetailByRepairOrderId"  resultMap="BaseResultMap">
@@ -31,9 +34,11 @@
 			type,
 			number,
 			ctime,
-			reason,
 			problemDescription,
-			express
+			repairResult,
+			materialCost,
+			manHourFee,
+			totalMoney
 		)values(
 			#{detail.id},
 			#{detail.repairOrderId},
@@ -41,9 +46,11 @@
 			#{detail.type},
 			#{detail.number},
 			#{detail.ctime},
-			#{detail.reason},
 			#{detail.problemDescription},
-			#{detail.express.id}
+			#{detail.repairResult},
+			#{detail.materialCost},
+			#{detail.manHourFee},
+			#{detail.totalMoney}
 		)
 	</insert>
 	
@@ -52,9 +59,11 @@
 			skuId=#{detail.productSku.id},
 			number=#{detail.number},
 			ctime=#{detail.ctime},
-			reason=#{detail.reason},
 			problemDescription=#{detail.problemDescription},
-			expressId=#{detail.express.id}  
+			repairResult=#{detail.repairResult},
+			materialCost=#{detail.materialCost},
+			manHourFee=#{detail.manHourFee},
+			totalMoney=#{detail.totalMoney}
 		where id=#{detail.id}
 	</update>
 	<update id="updateNumberById">

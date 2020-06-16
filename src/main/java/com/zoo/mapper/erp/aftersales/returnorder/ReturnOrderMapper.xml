@@ -47,8 +47,10 @@
 			customerId,
 			cuserId,
 			companyId,
-			processInstanceId,
-			isClaimed
+			isClaimed,
+			reason,
+			problemDescription,
+			expressId
 		) values(
 			#{returnOrder.id},
 			#{returnOrder.code},
@@ -61,8 +63,10 @@
 			#{returnOrder.customer.id},
 			#{returnOrder.cuser.id},
 			#{returnOrder.companyId},
-			#{returnOrder.processInstanceId},
-			#{returnOrder.isClaimed}
+			#{returnOrder.isClaimed},
+			#{returnOrder.reason},
+			#{returnOrder.problemDescription},
+			#{returnOrder.express.id}
 		)
 	</insert>
 	
@@ -70,7 +74,10 @@
 		update return_order set 
 			initDate=#{returnOrder.initDate},
 			supplierId=#{returnOrder.supplierId},
-			customerId=#{returnOrder.customerId} 
+			customerId=#{returnOrder.customerId},
+			reason=#{returnOrder.reason},
+			problemDescription=#{returnOrder.problemDescription},
+			expressId=#{returnOrder.express.id}  
 		where id = #{returnOrder.id}
 	</update>
 	

@@ -13,9 +13,21 @@
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
 		<result column="isClaimed" property="isClaimed"/>
+		<result column="freightType" property="freightType"/>
+		<result column="freightPayType" property="freightPayType"/>
+		<result column="freight" property="freight"/>
+		<result column="paymentMode" property="paymentMode"/>
+		<result column="paytime" property="paytime"/>
+		<result column="paymentType" property="paymentType"/>
+		<result column="totalMoney" property="totalMoney"/>
+		<result column="payable" property="payable"/>
+		<result column="actualPayment" property="actualPayment"/>
 		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
+		<association column="purchaseId" property="purchase" select="com.zoo.mapper.erp.purchase.PurchaseMapper.getPurchaseById"></association>
+		<association column="sellId" property="sell" select="com.zoo.mapper.erp.sell.SellMapper.getSellById"></association>
+		<association column="receivingId" property="receiving" select="com.zoo.mapper.crm.customer.ReceivingMapper.getReceivingById"></association>
 		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.replenishmentnote.ReplenishmentNoteDetailMapper.getDetailByReplenishmentNoteId"></association>
 	</resultMap>
 	
@@ -48,8 +60,22 @@
 			customerId,
 			cuserId,
 			companyId,
-			processInstanceId,
-			isClaimed
+			isClaimed,
+			reason,
+			problemDescription,
+			expressId,
+			purchaseId,
+			sellId,
+			receivingId,
+			freightType,
+			freightPayType,
+			freight,
+			paymentMode,
+			paytime,
+			paymentType,
+			totalMoney,
+			payable,
+			actualPayment
 		) values(
 			#{replenishmentNote.id},
 			#{replenishmentNote.code},
@@ -62,8 +88,22 @@
 			#{replenishmentNote.customer.id},
 			#{replenishmentNote.cuser.id},
 			#{replenishmentNote.companyId},
-			#{replenishmentNote.processInstanceId},
-			#{replenishmentNote.isClaimed}
+			#{replenishmentNote.isClaimed},
+			#{replenishmentNote.reason},
+			#{replenishmentNote.problemDescription},
+			#{replenishmentNote.express.id},
+			#{replenishmentNote.purchase.id},
+			#{replenishmentNote.sell.id},
+			#{replenishmentNote.receiving.id},
+			#{replenishmentNote.freightType},
+			#{replenishmentNote.freightPayType},
+			#{replenishmentNote.freight},
+			#{replenishmentNote.paymentMode},
+			#{replenishmentNote.paytime},
+			#{replenishmentNote.paymentType},
+			#{replenishmentNote.totalMoney},
+			#{replenishmentNote.payable},
+			#{replenishmentNote.actualPayment}
 		)
 	</insert>
 	
@@ -71,7 +111,20 @@
 		update replenishment_note set 
 			initDate=#{replenishmentNote.initDate},
 			supplierId=#{replenishmentNote.supplierId},
-			customerId=#{replenishmentNote.customerId} 
+			customerId=#{replenishmentNote.customerId},
+			reason=#{replenishmentNote.reason},
+			problemDescription=#{detreplenishmentNoteail.problemDescription},
+			expressId=#{replenishmentNote.express.id},
+			receivingId=#{replenishmentNote.receiving.id},
+			freightType=#{replenishmentNote.freightType},
+			freightPayType=#{replenishmentNote.freightPayType},
+			freight=#{replenishmentNote.freight},
+			paymentMode=#{replenishmentNote.paymentMode},
+			paytime=#{replenishmentNote.paytime},
+			paymentType=#{replenishmentNote.paymentType},
+			totalMoney=#{replenishmentNote.totalMoney},
+			payable=#{replenishmentNote.payable},
+			actualPayment=#{replenishmentNote.actualPayment}   
 		where id = #{replenishmentNote.id}
 	</update>
 	

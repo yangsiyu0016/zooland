@@ -58,9 +58,9 @@ public class ProductController {
 		}
     }
     @PostMapping("update")
-    public RespBean updateProduct(@RequestBody Product product) {
+    public RespBean updateProduct(@RequestParam("product")String product, @RequestParam(value="file",required = false) MultipartFile file) {
     	try {
-    		productService.updateProduct(product);
+    		productService.updateProduct(product, file);
 			return new RespBean("200","更新成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());

@@ -142,7 +142,34 @@ public class ProductService {
 		productMapper.addProduct(product);
 		
 	}
-	public void updateProduct(Product product) {
+	public void updateProduct(String productString, MultipartFile file) throws Exception {
+		
+		JSONObject jsonObject = JSONObject.fromObject(productString);
+		Product product = (Product) JSONObject.toBean(jsonObject, Product.class);
+		//Product product2 = productMapper.getProductById(product.getId());
+		if(file!=null) {
+			String fileName = file.getOriginalFilename();
+			//获取文件的后缀名
+			String suffix = fileName.substring(fileName.lastIndexOf("."));
+			
+			fileName = UUID.randomUUID().toString()+suffix;
+			//拼接下载url
+			//String url = sourceIp;
+			
+			String projectPath = System.getProperty("user.dir");//获取当前项目路径
+			//拼接上传路径
+			String uploadUrl = projectPath + "/static/productimage/" + fileName;
+			
+			//判断该文件是否存在，
+			File uploadFile = new File(uploadUrl);
+			if(file != null) {
+				file.transferTo(uploadFile);
+			}
+			
+			product.setImageUrl(sourceIp+"/productimage/" + fileName);
+			
+		}
+		
 		productMapper.updateProduct(product);
 	}
 	public Product getProductById(String id) {
