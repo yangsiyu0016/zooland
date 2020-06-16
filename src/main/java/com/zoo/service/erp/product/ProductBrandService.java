@@ -61,13 +61,13 @@ public class ProductBrandService {
 		UserInfo uinfo = LoginInterceptor.getLoginUser();
 		return productBrandMapper.getCount(uinfo.getCompanyId());
 	}
-	public void addProductBrand(ProductBrand brand,String[] typeIds) {
+	public void addProductBrand(ProductBrand brand) {
 		brand.setId(UUID.randomUUID().toString());
 		brand.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		productBrandMapper.addProductBrand(brand);
-		for(String typeId:typeIds) {
-			productBrandMapper.addBT(UUID.randomUUID().toString(),brand.getId(),typeId);
-		}
+		//for(String typeId:typeIds) {
+			//productBrandMapper.addBT(UUID.randomUUID().toString(),brand.getId(),typeId);
+		//}
 		
 	}
 	public int updateProductBrand(ProductBrand brand,String[] typeIds) {
@@ -80,5 +80,9 @@ public class ProductBrandService {
 	public List<ProductBrand> getBrandByTypeId(String typeId) {
 
 		return productBrandMapper.getBrandByTypeId(typeId);
+	}
+	public List<ProductBrand> getList() {
+		// TODO Auto-generated method stub
+		return productBrandMapper.getBrandList(LoginInterceptor.getLoginUser().getCompanyId());
 	}
 }

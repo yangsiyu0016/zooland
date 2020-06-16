@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,13 +46,27 @@ public class ProductController {
     	map.put("count", count);
     	return map;
     }
+    @GetMapping("getProductById")
+    public Product getProductById(@RequestParam("id")String id) {
+    	return productService.getProductById(id);
+    }
     @PostMapping("add")
-    public RespBean addProduct(@RequestBody Product product) {
+    public RespBean addProduct(@RequestParam("product")String product,@RequestParam(value="file",required = false) MultipartFile file) {
     	try {
-    		productService.addProduct(product);
+    		//System.out.println(request.getParameter("product"));
+    		productService.addProduct(product,file);
 			return new RespBean("200","添加成功");
 		} catch (Exception e) {
-			 throw new RuntimeException(e.getMessage());
+			return new RespBean("500",e.getMessage());
+		}
+    }
+    @PostMapping("update")
+    public RespBean updateProduct(@RequestBody Product product) {
+    	try {
+    		productService.updateProduct(product);
+			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
 		}
     }
 }

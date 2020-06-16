@@ -6,10 +6,9 @@
 	<select id="getGeneratorCodeByCondition" resultType="com.zoo.model.erp.GeneratorCode" parameterType="map">
 		SELECT 
 			id,
-			type,
-			pid,
+			prefix,
+			length,
 			number,
-			initCode,
 			companyId
 		FROM 
 			generator_code 
@@ -17,14 +16,11 @@
 			<if test="companyId!=null">
 				AND companyId=#{companyId} 
 			</if>
-			<if test="initCode!=null">
-				AND initCode=#{initCode} 
+			<if test="prefix!=null">
+				AND prefix=#{prefix} 
 			</if>
-			<if test="type!=null">
-				AND type=#{type} 
-			</if>
-			<if test="pid!=null">
-				AND pid=#{pid} 
+			<if test="length!=null">
+				AND length=#{length} 
 			</if>
 	</select>
 	<insert id="insertGeneratorCode" parameterType="com.zoo.model.erp.GeneratorCode">
@@ -32,19 +28,17 @@
 			generator_code
 			(
 				id,
-				type,
-				pid,
+				prefix,
+				length,
 				number,
-				initCode,
 				companyId
 			)
 			VALUES
 			(
 				#{id},
-				#{type},
-				#{pid},
+				#{prefix},
+				#{length},
 				#{number},
-				#{initCode},
 				#{companyId}
 			)
 	</insert>

@@ -1,25 +1,23 @@
 package com.zoo.service.erp.product;
 
+import java.io.File;
 import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.util.StringUtil;
 import com.github.tobato.fastdfs.domain.StorePath;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
 import com.zoo.config.UploadProperties;
-import com.zoo.controller.erp.constant.GeneratorCodeType;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
@@ -28,14 +26,16 @@ import com.zoo.mapper.erp.product.ProductDetailMapper;
 import com.zoo.mapper.erp.product.ProductMapper;
 import com.zoo.mapper.erp.product.ProductSkuMapper;
 import com.zoo.mapper.erp.product.ProductTypeMapper;
-import com.zoo.model.erp.GeneratorCode;
 import com.zoo.model.erp.product.Product;
-import com.zoo.model.erp.product.ProductDetail;
-import com.zoo.model.erp.product.ProductSku;
 import com.zoo.model.erp.product.ProductType;
+import com.zoo.service.system.parameter.SystemParameterService;
+import com.zoo.utils.CodeGenerator;
+
+import net.sf.json.JSONObject;
 
 @Service
 @Transactional
+@PropertySource("classpath:downloadAddress.properties")
 public class ProductService {
 	@Autowired
 	ProductMapper productMapper;
@@ -51,6 +51,12 @@ public class ProductService {
     private FastFileStorageClient storageClient;
 	@Autowired
 	GeneratorCodeMapper generatorCodeMapper;
+	@Autowired
+	SystemParameterService systemParamterService;
+	
+	@Value("${sourceIp}")
+	private String sourceIp;
+	
 	public String uploadImage(MultipartFile file) {
 		//保存图片
         try {
@@ -76,9 +82,12 @@ public class ProductService {
 	private void handleType(List<Product> products) {
 		for(Product product:products) {
 			String typeId = product.getTypeId();
-			ProductType type = typeMapper.getTypeById(typeId);
-			String name = buildName(type.getName(),type);
-			product.setTypeName(name);
+			if(StringUtil.isNotEmpty(typeId)) {
+				ProductType type = typeMapper.getTypeById(typeId);
+				String name = buildName(type.getName(),type);
+				product.setTypeName(name);
+			}
+			
 		}
 		
 	}
@@ -95,173 +104,49 @@ public class ProductService {
 	}
 
 	
-	public void addProduct(Product product) {
+	public void addProduct(String productString,MultipartFile file) throws Exception {
+		
+		JSONObject jsonObject = JSONObject.fromObject(productString);
+		Product product = (Product) JSONObject.toBean(jsonObject, Product.class);
 		product.setId(UUID.randomUUID().toString());
 		product.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		product.setCtime(new Date());
 		
-		// 得到一个NumberFormat的实例  
-        NumberFormat nf = NumberFormat.getInstance(); 
-        String code = "";
-        Map<String,Object> condition = new HashMap<String,Object>();
-        String typeId = product.getTypeId();
-        List<String> typeCodes = new ArrayList<String>();
-        typeCodes = buildTypeCodes(typeCodes,typeId);
-		
-        Collections.reverse(typeCodes);
-        String initCode = "";
-        for(String typeCode:typeCodes) {
-        	initCode+=typeCode;
-        }
-        
-        condition.put("initCode", initCode);
-		condition.put("type", GeneratorCodeType.PRODUCT);
-		condition.put("companyId", LoginInterceptor.getLoginUser().getCompanyId());
-		GeneratorCode generatorCode = generatorCodeMapper.getGeneratorCodeByCondition(condition);
-		
-		if(generatorCode!=null){
-			int number =generatorCode.getNumber();
-			// 设置是否使用分组  
-	        nf.setGroupingUsed(false);  
-	        // 设置最大整数位数  
-	        nf.setMaximumIntegerDigits(4);  
-	        // 设置最小整数位数  
-	        nf.setMinimumIntegerDigits(4); 
-	        code = (initCode+=nf.format(number+1));
-	        condition = new HashMap<String,Object>();
-	        condition.put("id", generatorCode.getId());
-	        condition.put("number", number+1);
-	        generatorCodeMapper.updateNumber(condition);
-		}else{
-			generatorCode = new GeneratorCode();
-			generatorCode.setId(UUID.randomUUID().toString());
-			generatorCode.setType(GeneratorCodeType.PRODUCT);
-			generatorCode.setNumber(1);
-			generatorCode.setInitCode(initCode);
-			generatorCode.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-			generatorCodeMapper.insertGeneratorCode(generatorCode);
-			
-			code = (initCode+="0001");
-		}
+		String parameterValue = systemParamterService.getValueByCode("c00001");
+		String code = CodeGenerator.getInstance().generator(parameterValue);
 		product.setCode(code);
+		
+		if(file!=null) {
+			String fileName = file.getOriginalFilename();
+			//获取文件的后缀名
+			String suffix = fileName.substring(fileName.lastIndexOf("."));
+			
+			fileName = UUID.randomUUID().toString()+suffix;
+			//拼接下载url
+			//String url = sourceIp;
+			
+			String projectPath = System.getProperty("user.dir");//获取当前项目路径
+			//拼接上传路径
+			String uploadUrl = projectPath + "/static/productimage/" + fileName;
+			
+			//判断该文件是否存在，
+			File uploadFile = new File(uploadUrl);
+			if(file != null) {
+				file.transferTo(uploadFile);
+			}
+			
+			product.setImageUrl(sourceIp+"/productimage/" + fileName);
+			
+		}
+		
 		productMapper.addProduct(product);
 		
-		ProductDetail productDetail = product.getProductDetail();
-		productDetail.setProductId(product.getId());
-		productDetailMapper.addProductDetail(productDetail);
-		
-		saveSku(product);
-		
 	}
-	private List<String> buildTypeCodes(List<String> typeCodes,String parentId) {
-		
-		ProductType type = typeMapper.getTypeById(parentId);
-		typeCodes.add(type.getCode());
-		if(StringUtils.isNotBlank(type.getParentId())) {
-			buildTypeCodes(typeCodes,type.getParentId());
-		}
-		return typeCodes;
+	public void updateProduct(Product product) {
+		productMapper.updateProduct(product);
 	}
-	public List<ProductSku> getSkuByProductId(String productId){
-		return skuMapper.getSkuByProductId(productId);
-	} 
-	private void saveSku(Product product) {
-		List<ProductSku> skuList = product.getSkus();
-		if(skuList.size()>0) {
-			for(ProductSku sku:skuList) {
-				sku.setId(UUID.randomUUID().toString());
-				sku.setProductId(product.getId());
-				
-				/**生成编码开始**/
-				// 得到一个NumberFormat的实例  
-		        NumberFormat nf = NumberFormat.getInstance(); 
-		        String code = "";
-		        String initCode = product.getCode();
-		        Map<String,Object> condition = new HashMap<String,Object>();
-		        
-
-		        
-		        condition.put("initCode", initCode);
-				condition.put("type", GeneratorCodeType.SKU);
-				condition.put("companyId", LoginInterceptor.getLoginUser().getCompanyId());
-				GeneratorCode generatorCode = generatorCodeMapper.getGeneratorCodeByCondition(condition);
-				
-				if(generatorCode!=null){
-					int number =generatorCode.getNumber();
-					// 设置是否使用分组  
-			        nf.setGroupingUsed(false);  
-			        // 设置最大整数位数  
-			        nf.setMaximumIntegerDigits(4);  
-			        // 设置最小整数位数  
-			        nf.setMinimumIntegerDigits(4); 
-			        code = (initCode+=nf.format(number+1));
-			        condition = new HashMap<String,Object>();
-			        condition.put("id", generatorCode.getId());
-			        condition.put("number", number+1);
-			        generatorCodeMapper.updateNumber(condition);
-				}else{
-					generatorCode = new GeneratorCode();
-					generatorCode.setId(UUID.randomUUID().toString());
-					generatorCode.setType(GeneratorCodeType.SKU);
-					generatorCode.setNumber(1);
-					generatorCode.setInitCode(initCode);
-					generatorCode.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-					generatorCodeMapper.insertGeneratorCode(generatorCode);
-					
-					code = (initCode+="0001");
-				}
-				sku.setCode(code);
-				/**生成编码结束**/
-				skuMapper.addSku(sku);
-			}
-		}else {
-			ProductSku sku = new ProductSku();
-			sku.setId(UUID.randomUUID().toString());
-			sku.setProductId(product.getId());
-			
-			/**生成编码开始**/
-			// 得到一个NumberFormat的实例  
-	        NumberFormat nf = NumberFormat.getInstance(); 
-	        String code = "";
-	        String initCode = product.getCode();
-	        Map<String,Object> condition = new HashMap<String,Object>();
-	        
-
-	        
-	        condition.put("initCode", initCode);
-			condition.put("type", GeneratorCodeType.SKU);
-			condition.put("companyId", LoginInterceptor.getLoginUser().getCompanyId());
-			GeneratorCode generatorCode = generatorCodeMapper.getGeneratorCodeByCondition(condition);
-			
-			if(generatorCode!=null){
-				int number =generatorCode.getNumber();
-				// 设置是否使用分组  
-		        nf.setGroupingUsed(false);  
-		        // 设置最大整数位数  
-		        nf.setMaximumIntegerDigits(4);  
-		        // 设置最小整数位数  
-		        nf.setMinimumIntegerDigits(4); 
-		        code = (initCode+=nf.format(number+1));
-		        condition = new HashMap<String,Object>();
-		        condition.put("id", generatorCode.getId());
-		        condition.put("number", number+1);
-		        generatorCodeMapper.updateNumber(condition);
-			}else{
-				generatorCode = new GeneratorCode();
-				generatorCode.setId(UUID.randomUUID().toString());
-				generatorCode.setType(GeneratorCodeType.SKU);
-				generatorCode.setNumber(1);
-				generatorCode.setInitCode(initCode);
-				generatorCode.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-				generatorCodeMapper.insertGeneratorCode(generatorCode);
-				
-				code = (initCode+="0001");
-			}
-			sku.setCode(code);
-			/**生成编码结束**/
-			skuMapper.addSku(sku);
-		}
-		
+	public Product getProductById(String id) {
+		Product product = productMapper.getProductById(id);
+		return product;
 	}
-
 }

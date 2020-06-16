@@ -3,10 +3,10 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://rm-2ze7z11s8c03zn2pg3o.mysql.rds.aliyuncs.com:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    #url: jdbc:mysql://rm-2ze89p9068qadm19ibo.mysql.rds.aliyuncs.com:3306/mjnb?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     url: jdbc:mysql://localhost:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
-    #password: zooland_007
+    #password: Zooland_007
     password: root
     hikari:
       maximum-pool-size: 30
@@ -24,7 +24,7 @@ spring:
       maxFileSize: -1
       maxRequestSize: -1
 #mybatis:#  configuration:#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
+  mvc:    static-path-pattern: /**
 zoo:
   jwt:
     secret: zoo@Login(Auth}*^31)&zooland% # 登录校验的密钥

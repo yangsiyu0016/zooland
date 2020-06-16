@@ -1,7 +1,8 @@
 package com.zoo.model.erp.product;
 
 import java.util.Date;
-import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -10,13 +11,23 @@ public class Product {
 	private String id;
 	private String name;
 	private String code;
-	private String brandId;
 	private String typeId;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date ctime;
 	private String companyId;
-	private ProductDetail productDetail;
+	private ProductType productType;
 	private ProductBrand productBrand;
-	private List<ProductSku> skus;
-	
+	private Unit unit;
 	private String typeName;
+	
+	private String spec;//规格
+	private String weight;//重量
+	private String color;//颜色
+	private String puse;//用途
+	private String description;//备注
+	
+	private String imageUrl;//图片地址
+	
+	private String deleted;//是否已删除  0未删除 1已删除
+	
 }

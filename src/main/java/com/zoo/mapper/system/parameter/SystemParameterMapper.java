@@ -13,4 +13,5 @@ public interface SystemParameterMapper {
 	int addParameter(@Param("parameter")SystemParameter parameter);
 	void update(@Param("parameter") SystemParameter parameter);
 	int delete(@Param("id") String id);
+	String getValueByCode(@Param("code")String code);
 }

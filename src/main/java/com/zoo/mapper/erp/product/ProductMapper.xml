@@ -11,13 +11,14 @@
 		<result column="companyId" property="companyId"/>
 		<result column="ctime" property="ctime"/>
 		<association column="brandId"   property="productBrand" select="com.zoo.mapper.erp.product.ProductBrandMapper.getBrandById"></association>
-		<association column="id" property="productDetail" select="com.zoo.mapper.erp.product.ProductDetailMapper.getProductDetailById"></association>
+		<association column="unitId"   property="unit" select="com.zoo.mapper.erp.product.UnitMapper.getUnitById"></association>
 	</resultMap>
 	<select id="getProductByPage" resultMap="BaseResultMap">
-		select * from product where 1=1 
+		select * from product where deleted!=1
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
+		order by ctime desc
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
@@ -26,12 +27,56 @@
 		select * from product where id=#{id}
 	</select>
 	<select id="getCount" resultType="Long">
-		select count(*) from product where 1=1 
+		select count(*) from product where  deleted!=1
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
 	</select>
 	<insert id="addProduct">
-		insert into product (id,name,code,typeId,brandId,companyId,ctime) values(#{product.id},#{product.name},#{product.code},#{product.typeId},#{product.brandId},#{product.companyId},#{product.ctime})
+		insert into 
+			product (
+				id,
+				name,
+				code,
+				typeId,
+				brandId,
+				unitId,
+				spec,
+				weight,
+				color,
+				puse,
+				description,
+				companyId,
+				ctime,
+				imageUrl
+			) values(
+				#{product.id},
+				#{product.name},
+				#{product.code},
+				#{product.typeId},
+				#{product.productBrand.id},
+				#{product.unit.id},
+				#{product.spec},
+				#{product.weight},
+				#{product.color},
+				#{product.puse},
+				#{product.description},
+				#{product.companyId},
+				#{product.ctime},
+				#{product.imageUrl}
+			)
 	</insert>
+	<update id="updateProduct">
+		update product set 
+			name=#{product.name},
+			typeId=#{product.typeId},
+			brandId=#{product.productBrand.id},
+			unitId=#{product.unit.id},
+			spec=#{product.spec},
+			weight=#{product.weight},
+			color=#{product.color},
+			puse=#{product.puse},
+			description=#{product.description}
+		where id=#{product.id}
+	</update>
 </mapper>
