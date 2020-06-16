@@ -89,7 +89,7 @@ public class ReturnOrderDetailService {
 		List<String> built = new ArrayList<String>();
 		
 		for(ReturnOrderDetail detail: list) {
-			ProductSku sku = detail.getSku();
+			ProductSku sku = detail.getProductSku();
 			
 			if(!built.contains(sku.getProduct().getId())) {
 				//通用规格参数
@@ -114,7 +114,7 @@ public class ReturnOrderDetailService {
 				}
 				sku.setOwnSpec(map.toString());
 				
-				detail.setSku(sku);
+				detail.setProductSku(sku);
 				built.add(sku.getProduct().getId());
 			}
 		}

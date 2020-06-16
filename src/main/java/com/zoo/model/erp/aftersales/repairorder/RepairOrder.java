@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zoo.model.crm.Customer;
 import com.zoo.model.erp.purchase.Supplier;
+import com.zoo.model.system.base.Express;
 import com.zoo.model.system.user.SystemUser;
 
 import lombok.Data;
@@ -38,4 +39,6 @@ public class RepairOrder {
 	private Supplier supplier;
 	private List<RepairOrderDetail> details;
 	private String codeGeneratorType;
+	private String reason;
+	private Express express;//物流信息
 }

@@ -92,7 +92,7 @@ public class RepairOrderDetailService {
 		List<String> built = new ArrayList<String>();
 		
 		for(RepairOrderDetail detail: list) {
-			ProductSku sku = detail.getSku();
+			ProductSku sku = detail.getProductSku();
 			
 			if(!built.contains(sku.getProduct().getId())) {
 				//通用规格参数
@@ -117,7 +117,7 @@ public class RepairOrderDetailService {
 				}
 				sku.setOwnSpec(map.toString());
 				
-				detail.setSku(sku);
+				detail.setProductSku(sku);
 				built.add(sku.getProduct().getId());
 			}
 		}

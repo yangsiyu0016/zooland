@@ -15,14 +15,11 @@ public class ReturnOrderDetail {
 	private String id;
 	private String returnOrderId;
 	private String skuId;
-	private ProductSku sku;//商品sku
+	private ProductSku productSku;//商品sku
 	private String type;
 	private BigDecimal number;
 	private BigDecimal costPrice;
 	private BigDecimal totalMoney;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date ctime;
-	private String reason;
-	private String problemDescription;
-	private Express express;//物流信息
 }
