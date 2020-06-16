@@ -12,5 +12,4 @@ public interface GeneratorCodeMapper {
 	GeneratorCode getGeneratorCodeByCondition(Map<String, Object> condition);
 	public int insertGeneratorCode(GeneratorCode generatorCode);
 	public int updateNumber(Map<String,Object> condtion);
-
 }

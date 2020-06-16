@@ -12,4 +12,6 @@ public interface ProductMapper {
 	List<Product> getProductByPage(@Param("start") Integer start,@Param("size") Integer size,@Param("companyId")String companyId);
 	Long getCount(@Param("companyId")String companyId);
 	int addProduct(@Param("product")Product product);
+	int updateProduct(@Param("product")Product product);
+	Product getProductById(@Param("id")String id);
 }

@@ -39,4 +39,9 @@ public class SystemParameterService {
 		parameterMapper.delete(id);
 		
 	}
+
+	public String getValueByCode(String code) {
+		// TODO Auto-generated method stub
+		return parameterMapper.getValueByCode(code);
+	}
 }

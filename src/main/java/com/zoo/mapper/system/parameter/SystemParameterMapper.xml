@@ -15,6 +15,9 @@
 	<select id="getParameterList" resultMap="BaseResultMap">
 		select * from system_parameter where companyId=#{companyId}
 	</select>
+	<select id="getValueByCode" resultType="String">
+		select parameterValue from system_parameter where code=#{code}
+	</select>
 	<insert id="addParameter">
 		insert into
 			system_parameter (

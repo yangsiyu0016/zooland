@@ -30,15 +30,20 @@ public class ProductBrandController {
 		map.put("count", count);
 		return map;
 	}
+	@GetMapping("list")
+	public List<ProductBrand> getBrandList(){
+		List<ProductBrand> brands = brandService.getList();
+		return brands;
+	}
 	@GetMapping("getBrandByTypeId")
 	public List<ProductBrand> getBrandByTypeId(@RequestParam("typeId")String typeId){
 		List<ProductBrand> brands = brandService.getBrandByTypeId(typeId);
 		return brands;
 	}
 	@PostMapping("add")
-	public RespBean addProductBrand(ProductBrand brand,String[] typeIds) {
+	public RespBean addProductBrand(ProductBrand brand) {
 		try {
-			brandService.addProductBrand(brand,typeIds);
+			brandService.addProductBrand(brand);
 			return new RespBean("200","添加成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());

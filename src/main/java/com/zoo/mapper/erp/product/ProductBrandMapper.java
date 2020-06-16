@@ -17,4 +17,5 @@ public interface ProductBrandMapper {
 	int addBT(@Param("id")String id,@Param("brandId")String brandId, @Param("typeId")String typeId);
 	List<ProductBrand> getBrandByTypeId(@Param("typeId")String typeId);
 	int deleteType(@Param("id")String id);
+	List<ProductBrand> getBrandList(@Param("companyId")String companyId);
 }
