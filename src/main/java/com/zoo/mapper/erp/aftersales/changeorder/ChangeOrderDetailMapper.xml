@@ -12,6 +12,7 @@
 		<result column="reason" property="reason"/>
 		<result column="problemDescription" property="problemDescription"/>
 		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="expressId" property="express" select="com.zoo.mapper.system.base.ExpressMapper.getExpressById"></association>
 	</resultMap>
 	
 	<select id="getDetailByChangeOrderId"  resultMap="BaseResultMap">
@@ -31,7 +32,8 @@
 			number,
 			ctime,
 			reason,
-			problemDescription
+			problemDescription,
+			expressId
 		)values(
 			#{detail.id},
 			#{detail.changeOrderId},
@@ -40,7 +42,8 @@
 			#{detail.number},
 			#{detail.ctime},
 			#{detail.reason},
-			#{detail.problemDescription}
+			#{detail.problemDescription},
+			#{detail.express.id}
 		)
 	</insert>
 	
@@ -50,7 +53,8 @@
 			number=#{detail.number},
 			ctime=#{detail.ctime},
 			reason=#{detail.reason},
-			problemDescription=#{detail.problemDescription} 
+			problemDescription=#{detail.problemDescription},
+			expressId=#{detail.express.id} 
 		where id=#{detail.id}
 	</update>
 	

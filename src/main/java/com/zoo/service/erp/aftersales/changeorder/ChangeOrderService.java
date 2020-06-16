@@ -204,7 +204,7 @@ public class ChangeOrderService {
 		
 		Map<String,Object> map = new HashMap<String, Object>();
 		
-		map.put("code", order.getCode());
+		map.put("id", id);
 		map.put("isClaimed", "N");
 		
 		changeOrderMapper.updateChangeOrderIsClaimed(map);
