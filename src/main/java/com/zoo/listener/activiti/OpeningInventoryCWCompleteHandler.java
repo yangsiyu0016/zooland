@@ -66,7 +66,7 @@ public class OpeningInventoryCWCompleteHandler implements TaskListener {
 		List<OpeningInventoryDetail> details = openingInventory.getDetails();
 		String warehouseId = openingInventory.getWarehouse().getId();
 		for(OpeningInventoryDetail detail:details){
-			Stock stock = stockService.getStock(detail.getProductSku().getId(), warehouseId);
+			Stock stock = stockService.getStock(detail.getProduct().getId(), warehouseId);
 			if(stock!=null){
 				stock.setUsableNumber(stock.getUsableNumber().add(detail.getNumber()));
 				stock.setTotalMoney(stock.getTotalMoney().add(detail.getTotalMoney()));
@@ -89,7 +89,7 @@ public class OpeningInventoryCWCompleteHandler implements TaskListener {
 				stock.setUsableNumber(detail.getNumber());
 				stock.setCostPrice(detail.getCostPrice());
 				stock.setTotalMoney(detail.getNumber().multiply(detail.getCostPrice()));
-				stock.setProductSku(detail.getProductSku());
+				stock.setProduct(detail.getProduct());
 				stock.setWarehouse(openingInventory.getWarehouse());
 				stockService.addStock(stock);
 				

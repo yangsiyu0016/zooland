@@ -11,7 +11,7 @@ import com.zoo.model.erp.warehouse.Stock;
 public interface StockMapper {
 	List<Stock> getStockByPage(@Param("start")Integer start,@Param("size")Integer size,@Param("companyId") String companyId);
 	long getStockCount(@Param("companyId")String companyId);
-	Stock getStock(@Param("skuId")String skuId, @Param("warehouseId")String warehouseId);
+	Stock getStock(@Param("productId")String productId, @Param("warehouseId")String warehouseId);
 
 	int addStock(@Param("stock")Stock stock);
 

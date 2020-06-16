@@ -28,8 +28,8 @@ public class StockController {
 		return map;
 	}
 	@GetMapping("getStock")
-	public Stock getStock(@RequestParam("skuId") String skuId,@RequestParam("warehouseId")String warehouseId) {
-		Stock stock = stockService.getStock(skuId, warehouseId);
+	public Stock getStock(@RequestParam("productId") String productId,@RequestParam("warehouseId")String warehouseId) {
+		Stock stock = stockService.getStock(productId, warehouseId);
 		return stock;
 	}
 }

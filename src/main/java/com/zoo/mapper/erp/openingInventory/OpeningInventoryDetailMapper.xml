@@ -49,4 +49,7 @@
             #{id}
         </foreach>
 	</delete>
+	<delete id="deleteDetailByOpeningInventoryId">
+		delete from opening_inventory_detail where openingInventoryId=#{openingInventoryId}
+	</delete>
 </mapper>

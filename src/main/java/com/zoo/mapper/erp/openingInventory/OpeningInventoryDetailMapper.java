@@ -17,4 +17,6 @@ public interface OpeningInventoryDetailMapper {
 	int deleteDetailById(@Param("ids")String[] ids);
 
 	int updateDetail(@Param("detail")OpeningInventoryDetail detail);
+
+	int deleteDetailByOpeningInventoryId(@Param("openingInventoryId")String openingInventoryId);
 }

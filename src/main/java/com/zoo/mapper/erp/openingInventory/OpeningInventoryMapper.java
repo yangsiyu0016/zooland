@@ -18,4 +18,6 @@ public interface OpeningInventoryMapper {
 	public int updateOpeningInventoryStatus(@Param("condition")Map<String, Object> condition);
 	int updateOpeningInventory(@Param("oi")OpeningInventory oi);
 	int updateOpeningInventoryIsClaimed(@Param("condition")Map<String, Object> condition);
+	
+	int deleteOiById(@Param("ids")String[] ids);
 }

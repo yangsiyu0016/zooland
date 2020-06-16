@@ -128,5 +128,7 @@ public class CodeGenerator {
 		String qc = "QC";
 		qc+=("0"+(now.get(Calendar.MONTH)+1));
 		System.out.println(qc);
+		String aa = "http://192.168.1.237:8081/productimage/6b835123-7af3-406d-b80e-eb706d059d53.jpg";
+		System.out.println(aa.substring(aa.lastIndexOf("/")));
 	}
 }

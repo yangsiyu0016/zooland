@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,6 +53,15 @@ public class OpeningInventoryController {
 		try {
 			oiService.updateOpeningInventory(oi);
 			return new RespBean("200","更新成功");
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
+		}
+	}
+	@RequestMapping(value = "{ids}",method=RequestMethod.DELETE)
+	public RespBean deleteOiById(@PathVariable String ids) {
+		try {
+			oiService.deleteOiById(ids);
+			return new RespBean("200","删除成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());
 		}

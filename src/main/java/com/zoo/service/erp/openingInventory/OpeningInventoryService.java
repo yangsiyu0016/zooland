@@ -70,46 +70,13 @@ public class OpeningInventoryService {
 		//ois = buildSpec(ois);
 		return ois;
 	}
-	private OpeningInventory buildSpec(OpeningInventory oi) {
-		List<String> built = new ArrayList<String>();
-		for(OpeningInventoryDetail detail:oi.getDetails()) {
-			ProductSku sku = detail.getProductSku();
-			if(!built.contains(sku.getProduct().getId())){
-				//通用规格参数处理
-				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-				Map<String,String> map = new HashMap<String,String>();
-				JSONObject obj = JSONObject.fromObject(genericSpec);
-				Set<String> keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
-				}
-				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
-				
-				
-				String ownSpec = sku.getOwnSpec();
-				 map = new HashMap<String,String>();
-				 obj  = JSONObject.fromObject(ownSpec);
-				keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), obj.getString(key));
-				}
-				sku.setOwnSpec(map.toString());
-				
-				detail.setProductSku(sku);
-				built.add(sku.getProduct().getId());
-			}
-			
-		}
-		return oi;
-	}
+	
 	public Long getCount(String cuserId) {
 		return openingInventoryMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(), cuserId);
 	}
 	public OpeningInventory getOpeningInventoryById(String id) {
 		OpeningInventory oi = openingInventoryMapper.getOpeningInventoryById(id);
-		return buildSpec(oi);
+		return oi;
 	}
 	public void addOpeningInventory(OpeningInventory oi) {
 		String id = UUID.randomUUID().toString();
@@ -171,6 +138,19 @@ public class OpeningInventoryService {
 	}
 	public int updateOpeningInventory(OpeningInventory oi) {
 		return openingInventoryMapper.updateOpeningInventory(oi);
+		
+	}
+	public void deleteOiById(String ids) {
+		String[] split = ids.split(",");
+		for(String openingInventoryId:split) {
+			//删除产品详情
+			detailMapper.deleteDetailByOpeningInventoryId(openingInventoryId);
+			//删除物流信息
+			//costService.deleteByForeignKey(sellId);
+			//删除附件
+			//annexService.delAnnexByForeignKey(sellId);
+		}
+		openingInventoryMapper.deleteOiById(split);
 		
 	}
 	public void updateOpeningInventoryIsClaimed(Map<String, Object> variables) {
@@ -274,4 +254,6 @@ public class OpeningInventoryService {
 		
 		openingInventoryMapper.updateProcessInstanceId(id, null);
 	}
+
+	
 }

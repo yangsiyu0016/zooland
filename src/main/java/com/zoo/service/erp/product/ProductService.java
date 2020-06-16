@@ -148,6 +148,9 @@ public class ProductService {
 		Product product = (Product) JSONObject.toBean(jsonObject, Product.class);
 		//Product product2 = productMapper.getProductById(product.getId());
 		if(file!=null) {
+			Product old = this.getProductById(product.getId());
+			
+			
 			String fileName = file.getOriginalFilename();
 			//获取文件的后缀名
 			String suffix = fileName.substring(fileName.lastIndexOf("."));
@@ -157,6 +160,12 @@ public class ProductService {
 			//String url = sourceIp;
 			
 			String projectPath = System.getProperty("user.dir");//获取当前项目路径
+			
+			String imageUrl = old.getImageUrl();
+			String deleteUrl = projectPath+"/static/productimage/"+imageUrl.substring(imageUrl.lastIndexOf("/"));
+			
+			new File(deleteUrl).delete();
+			
 			//拼接上传路径
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
