@@ -42,7 +42,7 @@
 	<update id="update">
 		update system_parameter set 
 			name=#{parameter.name},
-			code=#{parameter.code},
+			parameterValue=#{parameter.parameterValue},
 			description=#{parameter.description},
 			parameterDirectoryId=#{parameter.parameterDirectory.id} 
 		where id=#{parameter.id}

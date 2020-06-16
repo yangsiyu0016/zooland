@@ -76,7 +76,8 @@
 			weight=#{product.weight},
 			color=#{product.color},
 			puse=#{product.puse},
-			description=#{product.description}
+			description=#{product.description},
+			imageUrl=#{product.imageUrl}
 		where id=#{product.id}
 	</update>
 </mapper>
