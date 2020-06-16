@@ -10,7 +10,7 @@
 		<result column="totalMoney" property="totalMoney"/>
 		<result column="ctime" property="ctime"/>
 		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
-		<association column="skuId"   property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		
 	</resultMap>
 	<select id="getDetailByOpeningInventoryId" resultMap="BaseResultMap">
@@ -19,7 +19,7 @@
 	<insert id="addDetail">
 		insert into opening_inventory_detail (
 			id,
-			skuId,
+			productId,
 			number,
 			goodsAllocationId,
 			openingInventoryId,
@@ -28,7 +28,7 @@
 			ctime
 		) values(
 			#{detail.id},
-			#{detail.productSku.id},
+			#{detail.product.id},
 			#{detail.number},
 			#{detail.goodsAllocation.id},
 			#{detail.openingInventoryId},
@@ -38,7 +38,7 @@
 		)
 	</insert>
 	<update id="updateDetail">
-		update opening_inventory_detail set skuId=#{detail.productSku.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
+		update opening_inventory_detail set productId=#{detail.product.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
 	</update>
 	<update id="updatePrice">
 		update opening_inventory_detail set costPrice=#{costPrice},totalMoney=#{totalMoney} where id=#{id}

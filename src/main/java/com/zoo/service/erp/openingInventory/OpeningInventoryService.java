@@ -37,6 +37,8 @@ import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.erp.JournalAccountService;
 import com.zoo.service.erp.warehouse.StockDetailService;
 import com.zoo.service.erp.warehouse.StockService;
+import com.zoo.service.system.parameter.SystemParameterService;
+import com.zoo.utils.CodeGenerator;
 import com.zoo.utils.OrderCodeHelper;
 
 import net.sf.json.JSONObject;
@@ -60,6 +62,8 @@ public class OpeningInventoryService {
 	IdentityService identityService;
 	@Autowired
 	JournalAccountService journalAccountService;
+	@Autowired
+	SystemParameterService systemParameterService;
 	public List<OpeningInventory> getOpeningInventoryByPage(Integer page,Integer size,String cuserId){
 		int start = (page-1)*size;
 		List<OpeningInventory> ois = openingInventoryMapper.getOpeningInventoryByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId(), cuserId);
@@ -112,7 +116,9 @@ public class OpeningInventoryService {
 		oi.setId(id);
 		if(oi.getCodeGeneratorType().equals("AUTO")) {
 			try {
-				oi.setCode(OrderCodeHelper.GenerateId("QC"));
+				String parameterValue = systemParameterService.getValueByCode("C00003");
+				String code = CodeGenerator.getInstance().generator(parameterValue);
+				oi.setCode(code);
 			} catch (Exception e) {
 				throw new ZooException(ExceptionEnum.GENER_CODE_ERROR);
 			}

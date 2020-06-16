@@ -9,6 +9,7 @@
 			prefix,
 			length,
 			number,
+			dateStr,
 			companyId
 		FROM 
 			generator_code 
@@ -18,6 +19,15 @@
 			</if>
 			<if test="prefix!=null">
 				AND prefix=#{prefix} 
+			</if>
+			<if test="dateStr!=null">
+				AND dateStr =#{dateStr}
+			</if>
+			<if test="dateStr==null">
+				AND dateStr is null
+			</if>
+			<if test="dateValue!=null">
+				AND dateValue=#{dateValue}
 			</if>
 			<if test="length!=null">
 				AND length=#{length} 
@@ -31,6 +41,8 @@
 				prefix,
 				length,
 				number,
+				dateStr,
+				dateValue,
 				companyId
 			)
 			VALUES
@@ -39,6 +51,8 @@
 				#{prefix},
 				#{length},
 				#{number},
+				#{dateStr},
+				#{dateValue},
 				#{companyId}
 			)
 	</insert>

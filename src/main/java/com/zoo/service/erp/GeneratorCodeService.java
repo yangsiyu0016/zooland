@@ -17,10 +17,12 @@ import com.zoo.model.erp.GeneratorCode;
 public class GeneratorCodeService {
 	@Autowired
 	GeneratorCodeMapper generatorCodeMapper;
-	public GeneratorCode getGCode(String prefix, int length) {
+	public GeneratorCode getGCode(String prefix, int length,String dateStr,String dateValue) {
 		Map<String,Object> condition = new HashMap<String,Object>();
 		condition.put("prefix", prefix);
 		condition.put("length", length);
+		condition.put("dateStr", dateStr);
+		condition.put("dateValue", dateValue);
 		condition.put("companyId", LoginInterceptor.getLoginUser().getCompanyId());
 		return generatorCodeMapper.getGeneratorCodeByCondition(condition);
 	}
