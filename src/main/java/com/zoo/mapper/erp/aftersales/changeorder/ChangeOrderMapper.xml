@@ -17,6 +17,7 @@
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
 		<association column="id" property="details" select="com.zoo.mapper.erp.aftersales.changeorder.ChangeOrderDetailMapper.getDetailByChangeOrderId"></association>
+		
 	</resultMap>
 	
 	<select id="getChangeOrderByPage" resultMap="BaseResultMap">

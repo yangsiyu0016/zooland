@@ -36,6 +36,6 @@ public class ReturnOrder {
 	private SystemUser cuser;
 	private Customer customer;
 	private Supplier supplier;
-	private List<ReturnOrderDetail> detail;
+	private List<ReturnOrderDetail> details;
 	private String codeGeneratorType;
 }

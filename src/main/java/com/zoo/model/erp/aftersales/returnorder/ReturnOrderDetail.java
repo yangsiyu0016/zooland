@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zoo.model.erp.product.ProductSku;
+import com.zoo.model.system.base.Express;
 
 import lombok.Data;
 
@@ -23,5 +24,5 @@ public class ReturnOrderDetail {
 	private Date ctime;
 	private String reason;
 	private String problemDescription;
-	
+	private Express express;//物流信息
 }
