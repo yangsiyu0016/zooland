@@ -146,7 +146,7 @@ public class ProductService {
 		
 		JSONObject jsonObject = JSONObject.fromObject(productString);
 		Product product = (Product) JSONObject.toBean(jsonObject, Product.class);
-		//Product product2 = productMapper.getProductById(product.getId());
+		
 		if(file!=null) {
 			String fileName = file.getOriginalFilename();
 			//获取文件的后缀名
@@ -160,13 +160,25 @@ public class ProductService {
 			//拼接上传路径
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
-			//判断该文件是否存在，
-			File uploadFile = new File(uploadUrl);
-			if(file != null) {
-				file.transferTo(uploadFile);
+			//p判断该产品是否删除之前图片
+			Product product2 = productMapper.getProductById(product.getId());
+			String url = product2.getImageUrl();
+			String[] split = null;
+			if(url != null && !"".equals(url)) {
+				split = url.split("/");
+			}	
+			url = projectPath + "/static/productimage/" + split[split.length -1];
+			boolean flag = new File(url).delete();
+			if(flag) {
+				//判断该文件是否存在，
+				File uploadFile = new File(uploadUrl);
+				if(file != null) {
+					file.transferTo(uploadFile);
+				}
+				
+				product.setImageUrl(sourceIp+"/productimage/" + fileName);
 			}
 			
-			product.setImageUrl(sourceIp+"/productimage/" + fileName);
 			
 		}
 		
