@@ -162,10 +162,10 @@ public class ProductService {
 			String projectPath = System.getProperty("user.dir");//获取当前项目路径
 			
 			String imageUrl = old.getImageUrl();
-			String deleteUrl = projectPath+"/static/productimage/"+imageUrl.substring(imageUrl.lastIndexOf("/"));
-			
-			new File(deleteUrl).delete();
-			
+			if(StringUtil.isNotEmpty(imageUrl)) {
+				String deleteUrl = projectPath+"/static/productimage/"+imageUrl.substring(imageUrl.lastIndexOf("/"));
+				new File(deleteUrl).delete();
+			}
 			//拼接上传路径
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
