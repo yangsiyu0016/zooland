@@ -9,8 +9,8 @@ import com.zoo.model.erp.product.Product;
 
 @Component
 public interface ProductMapper {
-	List<Product> getProductByPage(@Param("start") Integer start,@Param("size") Integer size,@Param("key") String key,@Param("companyId")String companyId);
-	Long getCount(@Param("companyId")String companyId);
+	List<Product> getProductByPage(@Param("start") Integer start,@Param("size") Integer size,@Param("key") String key,@Param("typeId") String typeId,@Param("companyId")String companyId);
+	Long getCount(@Param("companyId")String companyId, @Param("key") String key, @Param("typeId") String typeId);
 	int addProduct(@Param("product")Product product);
 	int updateProduct(@Param("product")Product product);
 	Product getProductById(@Param("id")String id);

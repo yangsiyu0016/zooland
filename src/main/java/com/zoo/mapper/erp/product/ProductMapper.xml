@@ -18,8 +18,11 @@
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
-		<if test="key != null && key != '' ">
-			and name like concat('%', ${key}, '%')   
+		<if test="typeId != null">
+			and typeId = #{typeId} 
+		</if>
+		<if test="key != null and key != '' ">
+			and name like concat('%', #{key}, '%')   
 		</if>
 		order by ctime desc
 		<if test="start!=null and size!=null">
@@ -54,6 +57,12 @@
 		select count(*) from product where  deleted!=1
 		<if test="companyId!=null">
 			and companyId = #{companyId}
+		</if>
+		<if test="typeId != null">
+			and typeId = #{typeId} 
+		</if>
+		<if test="key != null and key != '' ">
+			and name like concat('%', #{key}, '%')   
 		</if>
 	</select>
 	<insert id="addProduct">
