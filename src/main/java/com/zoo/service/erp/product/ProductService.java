@@ -146,7 +146,7 @@ public class ProductService {
 		
 		JSONObject jsonObject = JSONObject.fromObject(productString);
 		Product product = (Product) JSONObject.toBean(jsonObject, Product.class);
-		//Product product2 = productMapper.getProductById(product.getId());
+		
 		if(file!=null) {
 			Product old = this.getProductById(product.getId());
 			
@@ -169,13 +169,25 @@ public class ProductService {
 			//拼接上传路径
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
-			//判断该文件是否存在，
-			File uploadFile = new File(uploadUrl);
-			if(file != null) {
-				file.transferTo(uploadFile);
+			//p判断该产品是否删除之前图片
+			Product product2 = productMapper.getProductById(product.getId());
+			String url = product2.getImageUrl();
+			String[] split = null;
+			if(url != null && !"".equals(url)) {
+				split = url.split("/");
+			}	
+			url = projectPath + "/static/productimage/" + split[split.length -1];
+			boolean flag = new File(url).delete();
+			if(flag) {
+				//判断该文件是否存在，
+				File uploadFile = new File(uploadUrl);
+				if(file != null) {
+					file.transferTo(uploadFile);
+				}
+				
+				product.setImageUrl(sourceIp+"/productimage/" + fileName);
 			}
 			
-			product.setImageUrl(sourceIp+"/productimage/" + fileName);
 			
 		}
 		
@@ -184,5 +196,17 @@ public class ProductService {
 	public Product getProductById(String id) {
 		Product product = productMapper.getProductById(id);
 		return product;
+	}
+	
+	/**
+	 * 删除
+	 * @param ids
+	 */
+	public int deleteProductById(String ids) {
+		// TODO Auto-generated method stub
+		String[] split = ids.split(",");
+		int num = productMapper.deleteProductById(split);
+		
+		return num;
 	}
 }

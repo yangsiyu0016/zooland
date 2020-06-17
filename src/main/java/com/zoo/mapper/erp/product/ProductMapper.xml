@@ -80,4 +80,12 @@
 			imageUrl=#{product.imageUrl}
 		where id=#{product.id}
 	</update>
+	<update id="deleteProductById">
+		update product set 
+			deleted = 1 
+		where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</update>
 </mapper>
