@@ -37,9 +37,10 @@ public class ProductController {
     @GetMapping("page")
     public Map<String,Object> getProductByPage(
     		@RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size){
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam("key") String key){
     	Map<String,Object> map = new HashMap<String,Object>();
-    	List<Product> products = productService.getProductByPage(page, size);
+    	List<Product> products = productService.getProductByPage(page, size, key);
     	long count = productService.getCount();
     	map.put("products", products);
     	map.put("count", count);
@@ -78,5 +79,15 @@ public class ProductController {
 			return new RespBean("500", e.getMessage());
 			// TODO: handle exception
 		}
+    }
+    
+    @GetMapping("getProductByTypeId")
+    public Map<String, Object> getProductByTypeId(@RequestParam("page") Integer page, @RequestParam("size") Integer size, @RequestParam("typeId") String typeId) {
+    	List<Product> list = productService.getProductByTypeId(page, size, typeId);
+    	Long count = productService.getCountByTypeId(typeId);
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	map.put("products", list);
+    	map.put("count", count);
+    	return map;
     }
 }
