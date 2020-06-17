@@ -14,7 +14,7 @@
 		insert into outbound_detail (
 			id,
 			outboundId,
-			skuId,
+			productId,
 			number,
 			price,
 			totalMoney,
@@ -24,7 +24,7 @@
 		)values(
 			#{detail.id},
 			#{detail.outboundId},
-			#{detail.productSku.id},
+			#{detail.product.id},
 			#{detail.number},
 			#{detail.price},
 			#{detail.totalMoney},

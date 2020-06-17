@@ -1,18 +1,15 @@
 package com.zoo.service.erp.openingInventory;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +22,9 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.openingInventory.OpeningInventoryDetailMapper;
 import com.zoo.mapper.erp.openingInventory.OpeningInventoryMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.openingInventory.OpeningInventory;
 import com.zoo.model.erp.openingInventory.OpeningInventoryDetail;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
@@ -39,17 +33,11 @@ import com.zoo.service.erp.warehouse.StockDetailService;
 import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
-import com.zoo.utils.OrderCodeHelper;
-
-import net.sf.json.JSONObject;
-
 @Service
 @Transactional
 public class OpeningInventoryService {
 	@Autowired
 	OpeningInventoryMapper openingInventoryMapper;
-	@Autowired
-	SpecParamMapper paramMapper;
 	@Autowired
 	OpeningInventoryDetailMapper detailMapper;
 	@Autowired
@@ -169,7 +157,7 @@ public class OpeningInventoryService {
 		
 		if(status.equals(OpeningInventoryStatus.FINISHED)) {
 			for(OpeningInventoryDetail oiDetail:openingInventory.getDetails()) {
-				Stock stock = stockService.getStock(oiDetail.getProductSku().getId(), openingInventory.getWarehouse().getId());
+				Stock stock = stockService.getStock(oiDetail.getProduct().getId(), openingInventory.getWarehouse().getId());
 				BigDecimal usableNumber = stock.getUsableNumber();
 				if(oiDetail.getNumber().subtract(usableNumber).compareTo(BigDecimal.ZERO)==1) {//库存不足
 					throw new ZooException(ExceptionEnum.STOCK_NOT_ENOUGH);
@@ -197,7 +185,7 @@ public class OpeningInventoryService {
 						stock.setCostPrice(after_costPrice);
 						stock.setTotalMoney(after_totalMoney);
 						
-						
+						stockService.updateStock(stock);
 						JournalAccount journalAccount = new JournalAccount();
 						journalAccount.setId(UUID.randomUUID().toString());
 						journalAccount.setType(JournalAccountType.QCDESTROY);

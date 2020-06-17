@@ -77,8 +77,6 @@ public class CostService {
 	@Autowired
 	JournalAccountService journalAccountService;
 	@Autowired
-	SpecParamMapper paramMapper;
-	@Autowired
 	PurchaseMapper purchaseMapper;
 	@Autowired
 	InboundMapper inboundMapper;
@@ -92,37 +90,6 @@ public class CostService {
 	CostDetailGoodsAllocationMapper costDetailGoodsAllocationMapper;
 	public List<Cost> getCostByForeignKey(String foreignKey){
 		List<Cost> costs = costMapper.getCostByForeignKey(foreignKey);
-		List<String> built = new ArrayList<String>();
-		for(Cost cost:costs) {
-			for(CostDetail detail:cost.getDetails()) {
-				ProductSku sku = detail.getProductSku();
-				if(!built.contains(sku.getProduct().getId())){
-					//通用规格参数处理
-					String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-					Map<String,String> map = new HashMap<String,String>();
-					JSONObject obj = JSONObject.fromObject(genericSpec);
-					Set<String> keyset = obj.keySet();
-					for(String key:keyset) {
-						SpecParam param = paramMapper.getParamById(key);
-						map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
-					}
-					sku.getProduct().getProductDetail().setGenericSpec(map.toString());
-					
-					
-					String ownSpec = sku.getOwnSpec();
-					 map = new HashMap<String,String>();
-					 obj  = JSONObject.fromObject(ownSpec);
-					keyset = obj.keySet();
-					for(String key:keyset) {
-						SpecParam param = paramMapper.getParamById(key);
-						map.put(param.getName(), obj.getString(key));
-					}
-					sku.setOwnSpec(map.toString());
-					detail.setProductSku(sku);
-					built.add(sku.getProduct().getId());
-				}
-			}
-		}
 		return costs;
 	} 
 	public void addCostFromPurchase(Cost cost) {
@@ -177,7 +144,7 @@ public class CostService {
 				detail.setCostId(cost.getId());
 				
 				
-				Stock stock = stockMapper.getStock(detail.getProductSku().getId(), outbound.getWarehouse().getId());
+				Stock stock = stockMapper.getStock(detail.getProduct().getId(), outbound.getWarehouse().getId());
 				
 				detail.setPrice(stock.getCostPrice());
 				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
@@ -196,7 +163,7 @@ public class CostService {
 					outboundDetail.setNumber(cdga.getNumber());
 					outboundDetail.setOrderDetailId(detail.getDetailId());
 					outboundDetail.setOutboundId(outbound.getId());
-					
+					outboundDetail.setProduct(detail.getProduct());
 					
 					
 					if(stock!=null) {
@@ -388,7 +355,7 @@ public class CostService {
 			SellDetail sellDetail = sellDetailMapper.getDetailById(detail.getDetailId());
 			sellDetailMapper.updateNotOutNumber(detail.getDetailId(), sellDetail.getNotOutNumber().add(detail.getNumber()));
 			
-			Stock stock = stockMapper.getStock(detail.getProductSku().getId(), cost.getWarehouse().getId());
+			Stock stock = stockMapper.getStock(detail.getProduct().getId(), cost.getWarehouse().getId());
 			//更新货位数量
 			for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
 				StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), cdga.getGoodsAllocation().getId());

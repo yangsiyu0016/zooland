@@ -7,7 +7,7 @@
 		<id column="id" property="id"/>
 		<result column="notOutNumber" property="notOutNumber"/>
 		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
-		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 	</resultMap>
 	<select id="getDetailBySellId"  resultMap="BaseResultMap">
 		select * from sell_detail where sellId= #{sellId}
@@ -21,7 +21,7 @@
 	<insert id="addDetail">
 		insert into sell_detail (
 			id,
-			skuId,
+			productId,
 			warehouseId,
 			number,
 			notOutNumber,
@@ -31,7 +31,7 @@
 			ctime
 		)values(
 			#{detail.id},
-			#{detail.productSku.id},
+			#{detail.product.id},
 			#{detail.warehouse.id},
 			#{detail.number},
 			#{detail.number},
@@ -43,7 +43,7 @@
 	</insert>
 	<update id="updateDetail">
 		update sell_detail set 
-			skuId=#{detail.productSku.id},
+			productId=#{detail.product.id},
 			warehouseId=#{detail.warehouse.id},
 			number=#{detail.number},
 			notOutNumber=#{detail.number},

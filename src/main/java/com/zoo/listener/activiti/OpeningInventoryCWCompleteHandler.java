@@ -68,8 +68,14 @@ public class OpeningInventoryCWCompleteHandler implements TaskListener {
 		for(OpeningInventoryDetail detail:details){
 			Stock stock = stockService.getStock(detail.getProduct().getId(), warehouseId);
 			if(stock!=null){
+				BigDecimal after_usable_number = stock.getUsableNumber().add(detail.getNumber());
+				BigDecimal after_total_money = stock.getTotalMoney().add(detail.getTotalMoney());
+				BigDecimal after_cost_price = after_total_money.divide(after_usable_number,4,BigDecimal.ROUND_HALF_UP);
 				stock.setUsableNumber(stock.getUsableNumber().add(detail.getNumber()));
 				stock.setTotalMoney(stock.getTotalMoney().add(detail.getTotalMoney()));
+				
+				stock.setCostPrice(after_cost_price);
+				
 				stockService.updateStock(stock);
 				StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), detail.getGoodsAllocation().getId());
 				if(stockDetail!=null){
