@@ -14,9 +14,9 @@ spring:
   activiti:
     database-schema-update: true    check-process-definitions: false
   
-  data:
-    elasticsearch:      cluster-name: elasticsearch
-      cluster-nodes: localhost:9300
+  #data:
+    #elasticsearch:      #cluster-name: elasticsearch
+      #cluster-nodes: localhost:9300
   jackson:
     default-property-inclusion: non-null # 配置json处理时忽略空值
   servlet:

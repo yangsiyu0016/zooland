@@ -18,7 +18,6 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.aftersales.replenishmentnote.ReplenishmentNoteDetailMapper;
 import com.zoo.mapper.erp.aftersales.replenishmentnote.ReplenishmentNoteMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.model.erp.aftersales.replenishmentnote.ReplenishmentNote;
 import com.zoo.model.erp.aftersales.replenishmentnote.ReplenishmentNoteDetail;
 import com.zoo.model.system.user.UserInfo;
@@ -27,9 +26,6 @@ import com.zoo.utils.OrderCodeHelper;
 @Service
 public class ReplenishmentNoteService {
 
-	@Autowired
-	SpecParamMapper paramMapper;
-	
 	@Autowired
 	ProcessEngine processEngine;
 	

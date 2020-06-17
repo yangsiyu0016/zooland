@@ -1,34 +1,24 @@
 package com.zoo.service.erp.purchase;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 
-import net.sf.json.JSONObject;
 
 @Service
 @Transactional
 public class PurchaseDetailService {
 	@Autowired
 	PurchaseDetailMapper detailMapper;
-	@Autowired
-	SpecParamMapper paramMapper;
 	public PurchaseDetail addDetail(PurchaseDetail detail) {
 		detail.setId(UUID.randomUUID().toString());
 		detailMapper.addDetail(detail);
@@ -47,37 +37,6 @@ public class PurchaseDetailService {
 	}
 	public List<PurchaseDetail> getDetailByPurchaseId(String purchaseId) {
 		List<PurchaseDetail> details = detailMapper.getDetailByPurchaseId(purchaseId);
-		List<String> built = new ArrayList<String>();
-		for(PurchaseDetail detail:details) {
-			ProductSku sku = detail.getProductSku();
-			if(!built.contains(sku.getProduct().getId())) {
-				//通用规格参数处理
-				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-				Map<String,String> map = new HashMap<String,String>();
-				JSONObject obj = JSONObject.fromObject(genericSpec);
-				Set<String> keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
-				}
-				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
-				
-				
-				String ownSpec = sku.getOwnSpec();
-				 map = new HashMap<String,String>();
-				 obj  = JSONObject.fromObject(ownSpec);
-				keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), obj.getString(key));
-				}
-				sku.setOwnSpec(map.toString());
-				
-				detail.setProductSku(sku);
-				built.add(sku.getProduct().getId());
-			}
-			
-		}
 		return details;
 	}
 }

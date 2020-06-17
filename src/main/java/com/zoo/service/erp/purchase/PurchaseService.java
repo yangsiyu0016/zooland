@@ -1,11 +1,9 @@
 package com.zoo.service.erp.purchase;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -13,7 +11,6 @@ import javax.transaction.Transactional;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,19 +21,14 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.purchase.PurchaseMapper;
 import com.zoo.mapper.annex.AnnexMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.model.annex.Annex;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.annex.AnnexService;
-import com.zoo.utils.OrderCodeHelper;
-
-import net.sf.json.JSONObject;
-
+import com.zoo.service.system.parameter.SystemParameterService;
+import com.zoo.utils.CodeGenerator;
 import org.activiti.engine.ProcessEngine;
 
 @Service
@@ -51,17 +43,19 @@ public class PurchaseService {
 	@Autowired
 	ProcessEngine processEngine;
 	@Autowired
-	SpecParamMapper paramMapper;
-	@Autowired
 	AnnexMapper annexMapper;
 	@Autowired
 	AnnexService annexService;
+	@Autowired
+	SystemParameterService systemParameterService;
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
 		if(purchase.getCodeGeneratorType().equals("AUTO")) {
 			try {
-				purchase.setCode(OrderCodeHelper.GenerateId("CG"));
+				String parameterValue = systemParameterService.getValueByCode("C00004");
+				String code = CodeGenerator.getInstance().generator(parameterValue);
+				purchase.setCode(code);
 			} catch (Exception e) {
 				throw new ZooException(ExceptionEnum.GENER_CODE_ERROR);
 			}
@@ -108,37 +102,6 @@ public class PurchaseService {
 
 	public Purchase getPurchaseById(String id) {
 		Purchase purchase = purchaseMapper.getPurchaseById(id);
-		List<String> built = new ArrayList<String>();
-		for(PurchaseDetail detail:purchase.getDetails()) {
-			ProductSku sku = detail.getProductSku();
-			if(!built.contains(sku.getProduct().getId())) {
-				//通用规格参数处理
-				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-				Map<String,String> map = new HashMap<String,String>();
-				JSONObject obj = JSONObject.fromObject(genericSpec);
-				Set<String> keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
-				}
-				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
-				
-				
-				String ownSpec = sku.getOwnSpec();
-				 map = new HashMap<String,String>();
-				 obj  = JSONObject.fromObject(ownSpec);
-				keyset = obj.keySet();
-				for(String key:keyset) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), obj.getString(key));
-				}
-				sku.setOwnSpec(map.toString());
-				
-				detail.setProductSku(sku);
-				built.add(sku.getProduct().getId());
-			}
-			
-		}
 		return purchase;
 	}
 

@@ -20,7 +20,6 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.aftersales.repairorder.RepairOrderDetailMapper;
 import com.zoo.mapper.erp.aftersales.repairorder.RepairOrderMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.model.erp.aftersales.repairorder.RepairOrder;
 import com.zoo.model.erp.aftersales.repairorder.RepairOrderDetail;
 import com.zoo.model.system.user.UserInfo;
@@ -34,9 +33,7 @@ public class RepairOrderService {
 	
 	@Autowired
 	RepairOrderDetailMapper detailMapper;
-	
-	@Autowired
-	SpecParamMapper paramMapper;
+
 	
 	@Autowired
 	ProcessEngine processEngine;

@@ -1,17 +1,12 @@
 package com.zoo.service.erp.cost;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +21,6 @@ import com.zoo.mapper.erp.inbound.InboundDetailMapper;
 import com.zoo.mapper.erp.inbound.InboundMapper;
 import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
 import com.zoo.mapper.erp.outbound.OutboundMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.mapper.erp.purchase.PurchaseMapper;
 import com.zoo.mapper.erp.sell.SellDetailMapper;
@@ -41,8 +35,6 @@ import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.erp.sell.Sell;
@@ -52,9 +44,6 @@ import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.erp.warehouse.Warehouse;
 import com.zoo.service.erp.JournalAccountService;
 import com.zoo.service.erp.outbound.OutboundService;
-
-import net.sf.json.JSONObject;
-
 @Service
 @Transactional
 public class CostService {
@@ -253,7 +242,7 @@ public class CostService {
 				inboundDetail.setId(UUID.randomUUID().toString());
 				inboundDetail.setCtime(new Date());
 				inboundDetail.setInboundId(inbound.getId());
-				inboundDetail.setProductSku(detail.getProductSku());
+				inboundDetail.setProduct(detail.getProduct());
 				inboundDetail.setGoodsAllocation(cdga.getGoodsAllocation());
 				inboundDetail.setOrderDetailId(detail.getDetailId());
 				inboundDetail.setNumber(cdga.getNumber());
@@ -266,12 +255,12 @@ public class CostService {
 				inboundDetail.setTotalMoney(purchaseDetail.getPrice().multiply(cdga.getNumber()));
 				inboundDetailMapper.addDetail(inboundDetail);
 				
-				Stock stock = stockMapper.getStock(detail.getProductSku().getId(), warehouse.getId());
+				Stock stock = stockMapper.getStock(detail.getProduct().getId(), warehouse.getId());
 				if(stock==null) {
 					stock = new Stock();
 					stock.setId(UUID.randomUUID().toString());
 					stock.setWarehouse(warehouse);
-					stock.setProductSku(detail.getProductSku());
+					stock.setProduct(detail.getProduct());
 					stock.setCostPrice(purchaseDetail.getPrice());
 					stock.setUsableNumber(cdga.getNumber());
 					stock.setTotalMoney(purchaseDetail.getPrice().multiply(cdga.getNumber()));

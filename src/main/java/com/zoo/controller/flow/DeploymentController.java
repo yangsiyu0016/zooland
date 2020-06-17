@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,7 +69,7 @@ public class DeploymentController {
 			String companyId = (String) object.get("companyId");
 			String name = file.getOriginalFilename().substring(0, file.getOriginalFilename().lastIndexOf("."));
 			ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream());
-			Deployment deployment = repositoryService.createDeployment().name(name).tenantId(companyId).addZipInputStream(zipInputStream).deploy();
+			repositoryService.createDeployment().name(name).tenantId(companyId).addZipInputStream(zipInputStream).deploy();
 			return true;
 		} catch (IOException e) {
 			return false;
