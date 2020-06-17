@@ -84,7 +84,8 @@ public class JwtUtils {
      * @param token
      * @return
      */
-    public static UserInfo getUserInfo(PublicKey publicKey, String token) {
+    @SuppressWarnings("deprecation")
+	public static UserInfo getUserInfo(PublicKey publicKey, String token) {
         Jws<Claims> claimsJws = parseToken(publicKey, token);
         Claims body = claimsJws.getBody();
         return new UserInfo(
@@ -101,7 +102,8 @@ public class JwtUtils {
      * @return
      * @throws Exception
      */
-    public static UserInfo getUserInfo(byte[] publicKey, String token) throws Exception {
+    @SuppressWarnings("deprecation")
+	public static UserInfo getUserInfo(byte[] publicKey, String token) throws Exception {
         Jws<Claims> claimsJws = parseToken(publicKey, token);
         Claims body = claimsJws.getBody();
         return new UserInfo(

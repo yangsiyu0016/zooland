@@ -76,6 +76,7 @@ public class SystemUserController {
 		}
 		return ResponseEntity.ok(user);
 	}
+	@SuppressWarnings("resource")
 	@GetMapping("exportUser")
 	public ResponseEntity<byte[]> exportEmp(){
 		HttpHeaders headers = null;

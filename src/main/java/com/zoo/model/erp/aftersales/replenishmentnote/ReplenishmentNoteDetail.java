@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.system.base.Express;
+import com.zoo.model.erp.product.Product;
 
 import lombok.Data;
 
@@ -15,7 +14,7 @@ public class ReplenishmentNoteDetail {
 	private String id;
 	private String replenishmentNoteId;
 	private String skuId;
-	private ProductSku productSku;//商品sku
+	private Product product;//商品sku
 	private String type;
 	private BigDecimal number;
 	private BigDecimal costPrice;

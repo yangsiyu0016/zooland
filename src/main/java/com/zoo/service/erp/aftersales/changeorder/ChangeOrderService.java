@@ -1,18 +1,15 @@
 package com.zoo.service.erp.aftersales.changeorder;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.pagehelper.util.StringUtil;
@@ -22,24 +19,15 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.aftersales.changeorder.ChangeOrderDetailMapper;
 import com.zoo.mapper.erp.aftersales.changeorder.ChangeOrderMapper;
-import com.zoo.mapper.erp.product.SpecParamMapper;
 import com.zoo.model.erp.aftersales.changeorder.ChangeOrder;
 import com.zoo.model.erp.aftersales.changeorder.ChangeOrderDetail;
-import com.zoo.model.erp.product.ProductSku;
-import com.zoo.model.erp.product.SpecParam;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.utils.OrderCodeHelper;
-
-import net.sf.json.JSONObject;
-
 @Service
 public class ChangeOrderService {
 
 	@Autowired
 	ChangeOrderMapper changeOrderMapper;
-	
-	@Autowired
-	SpecParamMapper paramMapper;
 	
 	@Autowired
 	ChangeOrderDetailMapper detailMapper;
@@ -117,34 +105,6 @@ public class ChangeOrderService {
 	 */
 	public ChangeOrder getChangeOrderById(String id) {
 		ChangeOrder order = changeOrderMapper.getChangeOrderById(id);
-		List<String> built = new ArrayList<String>();
-		for(ChangeOrderDetail detail: order.getDetails()) {
-			ProductSku sku = detail.getProductSku();
-			if(!built.contains(sku.getProduct().getId())) {
-				String genericSpec = sku.getProduct().getProductDetail().getGenericSpec();
-				Map<String,String> map = new HashMap<String, String>();
-				JSONObject obj = JSONObject.fromObject(genericSpec);
-				Set<String> keySet = obj.keySet();
-				for(String key: keySet) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), StringUtils.isBlank(obj.getString(key))?"其它":obj.getString(key));
-				}
-				sku.getProduct().getProductDetail().setGenericSpec(map.toString());
-				String ownSpec = sku.getOwnSpec();
-				map = new HashMap<String, String>();
-				
-				obj = JSONObject.fromObject(ownSpec);
-				keySet = obj.keySet();
-				for(String key: keySet) {
-					SpecParam param = paramMapper.getParamById(key);
-					map.put(param.getName(), obj.getString(key));
-				}
-				sku.setOwnSpec(ownSpec);
-				
-				detail.setProductSku(sku);
-				built.add(sku.getProduct().getId());
-			}
-		}
 		return order;
 	}
 	

@@ -22,9 +22,7 @@ import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.GeneratorCodeMapper;
-import com.zoo.mapper.erp.product.ProductDetailMapper;
 import com.zoo.mapper.erp.product.ProductMapper;
-import com.zoo.mapper.erp.product.ProductSkuMapper;
 import com.zoo.mapper.erp.product.ProductTypeMapper;
 import com.zoo.model.erp.product.Product;
 import com.zoo.model.erp.product.ProductType;
@@ -39,10 +37,6 @@ import net.sf.json.JSONObject;
 public class ProductService {
 	@Autowired
 	ProductMapper productMapper;
-	@Autowired
-	ProductSkuMapper skuMapper;
-	@Autowired
-	ProductDetailMapper productDetailMapper;
 	@Autowired
     private UploadProperties prop;
 	@Autowired

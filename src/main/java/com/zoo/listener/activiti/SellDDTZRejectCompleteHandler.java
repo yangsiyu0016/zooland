@@ -10,7 +10,6 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
-import com.zoo.controller.erp.constant.InventoryCheckStatus;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.model.erp.sell.Sell;
 import com.zoo.service.erp.sell.SellService;

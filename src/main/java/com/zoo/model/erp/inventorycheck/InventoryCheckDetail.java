@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zoo.model.erp.product.ProductSku;
+import com.zoo.model.erp.product.Product;
 import com.zoo.model.erp.warehouse.GoodsAllocation;
 
 import lombok.Data;
@@ -14,7 +14,7 @@ public class InventoryCheckDetail {
 
 	private String id;
 	private String panDianId;//盘点单ID
-	private ProductSku productSku;//商品sku
+	private Product product;//商品sku
 	private String type;//类型：OVERFLOW:盘盈 LOSSES:盘损
 	private BigDecimal number;//数量
 	private GoodsAllocation goodsAllocation;//货位对象

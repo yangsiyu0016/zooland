@@ -9,9 +9,7 @@ import java.util.UUID;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.zoo.controller.erp.constant.InventoryCheckStatus;
 import com.zoo.controller.erp.constant.InventoryDetailType;
 import com.zoo.controller.erp.constant.JournalAccountType;
-import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.inventorycheck.InventoryCheck;
@@ -44,6 +41,7 @@ public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("unused")
 	@Override
 	public void notify( DelegateTask delegateTask) {
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
@@ -58,9 +56,9 @@ public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 		String warehouseId = check.getWarehouse().getId();
 		List<InventoryCheckDetail> details = check.getDetails();
 		for(InventoryCheckDetail detail:details) {
-			String skuId = detail.getProductSku().getId();
+			String productId = detail.getProduct().getId();
 			//1、查询库存
-			Stock stock = stockService.getStock(skuId, warehouseId);
+			Stock stock = stockService.getStock(productId, warehouseId);
 			
 			//获取货位库存信息
 			StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), detail.getGoodsAllocation().getId());
@@ -146,7 +144,7 @@ public class InventoryCheckGXKCCompleteHandler implements TaskListener{
 					stock.setUsableNumber(detail.getNumber());
 					stock.setCostPrice(detail.getCostPrice());
 					stock.setTotalMoney(detail.getNumber().multiply(detail.getCostPrice()));
-					stock.setProductSku(detail.getProductSku());
+					stock.setProduct(detail.getProduct());
 					stock.setWarehouse(check.getWarehouse());
 					stockService.addStock(stock);
 					

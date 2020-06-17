@@ -16,11 +16,9 @@ import com.zoo.mapper.crm.customer.CustomerMapper;
 import com.zoo.mapper.crm.customer.LinkmanMapper;
 import com.zoo.mapper.crm.customer.ReceivingMapper;
 import com.zoo.mapper.system.area.AreaMapper;
-import com.zoo.model.crm.Account;
 import com.zoo.model.crm.Customer;
 import com.zoo.model.crm.Linkman;
 import com.zoo.model.crm.Receiving;
-import com.zoo.model.system.area.Area;
 
 @Service
 @Transactional

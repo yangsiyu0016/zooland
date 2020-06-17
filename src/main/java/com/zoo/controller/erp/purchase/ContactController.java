@@ -1,16 +1,13 @@
 package com.zoo.controller.erp.purchase;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.model.erp.purchase.Contact;
@@ -41,7 +38,7 @@ public class ContactController {
 	@PutMapping("updateContact")
 	public RespBean updateContact(@RequestBody Contact contact) {
 		try {
-			int updateLinkman = contactService.updateContact(contact);
+			contactService.updateContact(contact);
 			return new RespBean("200","更新成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());

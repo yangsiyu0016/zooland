@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;

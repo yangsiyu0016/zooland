@@ -24,7 +24,7 @@
 		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId,
+		    	detail.productId productId,
 		    	ARE.BUSINESS_KEY_ businessKey
 		    FROM
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
@@ -47,7 +47,7 @@
 		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId,
+		    	detail.productId productId,
 		    	ARE.BUSINESS_KEY_ businessKey
 		    FROM 
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
@@ -83,7 +83,7 @@
 		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId
+		    	detail.productId productId
 		    FROM
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
@@ -105,7 +105,7 @@
 		    	s.supplierName supplierName,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId
+		    	detail.productId productId
 		    FROM 
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
@@ -380,7 +380,7 @@
 		    	pd.code,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId,
+		    	detail.productId productId,
 		    	ARE.BUSINESS_KEY_ businessKey
 		    FROM
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
@@ -401,7 +401,7 @@
 		    	pd.code,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId,
+		    	detail.productId productId,
 		    	ARE.BUSINESS_KEY_ businessKey
 		    FROM 
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
@@ -433,7 +433,7 @@
 		    	pd.code,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId
+		    	detail.productId productId
 		    FROM
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_
@@ -453,7 +453,7 @@
 		    	pd.code,
 		    	su.realName originatorName,
 		    	su2.realName assigneeName,
-		    	detail.skuId skuId
+		    	detail.productId productId
 		    FROM 
 		    	ACT_RU_TASK ART LEFT JOIN ACT_RU_EXECUTION ARE ON ART.PROC_INST_ID_=ARE.PROC_INST_ID_ AND ARE.BUSINESS_KEY_ IS NOT NULL
 		    					LEFT JOIN ACT_RE_PROCDEF ARP ON ART.PROC_DEF_ID_=ARP.ID_

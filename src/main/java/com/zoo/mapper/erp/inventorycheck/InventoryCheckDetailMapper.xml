@@ -15,14 +15,14 @@
 		<result column="occupyStock" property="occupyStock"/>
 		<result column="occupyStockNumber" property="occupyStockNumber"/>
 		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
-		<association column="skuId"   property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		
 	</resultMap>
 	<select id="getDetailByInventoryCheckId" resultMap="BaseResultMap">
 		select 
 			detail.id,
 			detail.type,
-			detail.skuId,
+			detail.productId,
 			detail.goodsAllocationId,
 			detail.panDianId,
 			detail.number,
@@ -41,14 +41,14 @@
 			s.costPrice currentCostPrice,
 			s.costPrice*detail.number currentTotalMoney
 		from pan_dian_detail detail left join pan_dian pd on detail.panDianId=pd.id 
-									left join stock s on (s.skuId = detail.skuId and s.warehouseId = pd.warehouseId)
+									left join stock s on (s.productId = detail.productId and s.warehouseId = pd.warehouseId)
 		where detail.panDianId = #{id}
 	</select>
 	<insert id="addDetail">
 		insert into pan_dian_detail(
 			id,
 			panDianId,
-			skuId,
+			productId,
 			type,
 			number,
 			goodsAllocationId,
@@ -61,7 +61,7 @@
 		) values (
 			#{detail.id},
 			#{detail.panDianId},
-			#{detail.productSku.id},
+			#{detail.product.id},
 			#{detail.type},
 			#{detail.number},
 			#{detail.goodsAllocation.id},
@@ -75,7 +75,7 @@
 	</insert>
 	
 	<update id="updateDetail">
-		update pan_dian_detail set type=#{detail.type}, skuId=#{detail.productSku.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
+		update pan_dian_detail set type=#{detail.type}, productId=#{detail.product.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
 	</update>
 	
 	<update id="updatePrice">

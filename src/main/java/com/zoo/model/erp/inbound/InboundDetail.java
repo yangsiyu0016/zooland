@@ -3,7 +3,7 @@ package com.zoo.model.erp.inbound;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.zoo.model.erp.product.ProductSku;
+import com.zoo.model.erp.product.Product;
 import com.zoo.model.erp.warehouse.GoodsAllocation;
 
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.Data;
 public class InboundDetail {
 	private String id;
 	private String inboundId;
-	private ProductSku productSku;
+	private Product product;
 	
 	private GoodsAllocation goodsAllocation;
 	private String orderDetailId;
