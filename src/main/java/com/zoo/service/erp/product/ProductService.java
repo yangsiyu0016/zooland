@@ -188,4 +188,16 @@ public class ProductService {
 		Product product = productMapper.getProductById(id);
 		return product;
 	}
+	
+	/**
+	 * 删除
+	 * @param ids
+	 */
+	public int deleteProductById(String ids) {
+		// TODO Auto-generated method stub
+		String[] split = ids.split(",");
+		int num = productMapper.deleteProductById(split);
+		
+		return num;
+	}
 }
