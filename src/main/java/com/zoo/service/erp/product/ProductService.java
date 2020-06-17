@@ -63,13 +63,13 @@ public class ProductService {
             throw new ZooException(ExceptionEnum.UPLOAD_IMAGE_EXCEPTION);
         }
 	}
-	public List<Product> getProductByPage(Integer page,Integer size){
+	public List<Product> getProductByPage(Integer page,Integer size, String key){
 		Integer start = null;
 		if(page!=null&&size!=null) {
 			start = (page-1)*size;
 		}
 		
-		List<Product> products = productMapper.getProductByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Product> products = productMapper.getProductByPage(start, size, key, LoginInterceptor.getLoginUser().getCompanyId());
 		handleType(products);
 		return products;
 	}
@@ -202,5 +202,19 @@ public class ProductService {
 		int num = productMapper.deleteProductById(split);
 		
 		return num;
+	}
+	
+	/**
+	 * 根据typeId获取产品
+	 */
+	public List<Product> getProductByTypeId(Integer page, Integer size, String typeId) {
+		Integer start = null;
+		if(page != null) {
+			start = (page - 1) * size;
+		}
+		return productMapper.getProductByTypeId(start, size, LoginInterceptor.getLoginUser().getCompanyId(), typeId);
+	}
+	public Long getCountByTypeId(String typeId) {
+		return productMapper.getCountByTypeId(LoginInterceptor.getLoginUser().getCompanyId(), typeId);
 	}
 }
