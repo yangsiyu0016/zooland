@@ -8,12 +8,13 @@ import lombok.Data;
 
 @Data
 public class SearchData {
-
+	
+	private String productId;//商品id
 	private String code;//查询单号
 	private String status;//查询状态
 	private	String supplierName;//供应商名称
 	private String customerName;//客户名称
-	private String productSkuId;//skuId
+	private String productName;//产品名称
 	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date startDate;//开始时间
 	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
