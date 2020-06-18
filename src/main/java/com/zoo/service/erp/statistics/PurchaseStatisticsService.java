@@ -32,12 +32,7 @@ public class PurchaseStatisticsService {
 		
 		Long count = purchaseStatisticsMapper.getCount(userInfo.getCompanyId());
 		
-		List<PurchaseStatistics> retList = new ArrayList<PurchaseStatistics>();
-		
-		for(PurchaseStatistics ps: list) {
-			ps.setProductType(ps.getName());
-		}
-		map.put("purchaseStatisticses", retList);
+		map.put("purchaseStatisticses", list);
 		map.put("count", count);
 		return map;
 	}
@@ -61,12 +56,8 @@ public class PurchaseStatisticsService {
 		
 		Long count = purchaseStatisticsMapper.getSearchCount(searchData, userInfo.getCompanyId());
 		
-		List<PurchaseStatistics> retList = new ArrayList<PurchaseStatistics>();
 		
-		for(PurchaseStatistics ps: list) {
-			ps.setProductType(ps.getName());
-		}
-		map.put("purchaseStatisticses", retList);
+		map.put("purchaseStatisticses", list);
 		map.put("count", count);
 		return map;
 	}
