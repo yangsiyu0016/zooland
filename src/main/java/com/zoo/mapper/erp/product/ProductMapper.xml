@@ -18,7 +18,7 @@
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
-		<if test="typeId != null">
+		<if test="typeId != null and typeId != '' ">
 			and typeId = #{typeId} 
 		</if>
 		<if test="key != null and key != '' ">
@@ -58,7 +58,7 @@
 		<if test="companyId!=null">
 			and companyId = #{companyId}
 		</if>
-		<if test="typeId != null">
+		<if test="typeId != null and typeId != '' ">
 			and typeId = #{typeId} 
 		</if>
 		<if test="key != null and key != '' ">
