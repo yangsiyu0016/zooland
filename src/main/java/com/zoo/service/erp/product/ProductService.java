@@ -217,4 +217,8 @@ public class ProductService {
 	public Long getCountByTypeId(String typeId) {
 		return productMapper.getCountByTypeId(LoginInterceptor.getLoginUser().getCompanyId(), typeId);
 	}
+	
+	public void updateHasBom(String id,Boolean hasBom) {
+		productMapper.updateHasBom(id, hasBom);
+	}
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.product.MaterialStructureDetailMapper">
+	<resultMap type="com.zoo.model.erp.product.MaterialStructureDetail" id="BaseResult">
+		<id column="id" property="id"/>
+		<result column="description" property="description"/>
+		<result column="number" property="number"/>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+	</resultMap>
+
+	<insert id="addMaterialStructureDetail">
+		insert into material_structure (
+			id,
+			productId,
+			materialStructureId,
+			number
+			description
+		) 
+		values(
+			#{msd.id},
+			#{msd.product.id},
+			#{msd.materialStrutureId},
+			#{msd.number},
+			#{msd.description}
+		)
+	</insert>
+
+</mapper>

@@ -121,4 +121,7 @@
             #{id}
         </foreach>
 	</update>
+	<update id="updateHasBom">
+		update product set hasBom=#{hasBom} where id=#{id}
+	</update>
 </mapper>

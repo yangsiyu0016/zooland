@@ -17,4 +17,6 @@ public interface ProductMapper {
 	int deleteProductById(@Param("ids")String[] ids);
 	List<Product> getProductByTypeId(@Param("start") Integer start, @Param("size") Integer size, @Param("companyId") String companyId, @Param("typeId") String typeId);
 	Long getCountByTypeId(@Param("companyId") String companyId, @Param("typeId") String typeId);
+	
+	int updateHasBom(@Param("id")String id,@Param("hasBom") Boolean hasBom);
 }

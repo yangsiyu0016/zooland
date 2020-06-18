@@ -30,4 +30,6 @@ public class Product {
 	
 	private String deleted;//是否已删除  0未删除 1已删除
 	
+	private Boolean hasBom;//是否已做bom 0未做 1 已做
+	
 }
