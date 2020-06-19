@@ -8,23 +8,43 @@
 		<result column="description" property="description"/>
 		<result column="number" property="number"/>
 		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<collection column="productId" property="details" select="getDetailsByMaterialStructureProductId"></collection>
 	</resultMap>
-
+	<select id="getDetailsByMaterialStructureId" resultMap="BaseResult">
+		select * from material_structure_detail where materialStructureId=#{materialStructureId}
+	</select>
+	<select id="getDetailsByMaterialStructureProductId" resultMap="BaseResult">
+		select * from material_structure_detail msd left join material_structure ms on msd.materialStructureId=ms.id 
+		where ms.productId = #{productId}
+	</select>
 	<insert id="addMaterialStructureDetail">
-		insert into material_structure (
+		insert into material_structure_detail (
 			id,
 			productId,
 			materialStructureId,
-			number
+			number,
 			description
 		) 
 		values(
 			#{msd.id},
 			#{msd.product.id},
-			#{msd.materialStrutureId},
+			#{msd.materialStructureId},
 			#{msd.number},
 			#{msd.description}
 		)
 	</insert>
-
+	<update id="updateMaterialStructureDetail">
+		update material_structure_detail 
+			set number=#{msd.number},description=#{msd.description}
+		where id=#{msd.id}
+	</update>
+	<delete id="deleteDetailById">
+		delete from material_structure_detail  where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+	<delete id="deleteDetailByMaterialStructureId">
+		delete from material_structure_detail where materialStructureId=#{materialStructureId}
+	</delete>
 </mapper>
