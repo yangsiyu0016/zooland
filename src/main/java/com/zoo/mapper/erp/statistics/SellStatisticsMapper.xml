@@ -6,65 +6,49 @@
 
 	<select id="page" resultType="com.zoo.model.erp.statistics.SellStatistics" parameterType="map">
 		SELECT 
-			dd.id, 
-			dd.number, 
-			dd.price, 
-			dd.totalMoney, 
-			dd.notOutNumber, 
-			dd.code, dd.ctime, 
-			dd.status, 
-			dd.customerName, 
-			dd.genericSpec, 
-			dd.specialSpec, 
-			dd.productName, 
-			pt.name,
-			pt.parentName, 
-			dd.ownSpec, 
-			dd.companyId, 
-			dd.initDate,
-			dd.type 
-		FROM 
-			(SELECT team.*, pro.name productName, pro.typeId, prod.genericSpec, prod.specialSpec FROM (
-			SELECT 
-				pdp.*,
-				sup.name customerName,
-				sku.productId,
-				sku.ownSpec 
-			FROM 
-			(SELECT  pd.id,
-				pd.skuId,
-				pd.number, 
-				pd.price, 
-				pd.totalMoney, 
-				pd.notOutNumber, 
-				p.code,  
-				p.customerId,
-				p.ctime,
-				p.cuserId,
-				p.status,
-				p.companyId,
-				p.initDate,
-				u.type
-			FROM 
-				sell_detail pd 
-			LEFT JOIN 
-				sell p 
-			ON
-			 	pd.sellId = p.id 
-			LEFT JOIN 
-				SYSTEM_USER u
-			ON
-				p.cuserId = u.id) pdp 
-			LEFT JOIN 
-				customer sup
-			ON
-			pdp.customerId = sup.id
-			LEFT JOIN product_sku sku ON pdp.skuId = sku.id
-			) team
-			LEFT JOIN product pro ON team.productId = pro.id 
-			LEFT JOIN product_detail prod ON team.productId = prod.productId) dd
-			LEFT JOIN (SELECT pt1.id, pt1.name, pt2.name parentName FROM product_type pt1 LEFT JOIN product_type pt2 ON pt2.id = pt1.parentId) pt ON dd.typeId = pt.id
-			WHERE dd.companyId = #{companyId} 
+	pdp.*,
+	sup.name customerName,
+	p.name productName,
+	p.typeId,
+	P.spec,
+	pt.name typeName
+FROM
+(SELECT  pd.id,
+	pd.productId,
+	pd.number, 
+	pd.price, 
+	pd.totalMoney, 
+	pd.notOutNumber, 
+	p.code,  
+	p.customerId,
+	p.ctime,
+	p.cuserId,
+	p.status,
+	p.companyId,
+	p.initDate,
+	u.type
+FROM 
+	sell_detail pd 
+LEFT JOIN 
+	sell p 
+ON
+	pd.sellId = p.id 
+LEFT JOIN 
+	SYSTEM_USER u
+ON
+	p.cuserId = u.id) pdp
+LEFT JOIN 
+	customer sup
+ON
+	pdp.customerId = sup.id
+LEFT JOIN
+	product p 
+ON
+	pdp.productId = p.id
+LEFT JOIN 
+	product_type pt
+ON
+	p.typeId = pt.idWHERE dd.companyId = #{companyId} 
 			ORDER BY ctime DESC
 			<if test="start!=null and size!=null">
 				limit #{start},#{size}

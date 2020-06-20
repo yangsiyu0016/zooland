@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.statistics.SellStatisticsMapper;
+import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.model.erp.statistics.SellStatistics;
 import com.zoo.model.system.user.UserInfo;
 
@@ -39,6 +40,11 @@ public class SellStatisticsService {
 		map.put("count", count);
 		
 		return map;
+	}
+
+	public Map<String, Object> search(SearchData searchData) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
