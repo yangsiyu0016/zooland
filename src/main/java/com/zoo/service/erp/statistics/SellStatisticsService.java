@@ -1,6 +1,8 @@
 package com.zoo.service.erp.statistics;
 
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.statistics.SellStatisticsMapper;
+import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.model.erp.statistics.SellStatistics;
 import com.zoo.model.system.user.UserInfo;
 
@@ -20,25 +23,29 @@ public class SellStatisticsService {
 	@Autowired
 	private SellStatisticsMapper sellStatisticsMapper;
 
-	public Map<String, Object> page(Integer page, Integer size) {
-		Map<String,Object> map = new HashMap<String, Object>();
+	public Map<String, Object> page(SearchData searchData) throws ParseException {
+		Integer start = (searchData.getPage() - 1) * searchData.getSize();
 		
-		Integer start = (page-1)*size;
+		HashMap<String,Object> map = new HashMap<String, Object>();
 		
-		UserInfo info = LoginInterceptor.getLoginUser();
+		UserInfo userInfo = LoginInterceptor.getLoginUser();
+		/*
+		 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //格式化规则
+		 * if(searchData.getStartDate() != null && searchData.getEndDate() != null) {
+		 * Date startDate = searchData.getStartDate(); Date endDate =
+		 * searchData.getEndDate();
+		 * searchData.setStartDate(sdf.parse(sdf.format(startDate)));
+		 * searchData.setEndDate(sdf.parse(sdf.format(endDate)));
+		 * System.out.println(sdf.parse(sdf.format(startDate))); }
+		 */
 		
-		List<SellStatistics> list = sellStatisticsMapper.page(start, size, info.getCompanyId());
-		List<SellStatistics> retList = new ArrayList<SellStatistics>();
+		List<SellStatistics> list = sellStatisticsMapper.page(searchData, start, searchData.getSize(), userInfo.getCompanyId());
 		
-		for(SellStatistics ps: list) {
-			ps.setProductType(ps.getParentName() + "/" + ps.getName());
-		}
-		Long count = sellStatisticsMapper.getCount(info.getCompanyId());
+		Long count = sellStatisticsMapper.getCount(searchData, userInfo.getCompanyId());
 		
-		map.put("sellStatisticses", retList);
+		map.put("sellStatisticses", list);
 		map.put("count", count);
 		
 		return map;
 	}
-
 }

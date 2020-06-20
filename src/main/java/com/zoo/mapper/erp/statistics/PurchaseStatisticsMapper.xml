@@ -149,7 +149,8 @@
 		</if>
 		<if test="searchData.startDate != null and searchData.endDate != null">
 			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
-			<![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]>  -->
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate}
 		</if>
 		ORDER BY 
 			pdp.ctime desc	
@@ -210,7 +211,9 @@
 		</if>
 		<if test="searchData.startDate != null and searchData.endDate != null">
 			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
-			<![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> --> 
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate} 
+			
 		</if>
 	</select>
 </mapper>
