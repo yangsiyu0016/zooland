@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.assembled.ProductAssembledMapper">
+	<resultMap type="com.zoo.model.erp.assembled.ProductAssembled" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="assembledTime" property="assembledTime"/>
+		<result column="number" property="number"/>
+		<result column="code" property="code"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="companyId" property="companyId"/>
+		<result column="status" property="status"/>
+		<result column="isClaimed" property="isClaimed"/>
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<collection column="id" property="materials" select="com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper.getMaterialByAssembledId"></collection>
+	</resultMap>
+	<select id="getProductAssembledByPage" resultMap="BaseResultMap">
+		select * from product_assembled where companyId=#{companyId}
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="long">
+		select count(*) from product_assembled where companyId=#{companyId}
+	</select>
+	<select id="getProductAssembledById" resultMap="BaseResultMap">
+		select * from product_assembled where id=#{id}
+	</select>
+	<insert id="addProductAssembled">
+		insert into product_assembled (
+			id,
+			code,
+			assembledTime,
+			number,
+			ctime,
+			companyId,
+			warehouseId,
+			productId,
+			cuserId,
+			status
+		) values(
+			#{pa.id},
+			#{pa.code},
+			#{pa.assembledTime},
+			#{pa.number},
+			#{pa.ctime},
+			#{pa.companyId},
+			#{pa.warehouse.id},
+			#{pa.product.id},
+			#{pa.cuserId},
+			#{pa.status}
+		)
+	</insert>
+	<update id="updateProductAssembled">
+		update product_assembled 
+		set 
+			assembledTime=#{pa.assembledTime},
+			number=#{pa.number},
+			warehouseId=#{pa.warehouse.id},
+			productId=#{pa.product.id},
+			description=#{pa.description}
+		where id=#{pa.id}
+	</update>
+	<delete id="deleteProductAssembledById">
+		delete from product_assembled where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+</mapper>

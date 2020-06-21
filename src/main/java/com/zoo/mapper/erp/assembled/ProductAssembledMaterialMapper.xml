@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper">
+	<resultMap type="com.zoo.model.erp.assembled.ProductAssembledMaterial" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="productAssembledId" property="productAssembledId"/>
+		<result column="number" property="number"/>
+		<result column="needNumber" property="needNumber"/>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		
+	</resultMap>
+	<select id="getMaterialByAssembledId" resultMap="BaseResultMap">
+		select * from product_assembled_material where productAssembledId = #{productAssembledId}
+	</select>
+	<insert id="addMaterial">
+		insert into
+			product_assembled_material (
+				id,
+				productAssembledId,
+				number,
+				needNumber,
+				productId	
+		) values(
+			#{pam.id},
+			#{pam.productAssembledId},
+			#{pam.number},
+			#{pam.needNumber},
+			#{pam.product.id}
+		)
+	</insert>
+	
+	<delete id="deleteMaterialByAllembledId">
+		delete from product_assembled_material where productAssembledId=#{productAssembledId}
+	</delete>
+</mapper>
