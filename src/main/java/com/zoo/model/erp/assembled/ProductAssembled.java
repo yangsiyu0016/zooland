@@ -15,7 +15,7 @@ import lombok.Data;
 public class ProductAssembled {
 	private String id;
 	private String code;
-	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GTM+8")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date assembledTime;
 	private Product product;
 	private Warehouse warehouse;
@@ -23,10 +23,13 @@ public class ProductAssembled {
 	private String description;
 	private String cuserId;
 	private SystemUser cuser;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date ctime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date etime;
 	private String companyId;
 	private List<ProductAssembledMaterial> materials;
 	private String codeGeneratorType;
 	private String status;
+	private String isClaimed;
 }

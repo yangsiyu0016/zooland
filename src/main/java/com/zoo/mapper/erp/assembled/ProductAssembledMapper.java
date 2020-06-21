@@ -11,6 +11,8 @@ import com.zoo.model.erp.assembled.ProductAssembled;
 public interface ProductAssembledMapper {
 	List<ProductAssembled> getProductAssembledByPage(@Param("start")Integer start, @Param("size")Integer size, @Param("companyId")String companyId);
 	long getCount(@Param("companyId")String companyId);
+	ProductAssembled getProductAssembledById(@Param("id") String id);
 	int addProductAssembled(@Param("pa")ProductAssembled pa);
+	int updateProductAssembled(@Param("pa")ProductAssembled pa);
 	int deleteProductAssembledById(@Param("ids")String[] ids);
 }

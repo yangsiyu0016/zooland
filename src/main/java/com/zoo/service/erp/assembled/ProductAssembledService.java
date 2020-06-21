@@ -38,6 +38,9 @@ public class ProductAssembledService {
 		// TODO Auto-generated method stub
 		return paMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
 	}
+	public ProductAssembled getProductAssembledById(String id) {
+		return paMapper.getProductAssembledById(id);
+	}
 	public void addProductAssembled(ProductAssembled productAssembled) {
 		String id = UUID.randomUUID().toString();
 		productAssembled.setId(id);
@@ -62,13 +65,23 @@ public class ProductAssembledService {
 			pamMapper.addMaterial(material);
 		}
 	}
+	public void updateProductAssembled(ProductAssembled productAssembled) {
+
+		paMapper.updateProductAssembled(productAssembled);
+		pamMapper.deleteMaterialByAllembledId(productAssembled.getId());
+		for(ProductAssembledMaterial material:productAssembled.getMaterials()) {
+			material.setId(UUID.randomUUID().toString());
+			material.setProductAssembledId(productAssembled.getId());
+			pamMapper.addMaterial(material);
+		}
+	}
 	public void deleteProductAssembledById(String ids) {
 		String[] split = ids.split(",");
-		//for(String productAssembledId:split) {
+		for(String productAssembledId:split) {
 			//删除材料
-			//detailMapper.deleteDetailBySellId(sellId);
+			pamMapper.deleteMaterialByAllembledId(productAssembledId);
 
-		//}
+		}
 		paMapper.deleteProductAssembledById(split);
 		
 	}
