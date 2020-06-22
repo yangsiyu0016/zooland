@@ -25,10 +25,24 @@ public class ProductAssembledController {
 	@Autowired
 	ProductAssembledService paService;
 	@GetMapping("page")
-	public Map<String,Object> page(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> page(@RequestParam("page")Integer page,
+									@RequestParam("size")Integer size,
+									@RequestParam(value="keywords") String keywords,
+									@RequestParam(value="code") String code,
+									@RequestParam(value="productCode") String productCode,
+									@RequestParam(value="productName") String productName,
+									@RequestParam(value="status") String status,
+									@RequestParam(value="warehouseId") String warehouseId,
+									@RequestParam(value="start_assembledTime") String start_assembledTime,
+									@RequestParam(value="end_assembledTime") String end_assembledTime,
+									@RequestParam(value="start_ctime") String start_ctime,
+									@RequestParam(value="end_ctime") String end_ctime,
+									@RequestParam(value="sort") String sort,
+									@RequestParam(value="order") String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<ProductAssembled> productAssembleds = paService.getProductAssembledByPage(page,size);
-		long count = paService.getCount();
+		List<ProductAssembled> productAssembleds = paService.getProductAssembledByPage(page,size,keywords,
+				code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime,sort,order);
+		long count = paService.getCount(keywords,code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime);
 		map.put("productAssembleds", productAssembleds);
 		map.put("count", count);
 		return map;
