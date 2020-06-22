@@ -22,7 +22,9 @@ public interface ProductAssembledMapper {
 			@Param("end_assembledTime")String end_assembledTime,
 			@Param("start_ctime")String start_ctime,
 			@Param("end_ctime")String end_ctime,
-			@Param("companyId")String companyId);
+			@Param("companyId")String companyId,
+			@Param("sort")String sort,
+			@Param("order")String order);
 	long getCount(
 			@Param("keywords")String keywords, 
 			@Param("code")String code,

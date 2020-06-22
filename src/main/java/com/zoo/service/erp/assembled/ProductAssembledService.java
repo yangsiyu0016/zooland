@@ -31,9 +31,9 @@ public class ProductAssembledService {
 	ProductAssembledMaterialMapper pamMapper;
 	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size,String keywords,
 			String code,String productCode,String productName,String status,String warehouseId,
-			String start_assembledTime,String end_assembledTime,String start_ctime,String end_ctime) {
+			String start_assembledTime,String end_assembledTime,String start_ctime,String end_ctime,String sort,String order) {
 		Integer start = (page-1)*size;
-		List<ProductAssembled> productAssembleds = paMapper.getProductAssembledByPage(start,size,keywords,code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime,LoginInterceptor.getLoginUser().getCompanyId());
+		List<ProductAssembled> productAssembleds = paMapper.getProductAssembledByPage(start,size,keywords,code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime,LoginInterceptor.getLoginUser().getCompanyId(),sort,order);
 		return productAssembleds;
 	}
 	public long getCount(String keywords,
