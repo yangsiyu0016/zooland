@@ -29,14 +29,18 @@ public class ProductAssembledService {
 	SystemParameterService systemParameterService;
 	@Autowired
 	ProductAssembledMaterialMapper pamMapper;
-	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size) {
+	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size,String keywords,
+			String code,String productCode,String productName,String status,String warehouseId,
+			String start_assembledTime,String end_assembledTime,String start_ctime,String end_ctime) {
 		Integer start = (page-1)*size;
-		List<ProductAssembled> productAssembleds = paMapper.getProductAssembledByPage(start,size,LoginInterceptor.getLoginUser().getCompanyId());
+		List<ProductAssembled> productAssembleds = paMapper.getProductAssembledByPage(start,size,keywords,code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime,LoginInterceptor.getLoginUser().getCompanyId());
 		return productAssembleds;
 	}
-	public long getCount() {
+	public long getCount(String keywords,
+			String code,String productCode,String productName,String status,String warehouseId,
+			String start_assembledTime,String end_assembledTime,String start_ctime,String end_ctime) {
 		// TODO Auto-generated method stub
-		return paMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+		return paMapper.getCount(keywords,code,productCode,productName,status,warehouseId,start_assembledTime,end_assembledTime,start_ctime,end_ctime,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 	public ProductAssembled getProductAssembledById(String id) {
 		return paMapper.getProductAssembledById(id);

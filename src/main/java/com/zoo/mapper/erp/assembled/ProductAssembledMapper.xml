@@ -19,13 +19,82 @@
 		<collection column="id" property="materials" select="com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper.getMaterialByAssembledId"></collection>
 	</resultMap>
 	<select id="getProductAssembledByPage" resultMap="BaseResultMap">
-		select * from product_assembled where companyId=#{companyId}
+		select 
+			pa.* 
+		from product_assembled pa left join product p on pa.productId=p.id 
+								
+		where pa.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND  (pa.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND pa.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND pa.warehouseId =#{warehouseId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND pa.status =#{status}
+		</if>
+		<if test="start_assembledTime!=null and start_assembledTime!=''">
+			AND pa.assembledTime <![CDATA[ >= ]]> #{start_assembledTime}
+		</if>
+		<if test="end_assembledTime!=null and end_assembledTime!=''">
+			AND pa.assembledTime <![CDATA[ <= ]]> #{end_assembledTime}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND pa.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND pa.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="long">
-		select count(*) from product_assembled where companyId=#{companyId}
+		select 
+			count(*) 
+		from 
+			product_assembled pa 
+		left join product p on pa.productId=p.id 
+		where pa.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND  (pa.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND pa.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND pa.warehouseId =#{warehouseId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND pa.status =#{status}
+		</if>
+		<if test="start_assembledTime!=null and start_assembledTime!=''">
+			AND pa.assembledTime <![CDATA[ >= ]]> #{start_assembledTime}
+		</if>
+		<if test="end_assembledTime!=null and end_assembledTime!=''">
+			AND pa.assembledTime <![CDATA[ <= ]]> #{end_assembledTime}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND pa.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND pa.ctime<![CDATA[ <= ]]> #{end_ctime}
+		</if>
 	</select>
 	<select id="getProductAssembledById" resultMap="BaseResultMap">
 		select * from product_assembled where id=#{id}

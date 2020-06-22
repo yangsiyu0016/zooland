@@ -15,7 +15,7 @@ import lombok.Data;
 public class ProductAssembled {
 	private String id;
 	private String code;
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date assembledTime;
 	private Product product;
 	private Warehouse warehouse;
