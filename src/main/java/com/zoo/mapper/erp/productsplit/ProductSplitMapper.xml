@@ -20,6 +20,7 @@
 		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<association column="splitManId"   property="splitMan" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailByProductSplitId"></collection>
 	</resultMap>
 	
@@ -28,13 +29,14 @@
 		<if test="companyId != null">
 			and companyId = #{companyId}
 		</if>
+		order by ctime
 		<if test="start != null and size != null">
 			limit #{start}, #{size}
 		</if>
 	</select>
 	
 	<select id="getCount" resultType="Long">
-		select count(*) product_split where 1=1 
+		select count(*) from product_split where 1=1 
 		<if test="companyId != null">
 			and companyId = #{companyId}
 		</if>
@@ -44,7 +46,7 @@
 		select * from product_split where id = #{id}
 	</select>
 	
-	<insert test="addProductSplit">
+	<insert id="addProductSplit">
 		insert into product_split(
 			id,
 			code,
@@ -61,7 +63,8 @@
 			isClaimed,
 			processInstanceId,
 			notOutNumber,
-			goodsAllocationId
+			goodsAllocationId,
+			productId
 		)values(
 			#{productSplit.id},
 			#{productSplit.code},
@@ -69,29 +72,32 @@
 			#{productSplit.splitTime},
 			#{productSplit.number},
 			#{productSplit.batchNumber},
-			#{productSplit.splitMan.id},
+			#{productSplit.splitManId},
 			#{productSplit.ctime},
 			#{productSplit.etime},
 			#{productSplit.status},
 			#{productSplit.description},
 			#{productSplit.companyId},
 			#{productSplit.isClaimed},
+			#{productSplit.processInstanceId},
 			#{productSplit.notOutNumber},
-			#{productSplit.goodsAllocation.id}
+			#{productSplit.goodsAllocation.id},
+			#{productSplit.product.id}
 		)
 	</insert>
 	
-	<update test="updatePeoductSplit">
+	<update id="updatePeoductSplit">
 		update product_split set 
 			warehouseId = #{productSplit.warehouse.id},
 			splitTime = #{productSplit.splitTime},
 			number = #{productSplit.number},
-			description = #{productSplit.description}
+			description = #{productSplit.description},
+			productId = #{productSplit.product.id}
 		where
 			id = #{productSplit.id}
 	</update>
 	
-	<update test="updateProcessInstanceId">
+	<update id="updateProcessInstanceId">
 		update product_split set processInstanceId = #{processInstanceId} where id = #{id}
 	</update>
 	

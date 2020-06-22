@@ -85,6 +85,23 @@ public class ProductSplitService {
 	 */
 	public void updatePeoductSplit(ProductSplit productSplit) {
 		productSplitMapper.updatePeoductSplit(productSplit);
+		detailMapper.deleteByProductSplitId(productSplit.getId());
+		for(ProductSplitDetail detail : productSplit.getDetails()) {
+			detail.setId(UUID.randomUUID().toString());
+			detail.setCtime(new Date());
+			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
+			detail.setProductSplitId(productSplit.getId());
+			detailMapper.addDetail(detail);
+		}
+	}
+	
+	public void deleteDetailById(String ids) {
+		// TODO Auto-generated method stub
+		String[] split = ids.split(",");
+		productSplitMapper.deleteProductSplitByIds(split);
+		for(String id: split) {
+			detailMapper.deleteByProductSplitId(id);
+		}
 	}
 	
 	/**
@@ -94,7 +111,7 @@ public class ProductSplitService {
 	public void addProductSplit(ProductSplit productSplit) {
 		String id = UUID.randomUUID().toString();
 		productSplit.setId(id);
-		if("AUTO".equals(productSplit.getCode())) {
+		if("AUTO".equals(productSplit.getCodeGeneratorType())) {
 			try {
 				String parameterValue = systemParameterService.getValueByCode("c000012");
 				String code = CodeGenerator.getInstance().generator(parameterValue);
@@ -105,12 +122,14 @@ public class ProductSplitService {
 			}
 		}
 		productSplit.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		productSplit.setSplitManId(LoginInterceptor.getLoginUser().getId());
 		productSplit.setCtime(new Date());
 		productSplit.setStatus(ProductSplitStatus.WTJ);
 		productSplitMapper.addProductSplit(productSplit);
 		for(ProductSplitDetail detail : productSplit.getDetails()) {
 			detail.setId(UUID.randomUUID().toString());
 			detail.setCtime(new Date());
+			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
 			detail.setProductSplitId(id);
 			detailMapper.addDetail(detail);
 		}
@@ -188,4 +207,5 @@ public class ProductSplitService {
 		isClaimedCondition.put("isClaimed", "N");
 		productSplitMapper.updateProductSplitIsClaimed(isClaimedCondition);
 	}
+
 }

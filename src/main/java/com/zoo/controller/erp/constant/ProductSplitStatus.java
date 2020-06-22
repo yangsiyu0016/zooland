@@ -9,5 +9,6 @@ public class ProductSplitStatus {
 	public static final String CF = "CF";//拆分
 	public static final String DESTROY = "DESTROY";//作废
 	public static final String FINISHED = "FINISHED";//完成
+	public static final String REJECT = "REJECT";//重新提交
 	
 }
