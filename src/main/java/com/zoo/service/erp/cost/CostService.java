@@ -21,6 +21,7 @@ import com.zoo.mapper.erp.inbound.InboundDetailMapper;
 import com.zoo.mapper.erp.inbound.InboundMapper;
 import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
 import com.zoo.mapper.erp.outbound.OutboundMapper;
+import com.zoo.mapper.erp.productsplit.ProductSplitMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.mapper.erp.purchase.PurchaseMapper;
 import com.zoo.mapper.erp.sell.SellDetailMapper;
@@ -35,6 +36,7 @@ import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
+import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.erp.sell.Sell;
@@ -77,6 +79,10 @@ public class CostService {
 	SellDetailMapper sellDetailMapper;
 	@Autowired
 	CostDetailGoodsAllocationMapper costDetailGoodsAllocationMapper;
+	
+	@Autowired
+	ProductSplitMapper splitMapper;
+	
 	public List<Cost> getCostByForeignKey(String foreignKey){
 		List<Cost> costs = costMapper.getCostByForeignKey(foreignKey);
 		return costs;
@@ -105,6 +111,7 @@ public class CostService {
 			
 		}
 	}
+	
 	public void addCostFromSell(Cost cost) {
 		Sell sell = sellMapper.getSellById(cost.getForeignKey());
 		cost.setId(UUID.randomUUID().toString());
@@ -399,4 +406,5 @@ public class CostService {
 		}
 		
 	}
+	
 }

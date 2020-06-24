@@ -1,5 +1,6 @@
 package com.zoo.service.erp.productsplit;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +18,18 @@ import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
+import com.zoo.mapper.erp.outbound.OutboundMapper;
 import com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper;
 import com.zoo.mapper.erp.productsplit.ProductSplitMapper;
+import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
 import com.zoo.mapper.erp.warehouse.StockDetailMapper;
 import com.zoo.mapper.erp.warehouse.StockMapper;
+import com.zoo.model.erp.outbound.Outbound;
+import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
+import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
@@ -48,26 +55,55 @@ public class ProductSplitService {
 	@Autowired
 	SystemParameterService systemParameterService;
 	
+	@Autowired
+	OutboundMapper outboundMapper;
+	
+	@Autowired
+	OutboundDetailMapper outboundDetailMapper;
+	
+	@Autowired
+	GoodsAllocationMapper gaMapper;
+	/*
+	 * public List<ProductSplit> getProductSplitByPage(Integer page, Integer size){
+	 * Integer start = null; if(page != null) { start = (page - 1) * size; } return
+	 * productSplitMapper.getProductSplitByPage(start, size,
+	 * LoginInterceptor.getLoginUser().getCompanyId()); }
+	 * 
+	 * 
+	 * public Long getCount() { return
+	 * productSplitMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+	 * }
+	 */
+	
 	/**
 	 * 分页查询
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public List<ProductSplit> getProductSplitByPage(Integer page, Integer size){
+	public List<ProductSplit> getProductSplitByPage(Integer page, Integer size, String keywords, String code,
+			String productCode, String productName, String status, String warehouseId, String start_splitTime,
+			String end_splitTime, String start_ctime, String end_ctime, String sort, String order) {
+		// TODO Auto-generated method stub
 		Integer start = null;
 		if(page != null) {
 			start = (page - 1) * size;
 		}
-		return productSplitMapper.getProductSplitByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		
+		return productSplitMapper.getProductSplitByPage(start, size, keywords, code, productCode, productName, status,
+				warehouseId, start_splitTime, end_splitTime, start_ctime, end_ctime, LoginInterceptor.getLoginUser().getCompanyId(), sort, order);
 	}
-	
+
 	/**
 	 * 获取总条数
 	 * @return
 	 */
-	public Long getCount() {
-		return productSplitMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+	public Long getCount(String keywords, String code, String productCode, String productName, String status,
+			String warehouseId, String start_splitTime, String end_splitTime, String start_ctime, String end_ctime,
+			String sort, String order) {
+		// TODO Auto-generated method stub
+		return productSplitMapper.getCount(keywords, code, productCode, productName, status, warehouseId, start_splitTime, end_splitTime,
+				start_ctime, end_ctime, LoginInterceptor.getLoginUser().getCompanyId());
 	}
 	
 	/**
@@ -91,8 +127,13 @@ public class ProductSplitService {
 			detail.setCtime(new Date());
 			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
 			detail.setProductSplitId(productSplit.getId());
+			detail.setNotInNumber(detail.getNumber());
 			detailMapper.addDetail(detail);
 		}
+	}
+	
+	public void updateNotOutNumberById(BigDecimal notOutNumber, String id) {
+		productSplitMapper.updateNotOutNumberById(notOutNumber, id);
 	}
 	
 	public void deleteDetailById(String ids) {
@@ -124,6 +165,7 @@ public class ProductSplitService {
 		productSplit.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		productSplit.setSplitManId(LoginInterceptor.getLoginUser().getId());
 		productSplit.setCtime(new Date());
+		productSplit.setNotOutNumber(productSplit.getNumber());
 		productSplit.setStatus(ProductSplitStatus.WTJ);
 		productSplitMapper.addProductSplit(productSplit);
 		for(ProductSplitDetail detail : productSplit.getDetails()) {
@@ -131,6 +173,7 @@ public class ProductSplitService {
 			detail.setCtime(new Date());
 			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
 			detail.setProductSplitId(id);
+			detail.setNotInNumber(detail.getTotalNumber());
 			detailMapper.addDetail(detail);
 		}
 	}
@@ -161,7 +204,7 @@ public class ProductSplitService {
 		
 		//启动流程
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId("inventoryCheck", businessKey, variables,info.getCompanyId());
+		ProcessInstance processInstance = runtimeService.startProcessInstanceByKeyAndTenantId("productSplit", businessKey, variables,info.getCompanyId());
 		//获取流程id
 		String processInstanceId = processInstance.getId();
 		//更新到自定义拆分表中
@@ -207,5 +250,49 @@ public class ProductSplitService {
 		isClaimedCondition.put("isClaimed", "N");
 		productSplitMapper.updateProductSplitIsClaimed(isClaimedCondition);
 	}
+
+	//添加出库单
+	public void addOutbound(Outbound outbound, String goodsAllocationId, BigDecimal number) {
+		// TODO Auto-generated method stub
+		Outbound ob = outboundMapper.getOutboundByForeignKey(outbound.getForeignKey());
+		ProductSplit split = this.getProductSplitById(outbound.getForeignKey());
+		if(ob != null) {
+			
+			for(OutboundDetail detail: ob.getDetails()) {
+				if(detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
+					detail.setNumber(detail.getNumber().add(number));
+					outboundDetailMapper.addDetail(detail);
+				}
+			}
+			GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
+			OutboundDetail outboundDetail = new OutboundDetail();
+			outboundDetail.setId(UUID.randomUUID().toString());
+			outboundDetail.setCtime(new Date());
+			outboundDetail.setGoodsAllocation(goodsAllocation);
+			outboundDetail.setNumber(number);
+			outboundDetail.setOutboundId(ob.getId());
+			outboundDetail.setProduct(split.getProduct());
+			outboundDetailMapper.addDetail(outboundDetail);
+		}else {
+			outbound.setId(UUID.randomUUID().toString());
+			outbound.setCode(split.getCode());
+			outbound.setType("CF");
+			outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
+			outbound.setCtime(new Date());
+			outbound.setWarehouse(split.getWarehouse());
+			outboundMapper.addOutbound(outbound);
+			GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
+			OutboundDetail outboundDetail = new OutboundDetail();
+			outboundDetail.setId(UUID.randomUUID().toString());
+			outboundDetail.setCtime(new Date());
+			outboundDetail.setGoodsAllocation(goodsAllocation);
+			outboundDetail.setNumber(number);
+			outboundDetail.setOutboundId(outbound.getId());
+			outboundDetail.setProduct(split.getProduct());
+			outboundDetailMapper.addDetail(outboundDetail);
+		}
+	}
+
+	
 
 }

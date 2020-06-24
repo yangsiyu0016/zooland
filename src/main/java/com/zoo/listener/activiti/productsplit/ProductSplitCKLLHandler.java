@@ -35,7 +35,6 @@ public class ProductSplitCKLLHandler implements TaskListener {
 
 	private ProcessEngine processEngine;
 	private WarehouseService warehouseService;
-	private ProductSplitService productSplitService;
 	
 	@Override
 	public void notify(DelegateTask delegateTask) {
@@ -43,9 +42,7 @@ public class ProductSplitCKLLHandler implements TaskListener {
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		
-		productSplitService = (ProductSplitService) ApplicationUtil.getBean("productSplitService");
 		warehouseService = (WarehouseService)ApplicationUtil.getBean("warehouseService");
-		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String warehouseId = (String)runtimeService.getVariable(delegateTask.getExecutionId(), "warehouseId");
 		
 		Warehouse warehouse = warehouseService.getWarehouseById(warehouseId);
@@ -54,18 +51,7 @@ public class ProductSplitCKLLHandler implements TaskListener {
 		for(SystemUser user:users){
 			userIds.add(user.getId());
 		}
-		delegateTask.addCandidateUsers(userIds);	
-		
-		String key = result.getBusinessKey();
-		
-		ProductSplit split = productSplitService.getProductSplitById(key);
-		
-		Map<String,Object> condition = new HashMap<String,Object>();
-		condition = new HashMap<String,Object>();
-		condition.put("id", split.getId());
-		condition.put("status", ProductSplitStatus.CKLL);
-		
-		productSplitService.updateProductSplitStatus(condition);
+		delegateTask.addCandidateUsers(userIds);
 	}
 
 }

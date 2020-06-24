@@ -1,6 +1,8 @@
 package com.zoo.listener.activiti.productsplit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.zoo.controller.erp.constant.InventoryCheckStatus;
 import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.model.erp.productsplit.ProductSplit;
+import com.zoo.model.erp.warehouse.Warehouse;
 import com.zoo.service.erp.productsplit.ProductSplitService;
 import com.zoo.utils.ApplicationUtil;
 
@@ -40,7 +43,14 @@ public class ProductSplitCKZGCompleteHandler implements TaskListener {
 		String key = result.getBusinessKey();
 		
 		ProductSplit split = productSplitService.getProductSplitById(key);
+		List<String> warehouseIdList = new ArrayList<String>();
+		Warehouse warehouse = split.getWarehouse();
 		
+		Map<String, Object> variables = delegateTask.getVariables();
+		warehouseIdList.add(warehouse.getId());
+		
+		variables.put("warehouseIds", warehouseIdList);
+		delegateTask.setVariables(variables);
 		Map<String,Object> condition = new HashMap<String,Object>();
 		
 		

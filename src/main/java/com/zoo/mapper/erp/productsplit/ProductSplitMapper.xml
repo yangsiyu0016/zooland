@@ -25,20 +25,80 @@
 	</resultMap>
 	
 	<select id="getProductSplitByPage" resultMap="BaseResultMap">
-		select * from product_split where 1=1
+		select ps.* from product_split ps left join product p on ps.productId = p.id where 1=1
 		<if test="companyId != null">
-			and companyId = #{companyId}
+			and ps.companyId = #{companyId}
 		</if>
-		order by ctime
+		<if test="keywords != null and keywords != '' ">
+			and (ps.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and ps.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and ps.warehouseId = #{warehouseId} 
+		</if>
+		<if test="status != null and status != '' ">
+			and ps.status = #{status} 
+		</if>
+		<if test="start_splitTime != null and start_splitTime != '' ">
+			and ps.splitTime &gt;= #{start_splitTime}
+		</if>
+		<if test="end_splitTime != null and end_splitTime != '' ">
+			and ps.splitTime &lt;= #{end_splitTime}
+		</if>
+		<if test="start_ctime != null and start_ctime != '' ">
+			and ps.ctime &gt;= #{start_ctime}
+		</if>
+		<if test="end_ctime != null and end_ctime != '' ">
+			and ps.ctime &lt;= #{end_ctime}
+		</if>
+		order by ${sort} ${order}
 		<if test="start != null and size != null">
 			limit #{start}, #{size}
 		</if>
 	</select>
 	
 	<select id="getCount" resultType="Long">
-		select count(*) from product_split where 1=1 
+		select count(*) from product_split ps left join product p on ps.productId = p.id where 1=1 
 		<if test="companyId != null">
-			and companyId = #{companyId}
+			and ps.companyId = #{companyId}
+		</if>
+		<if test="keywords != null and keywords != '' ">
+			and (ps.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and ps.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and ps.warehouseId = #{warehouseId} 
+		</if>
+		<if test="status != null and status != '' ">
+			and ps.status = #{status} 
+		</if>
+		<if test="start_splitTime != null and start_splitTime != '' ">
+			and ps.splitTime &gt;= #{start_splitTime}
+		</if>
+		<if test="end_splitTime != null and end_splitTime != '' ">
+			and ps.splitTime &lt;= #{end_splitTime}
+		</if>
+		<if test="start_ctime != null and start_ctime != '' ">
+			and ps.ctime &gt;= #{start_ctime}
+		</if>
+		<if test="end_ctime != null and end_ctime != '' ">
+			and ps.ctime &lt;= #{end_ctime}
 		</if>
 	</select>
 	
@@ -90,6 +150,7 @@
 		update product_split set 
 			warehouseId = #{productSplit.warehouse.id},
 			splitTime = #{productSplit.splitTime},
+			notOutNumber = #{productSplit.notOutNumber},
 			number = #{productSplit.number},
 			description = #{productSplit.description},
 			productId = #{productSplit.product.id}
@@ -103,7 +164,7 @@
 	
 	<update id="updateProductSplitStatus">
 		update product_split set 
-			status = #{condition.status},
+			status = #{condition.status}
 			<if test="condition.isClaimed != null">
 				, isClaimed = #{condition.isClaimed}
 			</if>
@@ -118,6 +179,13 @@
 		update product_split set
 			isClaimed = #{condition.isClaimed} 
 		where 
+			id = #{id}
+	</update>
+	
+	<update id="updateNotOutNumberById">
+		update product_split set
+			notOutNumber = #{notOutNumber}
+		where
 			id = #{id}
 	</update>
 	

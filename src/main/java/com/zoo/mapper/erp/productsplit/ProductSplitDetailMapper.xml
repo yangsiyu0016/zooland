@@ -6,7 +6,7 @@
 	<resultMap type="com.zoo.model.erp.productsplit.ProductSplitDetail" id="BaseResultMap">
 		<id column="id" property="id"/>
 		<result column="number" property="number"/>
-		<result column="totalNumber" property="totalNumber"/>
+		<result column="notOutNumber" property="notOutNumber"/>
 		<result column="description" property="description"/>
 		<result column="productSplitId" property="productSplitId"/>
 		<result column="ctime" property="ctime"/>

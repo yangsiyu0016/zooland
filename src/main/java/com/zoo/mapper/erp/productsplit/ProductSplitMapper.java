@@ -1,5 +1,6 @@
 package com.zoo.mapper.erp.productsplit;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +13,10 @@ import com.zoo.model.erp.productsplit.ProductSplit;
 public interface ProductSplitMapper {
 
 	//分页查询
-	List<ProductSplit> getProductSplitByPage(@Param("start") Integer start, @Param("size") Integer size, @Param("companyId") String companyId);
+	//List<ProductSplit> getProductSplitByPage(@Param("start") Integer start, @Param("size") Integer size, @Param("companyId") String companyId);
 	
 	//获取总数
-	Long getCount(@Param("companyId") String companyId);
+	//Long getCount(@Param("companyId") String companyId);
 	
 	//根据id获取拆分单
 	ProductSplit getProductSplitById(@Param("id") String id);
@@ -37,5 +38,36 @@ public interface ProductSplitMapper {
 	
 	//批量删除
 	int deleteProductSplitByIds(@Param("ids") String[] ids);
+	
+	//更新未出库数量
+	int updateNotOutNumberById(@Param("notOutNumber") BigDecimal notOutNumber, @Param("id") String id);
+
+	List<ProductSplit> getProductSplitByPage(@Param("start") Integer start,
+			@Param("size") Integer size, 
+			@Param("keywords") String keywords, 
+			@Param("code") String code,
+			@Param("productCode") String productCode, 
+			@Param("productName") String productName, 
+			@Param("status") String status, 
+			@Param("warehouseId") String warehouseId, 
+			@Param("start_splitTime") String start_splitTime,
+			@Param("end_splitTime") String end_splitTime, 
+			@Param("start_ctime") String start_ctime, 
+			@Param("end_ctime") String end_ctime, 
+			@Param("companyId") String companyId, 
+			@Param("sort") String sort, 
+			@Param("order") String order);
+
+	Long getCount(@Param("keywords") String keywords, 
+			@Param("code") String code, 
+			@Param("productCode") String productCode, 
+			@Param("productName") String productName, 
+			@Param("status") String status,
+			@Param("warehouseId") String warehouseId, 
+			@Param("start_splitTime") String start_splitTime,
+			@Param("end_splitTime") String end_splitTime, 
+			@Param("start_ctime") String start_ctime, 
+			@Param("end_ctime") String end_ctime,
+			@Param("companyId") String companyId);
 	
 }
