@@ -15,11 +15,11 @@ import com.zoo.service.erp.openingInventory.OpeningInventoryService;
 import com.zoo.utils.ApplicationUtil;
 
 /**
- * 订单调整完成
+ * 订单重新提交
  * @author aa
  *
  */
-public class OpeningInventoryDDTZRejectCompleteHandler implements TaskListener {
+public class OpeningInventoryResubmitHandler implements TaskListener {
 
 	/**
 	 * 

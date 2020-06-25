@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.zoo.model.annex.Annex;
 import com.zoo.model.erp.warehouse.Warehouse;
 import com.zoo.model.system.user.SystemUser;
 
@@ -14,7 +14,7 @@ import lombok.Data;
 public class OpeningInventory {
 	private String id;
 	private String code;
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date initDate;
 	
 	private Warehouse warehouse;
@@ -31,5 +31,7 @@ public class OpeningInventory {
 	private String codeGeneratorType;
 	private List<OpeningInventoryDetail> details;
 	private String isClaimed;
+	
+	private List<Annex> annexs;
 	
 }

@@ -20,8 +20,10 @@ import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
+import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.openingInventory.OpeningInventoryDetailMapper;
 import com.zoo.mapper.erp.openingInventory.OpeningInventoryMapper;
+import com.zoo.model.annex.Annex;
 import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.openingInventory.OpeningInventory;
 import com.zoo.model.erp.openingInventory.OpeningInventoryDetail;
@@ -52,15 +54,47 @@ public class OpeningInventoryService {
 	JournalAccountService journalAccountService;
 	@Autowired
 	SystemParameterService systemParameterService;
-	public List<OpeningInventory> getOpeningInventoryByPage(Integer page,Integer size,String cuserId){
+	@Autowired
+	AnnexMapper annexMapper;
+	public List<OpeningInventory> getOpeningInventoryByPage(
+			Integer page,
+			Integer size,
+			String cuserId,
+			String keywords,
+			String code,
+			String productCode,
+			String productName,
+			String status,
+			String warehouseId,
+			String start_initDate,
+			String end_initDate,
+			String start_ctime,
+			String end_ctime,
+			String sort,
+			String order){
 		int start = (page-1)*size;
-		List<OpeningInventory> ois = openingInventoryMapper.getOpeningInventoryByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId(), cuserId);
-		//ois = buildSpec(ois);
+		List<OpeningInventory> ois = openingInventoryMapper
+				.getOpeningInventoryByPage(start, size, 
+						LoginInterceptor.getLoginUser().getCompanyId(), 
+						cuserId,keywords,code,productCode,productName,status,
+						warehouseId,start_initDate,end_initDate,start_ctime,end_ctime,sort,order);
 		return ois;
 	}
 	
-	public Long getCount(String cuserId) {
-		return openingInventoryMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(), cuserId);
+	public Long getCount(String cuserId,
+			String keywords,
+			String code,
+			String productCode,
+			String productName,
+			String status,
+			String warehouseId,
+			String start_initDate,
+			String end_initDate,
+			String start_ctime,
+			String end_ctime) {
+		return openingInventoryMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(), 
+				cuserId,keywords,code,productCode,productName,status,
+				warehouseId,start_initDate,end_initDate,start_ctime,end_ctime);
 	}
 	public OpeningInventory getOpeningInventoryById(String id) {
 		OpeningInventory oi = openingInventoryMapper.getOpeningInventoryById(id);
@@ -89,6 +123,11 @@ public class OpeningInventoryService {
 			detail.setCtime(new Date());
 			detail.setOpeningInventoryId(id);
 			detailMapper.addDetail(detail);
+		}
+		for(Annex annex:oi.getAnnexs()) {
+			annex.setId(UUID.randomUUID().toString());
+			annex.setForeignKey(oi.getId());
+			annexMapper.addAnnex(annex);
 		}
 	}
 	public void startProcess(String id) {

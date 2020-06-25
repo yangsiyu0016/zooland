@@ -27,10 +27,25 @@ public class OpeningInventoryController {
 	OpeningInventoryService oiService;
 	
 	@GetMapping("page")
-	public Map<String,Object> getOpeningInventory_self(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> getOpeningInventory_self(@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam(value="keywords") String keywords,
+			@RequestParam(value="code") String code,
+			@RequestParam(value="productCode") String productCode,
+			@RequestParam(value="productName") String productName,
+			@RequestParam(value="status") String status,
+			@RequestParam(value="warehouseId") String warehouseId,
+			@RequestParam(value="start_initDate") String start_initDate,
+			@RequestParam(value="end_initDate") String end_initDate,
+			@RequestParam(value="start_ctime") String start_ctime,
+			@RequestParam(value="end_ctime") String end_ctime,
+			@RequestParam(value="sort") String sort,
+			@RequestParam(value="order") String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<OpeningInventory> ois = oiService.getOpeningInventoryByPage(page, size, LoginInterceptor.getLoginUser().getId());
-		long count = oiService.getCount(LoginInterceptor.getLoginUser().getId());
+		List<OpeningInventory> ois = oiService.getOpeningInventoryByPage(page, size,LoginInterceptor.getLoginUser().getId(),keywords, code,productCode,productName,status,warehouseId,
+				start_initDate,end_initDate,start_ctime,end_ctime,sort,order);
+		long count = oiService.getCount(LoginInterceptor.getLoginUser().getId(),keywords, code,productCode,productName,status,warehouseId,
+				start_initDate,end_initDate,start_ctime,end_ctime);
 		map.put("ois", ois);
 		map.put("count",count);
 		return map;
