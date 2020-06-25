@@ -7,7 +7,7 @@
 		<id column="id" property="id"/>
 		<result column="productAssembledId" property="productAssembledId"/>
 		<result column="number" property="number"/>
-		<reslut column="needNumber" property="needNumber"></reslut>
+		<result column="needNumber" property="needNumber"/>
 		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		
 	</resultMap>

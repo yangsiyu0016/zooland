@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.statistics.SellStatisticsMapper">
+
+	<select id="page" resultType="com.zoo.model.erp.statistics.SellStatistics" parameterType="map">
+		SELECT 
+			pdp.*,
+			sup.name customerName,
+			p.name productName,
+			p.typeId,
+			P.spec,
+			pt.name typeName
+		FROM
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notOutNumber, 
+			p.code,  
+			p.customerId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate,
+			u.realName
+		FROM 
+			sell_detail pd 
+		LEFT JOIN 
+			sell p 
+		ON
+			pd.sellId = p.id 
+		LEFT JOIN 
+			SYSTEM_USER u
+		ON
+			p.cuserId = u.id) pdp
+		LEFT JOIN 
+			customer sup
+		ON
+			pdp.customerId = sup.id
+		LEFT JOIN
+			product p 
+		ON
+			pdp.productId = p.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			p.typeId = pt.id WHERE deleted != 1
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if> 
+		<if test="searchData.productName != null and searchData.productName != '' ">
+			and p.id = #{searchData.productId} 
+		</if>
+		<if test="searchData.code != null and searchData.code != '' ">
+			and pdp.code like concat('%', #{searchData.code}, '%')  
+		</if>
+		<if test="searchData.customerName != null and searchData.customerName != '' ">
+			and sup.name like concat('%', #{searchData.customerName},'%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate} 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]>  -->
+		</if>
+		ORDER BY pdp.ctime DESC
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="long">
+		SELECT 
+			count(*)
+		FROM
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notOutNumber, 
+			p.code,  
+			p.customerId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate,
+			u.type
+		FROM 
+			sell_detail pd 
+		LEFT JOIN 
+			sell p 
+		ON
+			pd.sellId = p.id 
+		LEFT JOIN 
+			SYSTEM_USER u
+		ON
+			p.cuserId = u.id) pdp
+		LEFT JOIN 
+			customer sup
+		ON
+			pdp.customerId = sup.id
+		LEFT JOIN
+			product p 
+		ON
+			pdp.productId = p.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			p.typeId = pt.id WHERE deleted != 1
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if> 
+		<if test="searchData.productName != null and searchData.productName != '' ">
+			and p.id = #{searchData.productId} 
+		</if>
+		<if test="searchData.code != null and searchData.code != '' ">
+			and pdp.code like concat('%', #{searchData.code}, '%')  
+		</if>
+		<if test="searchData.customerName != null and searchData.customerName != '' ">
+			and sup.name like concat('%', #{searchData.customerName},'%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate} 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> --> 
+		</if>
+	</select>
+</mapper>

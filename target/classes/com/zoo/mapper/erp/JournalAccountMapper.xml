@@ -71,5 +71,8 @@
 				#{ja.companyId}    
 			)
 	</insert>
-
+	<delete id="deleteByOrderDetailId">
+	
+	delete from journal_account where orderDetailId=#{orderDetailId}
+	</delete>
 </mapper>

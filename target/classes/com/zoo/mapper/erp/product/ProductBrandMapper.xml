@@ -39,6 +39,9 @@
 			#{id}
 		</foreach>
 	</select>
+	<select id="getBrandList" resultMap="BaseResult">
+		SELECT * from product_brand where companyId=#{companyId}
+	</select>
 	<insert id="addProductBrand">
 		insert into product_brand (id,name,description,companyId) values(#{brand.id},#{brand.name},#{brand.description},#{brand.companyId})
 	</insert>

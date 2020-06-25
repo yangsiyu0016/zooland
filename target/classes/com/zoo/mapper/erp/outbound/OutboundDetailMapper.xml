@@ -3,11 +3,18 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundDetailMapper">
+	<resultMap type="com.zoo.model.erp.outbound.OutboundDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+	</resultMap>
+	
+	<select id="getDetailByOutboundId" resultMap="BaseResultMap">
+		select * from outbound_detail where outboundId=#{outboundId}
+	</select>
 	<insert id="addDetail">
 		insert into outbound_detail (
 			id,
 			outboundId,
-			skuId,
+			productId,
 			number,
 			price,
 			totalMoney,
@@ -17,7 +24,7 @@
 		)values(
 			#{detail.id},
 			#{detail.outboundId},
-			#{detail.productSku.id},
+			#{detail.product.id},
 			#{detail.number},
 			#{detail.price},
 			#{detail.totalMoney},
@@ -26,4 +33,7 @@
 			#{detail.ctime}
 		)
 	</insert>
+	<delete id="deleteByOutboundId">
+		delete from outbound_detail where outboundId=#{outboundId}
+	</delete>
 </mapper>

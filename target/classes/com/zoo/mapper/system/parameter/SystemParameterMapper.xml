@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.parameter.SystemParameterMapper">
+    <resultMap id="BaseResultMap" type="com.zoo.model.system.parameter.SystemParameter">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="parameterValue" property="parameterValue" jdbcType="VARCHAR"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+      	<result column="companyId" property="companyId"/> 
+      	<association column="parameterDirectoryId" property="parameterDirectory" select="com.zoo.mapper.system.parameter.SystemParameterDirectoryMapper.getDirectoryById"></association>
+    </resultMap>
+	<select id="getParameterList" resultMap="BaseResultMap">
+		select * from system_parameter where companyId=#{companyId}
+	</select>
+	<select id="getValueByCode" resultType="String">
+		select parameterValue from system_parameter where code=#{code}
+	</select>
+	<insert id="addParameter">
+		insert into
+			system_parameter (
+				id,
+				name,
+				parameterValue,
+				code,
+				description,
+				companyId,
+				parameterDirectoryId
+			) values (
+				#{parameter.id},
+				#{parameter.name},
+				#{parameter.parameterValue},
+				#{parameter.code},
+				#{parameter.description},
+				#{parameter.companyId},
+				#{parameter.parameterDirectory.id}
+			)
+		
+	</insert>
+	<update id="update">
+		update system_parameter set 
+			name=#{parameter.name},
+			parameterValue=#{parameter.parameterValue},
+			description=#{parameter.description},
+			parameterDirectoryId=#{parameter.parameterDirectory.id} 
+		where id=#{parameter.id}
+	</update>
+	
+	<delete id="delete">
+		delete from system_parameter where id=#{id}
+	</delete>
+</mapper>

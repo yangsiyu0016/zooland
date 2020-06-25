@@ -1,49 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-  <process id="myProcess" name="My process" isExecutable="true">
-    <startEvent id="startevent1" name="Start"></startEvent>
-    <userTask id="usertask1" name="仓库主管审核"></userTask>
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+  <process id="assembled" name="产品组装流程" isExecutable="true">
+    <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
+    <userTask id="assembledckzg" name="仓库主管审核">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledCKZGHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="assembledckzg"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask3" name="仓库领料"></userTask>
-    <sequenceFlow id="flow5" sourceRef="exclusivegateway1" targetRef="usertask3"></sequenceFlow>
-    <userTask id="usertask4" name="组装"></userTask>
-    <sequenceFlow id="flow6" sourceRef="usertask3" targetRef="usertask4"></sequenceFlow>
-    <userTask id="usertask5" name="成品入库"></userTask>
-    <sequenceFlow id="flow7" sourceRef="usertask4" targetRef="usertask5"></sequenceFlow>
-    <endEvent id="endevent1" name="End"></endEvent>
-    <sequenceFlow id="flow8" sourceRef="usertask5" targetRef="endevent1"></sequenceFlow>
-    <userTask id="usertask6" name="订单调整"></userTask>
-    <sequenceFlow id="flow10" sourceRef="exclusivegateway1" targetRef="usertask6"></sequenceFlow>
-    <sequenceFlow id="flow11" sourceRef="usertask6" targetRef="usertask1"></sequenceFlow>
-    <sequenceFlow id="flow12" sourceRef="usertask6" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="assembledckzg" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="getmaterials" name="仓库领料">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledKGHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow5" sourceRef="exclusivegateway1" targetRef="getmaterials">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="assembledproduct" name="组装" activiti:assignee="${applyUserId}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledStarterHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow6" sourceRef="getmaterials" targetRef="assembledproduct"></sequenceFlow>
+    <userTask id="inbound" name="成品入库">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledKGHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.assembled.AssembledKGCompleteHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow7" sourceRef="assembledproduct" targetRef="inbound"></sequenceFlow>
+    <endEvent id="endevent1" name="结束"></endEvent>
+    <sequenceFlow id="flow8" sourceRef="inbound" targetRef="endevent1"></sequenceFlow>
+    <userTask id="reject" name="订单调整">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledStarterHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.assembled.AssembledRejectCompleteHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway1" targetRef="reject">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow13" sourceRef="reject" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow14" name="作废" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='DESTROY'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow15" name="重新提交" sourceRef="exclusivegateway2" targetRef="assembledckzg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AFRESH'}]]></conditionExpression>
+    </sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
-    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_assembled">
+    <bpmndi:BPMNPlane bpmnElement="assembled" id="BPMNPlane_assembled">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="170.0" y="290.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+      <bpmndi:BPMNShape bpmnElement="assembledckzg" id="BPMNShape_assembledckzg">
         <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="280.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
         <omgdc:Bounds height="40.0" width="40.0" x="461.0" y="290.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+      <bpmndi:BPMNShape bpmnElement="getmaterials" id="BPMNShape_getmaterials">
         <omgdc:Bounds height="55.0" width="105.0" x="570.0" y="281.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask4" id="BPMNShape_usertask4">
+      <bpmndi:BPMNShape bpmnElement="assembledproduct" id="BPMNShape_assembledproduct">
         <omgdc:Bounds height="55.0" width="105.0" x="720.0" y="281.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask5" id="BPMNShape_usertask5">
+      <bpmndi:BPMNShape bpmnElement="inbound" id="BPMNShape_inbound">
         <omgdc:Bounds height="55.0" width="105.0" x="871.0" y="281.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="910.0" y="440.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="910.0" y="513.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask6" id="BPMNShape_usertask6">
+      <bpmndi:BPMNShape bpmnElement="reject" id="BPMNShape_reject">
         <omgdc:Bounds height="55.0" width="105.0" x="429.0" y="430.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="461.0" y="510.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="205.0" y="307.0"></omgdi:waypoint>
@@ -67,20 +102,30 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
         <omgdi:waypoint x="923.0" y="336.0"></omgdi:waypoint>
-        <omgdi:waypoint x="927.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="927.0" y="513.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
         <omgdi:waypoint x="481.0" y="330.0"></omgdi:waypoint>
         <omgdi:waypoint x="481.0" y="430.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
-        <omgdi:waypoint x="429.0" y="457.0"></omgdi:waypoint>
-        <omgdi:waypoint x="349.0" y="457.0"></omgdi:waypoint>
-        <omgdi:waypoint x="352.0" y="335.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="481.0" y="485.0"></omgdi:waypoint>
+        <omgdi:waypoint x="481.0" y="510.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
-        <omgdi:waypoint x="534.0" y="457.0"></omgdi:waypoint>
-        <omgdi:waypoint x="910.0" y="457.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="501.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="910.0" y="530.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="626.0" y="524.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="461.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="529.0"></omgdi:waypoint>
+        <omgdi:waypoint x="352.0" y="335.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="357.0" y="514.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

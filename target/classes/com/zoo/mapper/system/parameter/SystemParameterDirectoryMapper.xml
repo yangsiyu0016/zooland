@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.system.parameter.SystemParameterDirectoryMapper">
+    <resultMap id="BaseResultMap" type="com.zoo.model.system.parameter.SystemParameterDirectory">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="parentId" property="parentId" jdbcType="VARCHAR"/>
+        <result column="orderNumber" property="orderNumber"/>
+        <result column="companyId" property="companyId" jdbcType="VARCHAR"/>
+      
+    </resultMap>
+
+	<resultMap type="com.zoo.model.system.parameter.SystemParameterDirectory" id="WithChildrenResultMap">
+		<collection column="id" property="children" select="getDirecotryByParentId"></collection>
+	</resultMap>
+	<resultMap type="com.zoo.model.system.parameter.SystemParameterDirectory" id="WithParentResultMap">
+		<association column="parentId" property="parent" select="getDirectoryById"></association>
+	</resultMap>
+	<select id="getTreeData" resultMap="WithChildrenResultMap">
+		select * from system_parameter_directory where companyId=#{companyId} and parentId='' order by orderNumber
+	</select>
+	<select id="getDirecotryByParentId" resultMap="WithChildrenResultMap">
+		select * from system_parameter_directory where parentId=#{parentId} order by orderNumber
+	</select>
+	<select id="getDirectoryById" resultMap="BaseResultMap">
+		select * from system_parameter_directory where id=#{id}
+	</select>
+	<select id="getDirectoryList" resultMap="WithParentResultMap">
+		select * from system_parameter_directory where companyId=#{companyId}
+	</select>
+	<insert id="addDirectory">
+		insert into 
+			system_parameter_directory (
+				id,
+				name,
+				parentId,
+				orderNumber,
+				companyId
+			) 
+			values(
+				#{directory.id},
+				#{directory.name},
+				#{directory.parentId},
+				#{directory.orderNumber},
+				#{directory.companyId}
+			)
+	</insert>
+	<update id="update">
+		update system_parameter_directory set 
+			name=#{directory.name},
+			orderNumber=#{directory.orderNumber},
+		where id=#{parameter.id}
+	</update>
+	<delete id="delete">
+		delete from system_parameter_directory where id=#{id}
+	</delete>
+</mapper>

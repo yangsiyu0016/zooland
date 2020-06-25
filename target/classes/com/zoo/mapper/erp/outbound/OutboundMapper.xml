@@ -3,6 +3,27 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundMapper">
+	<resultMap type="com.zoo.model.erp.outbound.Outbound" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.outbound.OutboundDetailMapper.getDetailByOutboundId"></collection>
+	</resultMap>
+	<select id="getOutboundsByPage" resultType="java.util.HashMap">
+		select o.code code, o.ctime ctime, sc.name name from outbound o 
+		left join 
+		(select s.id id, c.name name from sell s left join customer c on s.customerId = c.id) sc 
+		on 
+ 		o.foreignKey = sc.id order by ctime desc
+	</select>
+	<select id="getTotalCount" resultType="long">
+		select count(*) count from outbound o 
+		left join 
+		(select s.id id, c.name name from sell s left join customer c on s.customerId = c.id) sc 
+		on 
+ 		o.foreignKey = sc.id
+	</select>
+	<select id="getOutboundByCostId" resultMap="BaseResultMap">
+		select * from outbound where costId=#{costId}
+	</select>
 	<insert id="addOutbound">
 		insert into outbound (
 			id,
@@ -24,4 +45,7 @@
 			#{outbound.cost.id}
 		)
 	</insert>
+	<delete id="deleteByCostId">
+		delete from outbound where costId=#{costId}
+	</delete>
 </mapper>

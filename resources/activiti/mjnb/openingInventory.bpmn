@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="openingInventory" name="期初库存录入流程" isExecutable="true">
-    <startEvent id="startevent1" name="Start" activiti:initiator="applyUserId"></startEvent>
+    <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
     <userTask id="openinginventoryckzg" name="仓库主管人员审核" activiti:formKey="flow/task/tockzgforopeninginventory">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.OpeningInventoryCKZGHandler"></activiti:taskListener>
         <activiti:taskListener event="complete" class="com.zoo.listener.activiti.OpeningInventoryCKZGCompleteHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
-    <endEvent id="endevent1" name="End"></endEvent>
+    <endEvent id="endevent1" name="结束"></endEvent>
     <userTask id="openinginventorycw" name="财务录入成本" activiti:formKey="flow/task/tocwforopeninginventory">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.OpeningInventoryCWHandler"></activiti:taskListener>
@@ -104,7 +104,7 @@
         <omgdi:waypoint x="766.0" y="397.0"></omgdi:waypoint>
         <omgdi:waypoint x="766.0" y="255.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="24.0" x="610.0" y="380.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="610.0" y="380.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="inventoryCheck" name="盘点流程" isExecutable="true">
+    <startEvent id="startevent1" name="流程开始" activiti:initiator="applyUserId"></startEvent>
+    <userTask id="inventorycheckckzg" name="仓库主管人员审核">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.InventoryCheckCKZGHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.InventoryCheckCKZGCompleteHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="inventorycheckckzg"></sequenceFlow>
+    <userTask id="inventorycheckkg" name="财务记账">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.InventoryCheckGXKCHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.InventoryCheckGXKCCompleteHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent1" name="流程结束"></endEvent>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow4" sourceRef="inventorycheckckzg" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow5" name="通过" sourceRef="exclusivegateway1" targetRef="inventorycheckkg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow6" sourceRef="inventorycheckkg" targetRef="endevent1"></sequenceFlow>
+    <userTask id="inventorycheckreject" name="订单调整" activiti:assignee="${applyUserId}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.InventoryCheckGXKCReject"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.InventoryCheckGXKCRejectComplete"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow11" name="驳回" sourceRef="exclusivegateway1" targetRef="inventorycheckreject">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow12" sourceRef="inventorycheckreject" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow13" name="作废" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow14" name="重新提交" sourceRef="exclusivegateway2" targetRef="inventorycheckckzg">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_inventoryCheck">
+    <bpmndi:BPMNPlane bpmnElement="inventoryCheck" id="BPMNPlane_inventoryCheck">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="295.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inventorycheckckzg" id="BPMNShape_inventorycheckckzg">
+        <omgdc:Bounds height="55.0" width="105.0" x="260.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inventorycheckkg" id="BPMNShape_inventorycheckkg">
+        <omgdc:Bounds height="55.0" width="105.0" x="672.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="707.0" y="503.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="490.0" y="277.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="inventorycheckreject" id="BPMNShape_inventorycheckreject">
+        <omgdc:Bounds height="55.0" width="105.0" x="458.0" y="382.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="490.0" y="500.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="312.0" y="159.0"></omgdi:waypoint>
+        <omgdi:waypoint x="312.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="365.0" y="297.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="297.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="530.0" y="297.0"></omgdi:waypoint>
+        <omgdi:waypoint x="672.0" y="297.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="570.0" y="280.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="724.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="724.0" y="503.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="510.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="382.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="510.0" y="349.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="510.0" y="437.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="500.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="530.0" y="520.0"></omgdi:waypoint>
+        <omgdi:waypoint x="707.0" y="520.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="570.0" y="501.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="490.0" y="520.0"></omgdi:waypoint>
+        <omgdi:waypoint x="312.0" y="519.0"></omgdi:waypoint>
+        <omgdi:waypoint x="312.0" y="325.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="350.0" y="501.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,4 +1,5 @@
 com\zoo\controller\annex\AnnexController.class
+META-INF\spring-configuration-metadata.json
 com\zoo\mapper\annex\AnnexMapper.class
 com\zoo\service\annex\AnnexService.class
 com\zoo\model\annex\Annex.class
