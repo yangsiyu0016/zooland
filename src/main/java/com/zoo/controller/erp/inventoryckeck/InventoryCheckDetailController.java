@@ -31,7 +31,7 @@ public class InventoryCheckDetailController {
 			map.put("detail", detail);
 		} catch (Exception e) {
 			map.put("status", 500);
-			map.put("msag", e.getMessage());
+			map.put("msg", e.getMessage());
 		}
 		return map;
 	}

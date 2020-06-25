@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
+import com.zoo.model.flow.ProductSplitTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 
@@ -26,5 +27,10 @@ public interface CustomTaskMapper {
 	PurchaseTask getPurchaseTaskById(@Param("taskId")String taskId);
 	SellTask getSellTaskById(@Param("taskId")String taskId);
 	InventoryCheckTask getInventoryCheckTaskById(@Param("taskId")String taskId);
+	/*--------------拆分单流程任务代码开始-----------------*/
+	List<ProductSplitTask> getProductSplitTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
+	Long getProductSplitTaskCount(@Param("userId")String userId);
+	ProductSplitTask getProductSplitTaskById(@Param("taskId")String taskId);
+	/*--------------拆分单流程任务代码结束-----------------*/
 	
 }

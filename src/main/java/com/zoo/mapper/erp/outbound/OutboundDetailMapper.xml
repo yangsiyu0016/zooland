@@ -5,6 +5,9 @@
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundDetailMapper">
 	<resultMap type="com.zoo.model.erp.outbound.OutboundDetail" id="BaseResultMap">
 		<id column="id" property="id"/>
+		<result column="totalNumber" property="totalNumber"/>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
 	</resultMap>
 	
 	<select id="getDetailByOutboundId" resultMap="BaseResultMap">
