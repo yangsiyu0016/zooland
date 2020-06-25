@@ -20,6 +20,7 @@ import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.flow.AssembledTask;
 import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
+import com.zoo.model.flow.ProductSplitTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
@@ -66,6 +67,23 @@ public class TaskController {
 		map.put("count", count);
 		return map;
 	}
+	/**
+	 * 获取拆分单任务
+	 * @param page
+	 * @param size
+	 * @return
+	 */
+	@GetMapping("getProductSplitTask")
+	public Map<String, Object> getProductSplitTask(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<ProductSplitTask> tasks = customTaskService.getProductSplitTask(page, size);
+		Long count = customTaskService.getProductSplitTaskCount();
+		
+		map.put("tasks", tasks);
+		map.put("count", count);
+		
+		return map;
+	}
 	@GetMapping("getSellTask")
 	public Map<String,Object> getSellTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -99,6 +117,12 @@ public class TaskController {
 		map.put("count", count);
 		return map;
 	}
+	
+	@GetMapping("getProductSplitTaskById")
+	public ProductSplitTask getProductSplitTaskById(String taskId) {
+		return customTaskService.getProductSplitTaskById(taskId);
+	}
+	
 	@GetMapping("getOpeningInventoryTaskById")
 	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
 		return customTaskService.getOpeningInventoryTaskById(taskId);

@@ -14,6 +14,7 @@ import com.zoo.mapper.flow.CustomTaskMapper;
 import com.zoo.model.flow.AssembledTask;
 import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
+import com.zoo.model.flow.ProductSplitTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
@@ -100,7 +101,24 @@ public class CustomTaskService {
 		// TODO Auto-generated method stub
 		return taskMapper.getInventoryCheckTaskById(taskId);
 	}
-	
+	/*--------------拆分单流程任务代码开始-----------------*/
+	//分页查询
+	public List<ProductSplitTask> getProductSplitTask(Integer page, Integer size) {
+		// TODO Auto-generated method stub
+		Integer start = (page-1)*size;
+		return taskMapper.getProductSplitTask(start, size, LoginInterceptor.getLoginUser().getId());
+	}
+	//总数量
+	public Long getProductSplitTaskCount() {
+		// TODO Auto-generated method stub
+		return taskMapper.getProductSplitTaskCount(LoginInterceptor.getLoginUser().getId());
+	}
+	//根据任务id获取数据
+	public ProductSplitTask getProductSplitTaskById(String taskId) {
+		// TODO Auto-generated method stub
+		return taskMapper.getProductSplitTaskById(taskId);
+	}
+	/*--------------拆分单流程任务代码结束-----------------*/
 	public void claim(String taskId, String id) {
 		taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
 		Map<String, Object> variables = taskService.getVariables(taskId);
@@ -116,4 +134,5 @@ public class CustomTaskService {
 			openingInventoryService.updateOpeningInventoryIsClaimed(variables);
 		}
 	}
+	
 }

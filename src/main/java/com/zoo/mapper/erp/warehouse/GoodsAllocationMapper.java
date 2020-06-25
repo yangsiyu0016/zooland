@@ -13,4 +13,5 @@ public interface GoodsAllocationMapper {
 	Long getCount(@Param("warehouseId") String warehouseId);
 	int addGoodsAllocation(@Param("ga")GoodsAllocation ga);
 	int updateGoodsAllocation(@Param("ga") GoodsAllocation ga);
+	GoodsAllocation getGoodsAllocationById(@Param("id") String id);
 }

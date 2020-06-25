@@ -39,4 +39,8 @@ public class OutboundService {
 		outboundDetailMapper.deleteByOutboundId(outbound.getId());
 		outboundMapper.deleteByCostId(costId);
 	}
+	
+	public Outbound getOutboundByForeignKey(String foreignKey) {
+		return outboundMapper.getOutboundByForeignKey(foreignKey);
+	}
 }
