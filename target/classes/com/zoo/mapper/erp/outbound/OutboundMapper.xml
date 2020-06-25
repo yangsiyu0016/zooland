@@ -24,6 +24,9 @@
 	<select id="getOutboundByCostId" resultMap="BaseResultMap">
 		select * from outbound where costId=#{costId}
 	</select>
+	<select id="getOutboundByForeignKey" resultMap="BaseResultMap">
+		select * from outbound where foreignKey=#{foreignKey}
+	</select>
 	<insert id="addOutbound">
 		insert into outbound (
 			id,
