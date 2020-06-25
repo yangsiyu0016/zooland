@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import com.zoo.model.flow.AssembledTask;
 import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.PurchaseTask;
@@ -12,6 +13,8 @@ import com.zoo.model.flow.SellTask;
 
 @Component
 public interface CustomTaskMapper {
+	long getAssembledTaskCount(@Param("userId")String userId);
+	List<AssembledTask> getAssembledTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
 	List<OpeningInventoryTask> getOpeningInventoryTask(@Param("start")Integer start,@Param("size")Integer size,@Param("userId") String userId);
 	long getOpeningInventoryTaskCount(@Param("userId") String userId);
 	List<SellTask> getSellTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
@@ -27,4 +30,5 @@ public interface CustomTaskMapper {
 	SellTask getSellTaskById(@Param("taskId")String taskId);
 	InventoryCheckTask getInventoryCheckTaskById(@Param("taskId")String taskId);
 	
+	AssembledTask getAssembledTaskById(@Param("taskId")String taskId);
 }

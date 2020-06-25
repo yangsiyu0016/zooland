@@ -135,6 +135,23 @@
 			description=#{pa.description}
 		where id=#{pa.id}
 	</update>
+	<update id="updateProcessInstanceId">
+		update product_assembled set processInstanceId=#{processInstanceId} where id=#{id}
+	</update>
+	<update id="updateProductAssembledStatus">
+		UPDATE 
+			product_assembled 
+		SET 
+			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+			</if>
+			<if test="condition.etime!=null">
+				,etime = #{condition.etime} 
+			</if> 
+			 
+		WHERE id = #{condition.id}
+	</update>
 	<delete id="deleteProductAssembledById">
 		delete from product_assembled where id in 
 		<foreach collection="ids" separator="," open="(" close=")" item="id">

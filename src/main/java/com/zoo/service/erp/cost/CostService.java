@@ -134,7 +134,9 @@ public class CostService {
 				
 				
 				Stock stock = stockMapper.getStock(detail.getProduct().getId(), outbound.getWarehouse().getId());
-				
+				if(stock==null) {
+					throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND);
+				}
 				detail.setPrice(stock.getCostPrice());
 				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
 				
