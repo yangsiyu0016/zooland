@@ -21,4 +21,6 @@ public interface ProductSplitDetailMapper {
 	
 	//根据拆分单删除
 	int deleteByProductSplitId(@Param("productSplitId") String productSplitId);
+	
+	ProductSplitDetail getDetailById(@Param("id") String id);
 }

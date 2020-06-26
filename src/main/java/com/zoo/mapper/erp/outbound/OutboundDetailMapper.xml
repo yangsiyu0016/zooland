@@ -39,4 +39,10 @@
 	<delete id="deleteByOutboundId">
 		delete from outbound_detail where outboundId=#{outboundId}
 	</delete>
+	
+	<update id="update">
+		update outbound_detail set 
+			number = #{detail.number}
+		where id = #{detail.id}
+	</update>
 </mapper>

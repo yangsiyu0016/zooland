@@ -41,9 +41,9 @@ public class ProductSplitCLRKCompleteHandler implements TaskListener {
 	private static final long serialVersionUID = 4204304354707127035L;
 	
 	private ProcessEngine processEngine;
-	private StockService stockService;
-	private StockDetailService stockDetailService;
-	private JournalAccountService journalAccountService;
+	//private StockService stockService;
+	//private StockDetailService stockDetailService;
+	//private JournalAccountService journalAccountService;
 	private ProductSplitService productSplitService;
 
 	@Override
@@ -53,57 +53,59 @@ public class ProductSplitCLRKCompleteHandler implements TaskListener {
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
-		stockService = (StockService)ApplicationUtil.getBean("stockService");
-		stockDetailService = (StockDetailService)ApplicationUtil.getBean("stockDetailService");
+		//stockService = (StockService)ApplicationUtil.getBean("stockService");
+		//stockDetailService = (StockDetailService)ApplicationUtil.getBean("stockDetailService");
 		productSplitService = (ProductSplitService) ApplicationUtil.getBean("productSplitService");
-		journalAccountService = (JournalAccountService)ApplicationUtil.getBean("journalAccountService");
+		//journalAccountService = (JournalAccountService)ApplicationUtil.getBean("journalAccountService");
 		
 		//获取拆分单
 		ProductSplit split = productSplitService.getProductSplitById(key);
 		//获取仓库id
-		String warehouseId = split.getWarehouse().getId();
+		//String warehouseId = split.getWarehouse().getId();
 		
-		for(ProductSplitDetail detail: split.getDetails()) {
-			String productId = detail.getProduct().getId();
+		//for(ProductSplitDetail detail: split.getDetails()) {
+			//String productId = detail.getProduct().getId();
 			//获取库存
-			Stock stock = stockService.getStock(productId, warehouseId);
+			//Stock stock = stockService.getStock(productId, warehouseId);
 			
 			//获取货位库存信息
-			StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), split.getGoodsAllocation().getId());
+			//StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), split.getGoodsAllocation().getId());
 			//更新货位库存数量
-			stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(detail.getTotalNumber()));
-			stockDetailService.updateStockDetail(stockDetail);
+			//stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(detail.getTotalNumber()));
+			//stockDetailService.updateStockDetail(stockDetail);
 			
 			/*
 			 * 更新库存信息开始
 			 */
 			//变化后可用数量
-			BigDecimal after_usableNumber = stock.getUsableNumber().add(detail.getTotalNumber());
+			//BigDecimal after_usableNumber = stock.getUsableNumber().add(detail.getTotalNumber());
 			//变化后库存总额
-			BigDecimal after_totalMoney = stock.getTotalMoney().add(detail.getTotalNumber().multiply(stock.getCostPrice()));
+			//BigDecimal after_totalMoney = stock.getTotalMoney().add(detail.getTotalNumber().multiply(stock.getCostPrice()));
 			
 			//更新库存
-			stock.setUsableNumber(after_usableNumber);
-			stock.setTotalMoney(after_totalMoney);
-			stockService.updateStock(stock);
+			//stock.setUsableNumber(after_usableNumber);
+			//stock.setTotalMoney(after_totalMoney);
+			//stockService.updateStock(stock);
 			/*
 			 * 更新库存信息结束
 			 */
 			//添加库存变化明细
-			JournalAccount journalAccount = new JournalAccount();
-			journalAccount.setId(UUID.randomUUID().toString());
-			journalAccount.setType(JournalAccountType.SPLIT);
-			journalAccount.setOrderDetailId(detail.getId());
-			journalAccount.setOrderCode(split.getCode());
-			journalAccount.setStock(stock);
-			journalAccount.setCkNumber(detail.getNumber());
-			journalAccount.setCkPrice(stock.getCostPrice());
-			journalAccount.setCkTotalMoney(detail.getTotalNumber());
-			journalAccount.setCtime(new Date());
-			journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
-			journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-			journalAccountService.addJournalAccount(journalAccount);
-		}
+			/*
+			 * JournalAccount journalAccount = new JournalAccount();
+			 * journalAccount.setId(UUID.randomUUID().toString());
+			 * journalAccount.setType(JournalAccountType.SPLIT);
+			 * journalAccount.setOrderDetailId(detail.getId());
+			 * journalAccount.setOrderCode(split.getCode()); journalAccount.setStock(stock);
+			 * journalAccount.setCkNumber(detail.getNumber());
+			 * journalAccount.setCkPrice(stock.getCostPrice());
+			 * journalAccount.setCkTotalMoney(detail.getTotalNumber());
+			 * journalAccount.setCtime(new Date());
+			 * journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.
+			 * getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+			 * journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			 * journalAccountService.addJournalAccount(journalAccount);
+			 */
+		//}
 		//更新订单状态
 		Map<String,Object> condition = new HashMap<String,Object>();
 		condition.put("id", split.getId());

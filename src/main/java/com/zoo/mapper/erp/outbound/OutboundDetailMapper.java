@@ -10,4 +10,6 @@ public interface OutboundDetailMapper {
 	int addDetail(@Param("detail")OutboundDetail detail);
 
 	int deleteByOutboundId(@Param("outboundId")String outboundId);
+	
+	int update(@Param("detail") OutboundDetail detail);
 }

@@ -30,6 +30,8 @@ import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
 import com.zoo.model.erp.warehouse.GoodsAllocation;
+import com.zoo.model.erp.warehouse.Stock;
+import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
@@ -254,25 +256,32 @@ public class ProductSplitService {
 	//添加出库单
 	public void addOutbound(Outbound outbound, String goodsAllocationId, BigDecimal number) {
 		// TODO Auto-generated method stub
+		//获取出库单
 		Outbound ob = outboundMapper.getOutboundByForeignKey(outbound.getForeignKey());
+		//获取拆分单
 		ProductSplit split = this.getProductSplitById(outbound.getForeignKey());
+		//获取货位
+		GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
+		
+		OutboundDetail outboundDetail = new OutboundDetail();
 		if(ob != null) {
-			
 			for(OutboundDetail detail: ob.getDetails()) {
 				if(detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
 					detail.setNumber(detail.getNumber().add(number));
-					outboundDetailMapper.addDetail(detail);
+					outboundDetailMapper.update(detail);
+					break;
+				}else if (!detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
+					outboundDetail.setId(UUID.randomUUID().toString());
+					outboundDetail.setCtime(new Date());
+					outboundDetail.setGoodsAllocation(goodsAllocation);
+					outboundDetail.setNumber(number);
+					outboundDetail.setOutboundId(ob.getId());
+					outboundDetail.setProduct(split.getProduct());
+					outboundDetailMapper.addDetail(outboundDetail);
+					break;
 				}
 			}
-			GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
-			OutboundDetail outboundDetail = new OutboundDetail();
-			outboundDetail.setId(UUID.randomUUID().toString());
-			outboundDetail.setCtime(new Date());
-			outboundDetail.setGoodsAllocation(goodsAllocation);
-			outboundDetail.setNumber(number);
-			outboundDetail.setOutboundId(ob.getId());
-			outboundDetail.setProduct(split.getProduct());
-			outboundDetailMapper.addDetail(outboundDetail);
+			
 		}else {
 			outbound.setId(UUID.randomUUID().toString());
 			outbound.setCode(split.getCode());
@@ -281,8 +290,6 @@ public class ProductSplitService {
 			outbound.setCtime(new Date());
 			outbound.setWarehouse(split.getWarehouse());
 			outboundMapper.addOutbound(outbound);
-			GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
-			OutboundDetail outboundDetail = new OutboundDetail();
 			outboundDetail.setId(UUID.randomUUID().toString());
 			outboundDetail.setCtime(new Date());
 			outboundDetail.setGoodsAllocation(goodsAllocation);
@@ -291,6 +298,31 @@ public class ProductSplitService {
 			outboundDetail.setProduct(split.getProduct());
 			outboundDetailMapper.addDetail(outboundDetail);
 		}
+		/*--------------更新仓库库存开始----------------*/
+		Stock stock = stockMapper.getStock(split.getProduct().getId(), split.getWarehouse().getId());
+		
+		if(stock != null) {
+			//更新后使用数量
+			BigDecimal after_usableNumber = stock.getUsableNumber().subtract(number);
+			//更新后总额
+			BigDecimal after_totalMoney = stock.getTotalMoney().subtract(after_usableNumber.multiply(stock.getCostPrice()));
+			
+			stock.setUsableNumber(after_usableNumber);
+			stock.setTotalMoney(after_totalMoney);
+			stockMapper.updateStock(stock);
+		}else {
+			throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND);
+		}
+		/*--------------更新仓库库存结束----------------*/
+		/*--------------更新货位库存开始----------------*/
+		//获取货位库存
+		StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), goodsAllocationId);
+		if(stockDetail != null) {
+			//更新可用数量
+			stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(number));
+			stockDetailMapper.updateStockDetail(stockDetail);
+		}
+		/*--------------更新货位库存结束----------------*/
 	}
 
 	
