@@ -12,13 +12,47 @@
 		<collection column="id" property="details" select="com.zoo.mapper.erp.warehouse.StockDetailMapper.getDetailsByStockId"></collection>
 	</resultMap>
 	<select id="getStockByPage" resultMap="BaseResultMap">
-		select s.* from stock s left join warehouse w on s.warehouseId=w.id  where w.companyId=#{companyId} 
+		select 
+			s.* 
+		from 
+			stock s left join warehouse w on s.warehouseId=w.id  
+				left join product p on s.productId = p.id
+		where w.companyId=#{companyId} 
+		<if test="keywords!=null and keywords!=''">
+			AND (p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%'))
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND w.id = #{warehouseId}
+		</if>
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getStockCount" resultType="long">
-		select count(*) from stock s left join warehouse w on s.warehouseId=w.id where w.companyId=#{companyId}
+		select 
+			count(*) 
+		from 
+			stock s left join warehouse w on s.warehouseId=w.id 
+				left join product p on s.productId = p.id
+		where w.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND (p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%'))
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND w.id = #{warehouseId}
+		</if>
 	</select>
 	<select id="getStock" resultMap="BaseResultMap">
 		select * from stock where productId=#{productId} and warehouseId = #{warehouseId}

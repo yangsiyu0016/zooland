@@ -15,13 +15,13 @@ import com.zoo.model.erp.warehouse.Stock;
 public class StockService {
 	@Autowired
 	StockMapper stockMapper;
-	public List<Stock> getStockByPage(Integer page,Integer size){
+	public List<Stock> getStockByPage(Integer page,Integer size,String keywords,String productCode,String productName,String warehouseId){
 		Integer start = (page-1)*size;
-		List<Stock> stocks = stockMapper.getStockByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Stock> stocks = stockMapper.getStockByPage(start, size,keywords,productCode,productName,warehouseId,LoginInterceptor.getLoginUser().getCompanyId());
 		return stocks;
 	}
-	public long getStockCount() {
-		return stockMapper.getStockCount(LoginInterceptor.getLoginUser().getCompanyId());
+	public long getStockCount(String keywords,String productCode,String productName,String warehouseId) {
+		return stockMapper.getStockCount(keywords,productCode,productName,warehouseId,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 	public Stock getStock(String productId, String warehouseId) {
 		// TODO Auto-generated method stub
