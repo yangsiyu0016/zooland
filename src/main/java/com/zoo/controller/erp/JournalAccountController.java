@@ -19,11 +19,20 @@ public class JournalAccountController {
 	@Autowired
 	JournalAccountService jaService;
 	@GetMapping("page")
-	public Map<String,Object> page(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> page(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("keywords")String keywords,
+			@RequestParam("code")String code,
+			@RequestParam("productCode")String productCode,
+			@RequestParam("productName")String productName,
+			@RequestParam("warehouseId")String warehouseId,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<JournalAccount> journalAccounts = jaService.getJournalAccountByPage(page, size);
+		List<JournalAccount> journalAccounts = jaService.getJournalAccountByPage(page, size,keywords,code,productCode,productName,warehouseId,sort,order);
 		
-		long count = jaService.getCount();
+		long count = jaService.getCount(keywords,code,productCode,productName,warehouseId);
 		map.put("journalAccounts", journalAccounts);
 		map.put("count", count);
 		return map;

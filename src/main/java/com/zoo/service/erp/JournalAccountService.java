@@ -17,13 +17,13 @@ import com.zoo.model.erp.JournalAccount;
 public class JournalAccountService {
 	@Autowired
 	JournalAccountMapper jaMapper;
-	public List<JournalAccount> getJournalAccountByPage(Integer page,Integer size){
+	public List<JournalAccount> getJournalAccountByPage(Integer page,Integer size,String keywords,String code,String productCode,String productName,String warehouseId,String sort,String order){
 		Integer start = (page-1)*size;
-		List<JournalAccount> list = jaMapper.getJournalAccountByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		List<JournalAccount> list = jaMapper.getJournalAccountByPage(start, size,keywords,code,productCode,productName,warehouseId, LoginInterceptor.getLoginUser().getCompanyId(),sort,order);
 		return list;
 	}
-	public long getCount() {
-		return jaMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+	public long getCount(String keywords,String code,String productCode,String productName,String warehouseId) {
+		return jaMapper.getCount(keywords,code,productCode,productName,warehouseId,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 	public int addJournalAccount(JournalAccount journalAccount) {
 		return jaMapper.addJournalAccount(journalAccount);		

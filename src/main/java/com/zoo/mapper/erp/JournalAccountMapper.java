@@ -9,8 +9,24 @@ import com.zoo.model.erp.JournalAccount;
 
 @Component
 public interface JournalAccountMapper {
-	List<JournalAccount> getJournalAccountByPage(@Param("start")Integer start,@Param("size")Integer size,@Param("companyId") String companyId);
-	long getCount(@Param("companyId")String companyId);
+	List<JournalAccount> getJournalAccountByPage(
+			@Param("start")Integer start,
+			@Param("size")Integer size,
+			@Param("keywords")String keywords,
+			@Param("code")String code,
+			@Param("productCode")String productCode,
+			@Param("productName")String productName,
+			@Param("warehouseId")String warehouseId,
+			@Param("companyId") String companyId,
+			@Param("sort") String sort,
+			@Param("order") String order);
+	long getCount(
+			@Param("keywords")String keywords,
+			@Param("code")String code,
+			@Param("productCode")String productCode,
+			@Param("productName")String productName,
+			@Param("warehouseId")String warehouseId,
+			@Param("companyId")String companyId);
 	int addJournalAccount(@Param("ja")JournalAccount ja);
 	int deleteByOrderDetailId(@Param("orderDetailId")String orderDetailId);
 
