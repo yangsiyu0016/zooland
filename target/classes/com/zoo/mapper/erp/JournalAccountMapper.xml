@@ -40,6 +40,12 @@
 		<if test="warehouseId!=null and warehouseId!=''">
 			AND w.id =#{warehouseId}
 		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND ja.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND ja.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
 		order by ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}

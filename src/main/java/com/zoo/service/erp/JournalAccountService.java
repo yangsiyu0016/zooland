@@ -17,9 +17,9 @@ import com.zoo.model.erp.JournalAccount;
 public class JournalAccountService {
 	@Autowired
 	JournalAccountMapper jaMapper;
-	public List<JournalAccount> getJournalAccountByPage(Integer page,Integer size,String keywords,String code,String productCode,String productName,String warehouseId,String sort,String order){
+	public List<JournalAccount> getJournalAccountByPage(Integer page,Integer size,String keywords,String code,String productCode,String productName,String warehouseId,String start_ctime,String end_ctime,String sort,String order){
 		Integer start = (page-1)*size;
-		List<JournalAccount> list = jaMapper.getJournalAccountByPage(start, size,keywords,code,productCode,productName,warehouseId, LoginInterceptor.getLoginUser().getCompanyId(),sort,order);
+		List<JournalAccount> list = jaMapper.getJournalAccountByPage(start, size,keywords,code,productCode,productName,warehouseId,start_ctime,end_ctime, LoginInterceptor.getLoginUser().getCompanyId(),sort,order);
 		return list;
 	}
 	public long getCount(String keywords,String code,String productCode,String productName,String warehouseId) {

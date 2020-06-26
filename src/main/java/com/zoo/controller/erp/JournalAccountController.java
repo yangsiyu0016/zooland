@@ -27,10 +27,12 @@ public class JournalAccountController {
 			@RequestParam("productCode")String productCode,
 			@RequestParam("productName")String productName,
 			@RequestParam("warehouseId")String warehouseId,
+			@RequestParam("start_ctime")String start_ctime,
+			@RequestParam("end_ctime")String end_ctime,
 			@RequestParam("sort")String sort,
 			@RequestParam("order")String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<JournalAccount> journalAccounts = jaService.getJournalAccountByPage(page, size,keywords,code,productCode,productName,warehouseId,sort,order);
+		List<JournalAccount> journalAccounts = jaService.getJournalAccountByPage(page, size,keywords,code,productCode,productName,warehouseId,start_ctime,end_ctime,sort,order);
 		
 		long count = jaService.getCount(keywords,code,productCode,productName,warehouseId);
 		map.put("journalAccounts", journalAccounts);

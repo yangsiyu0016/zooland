@@ -17,6 +17,8 @@ public interface JournalAccountMapper {
 			@Param("productCode")String productCode,
 			@Param("productName")String productName,
 			@Param("warehouseId")String warehouseId,
+			@Param("start_ctime")String start_ctime,
+			@Param("end_ctime")String end_ctime,
 			@Param("companyId") String companyId,
 			@Param("sort") String sort,
 			@Param("order") String order);
