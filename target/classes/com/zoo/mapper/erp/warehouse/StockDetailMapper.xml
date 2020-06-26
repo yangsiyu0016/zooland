@@ -10,6 +10,9 @@
 		<result column="lockedNumber" property="lockedNumber" />
 		<association column="goodsAllocationId" property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>		
 	</resultMap>
+	<select id="getDetailsByStockId" resultMap="BaseResultMap">
+		select * from stock_detail where stockId=#{stockId}
+	</select>
 	<select id="getDetail" resultMap="BaseResultMap">
 		select * from stock_detail where stockId=#{stockId} and goodsAllocationId=#{goodsAllocationId}
 	</select>

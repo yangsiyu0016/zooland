@@ -5,7 +5,7 @@
 <mapper namespace="com.zoo.mapper.erp.cost.CostDetailMapper">
 	<resultMap type="com.zoo.model.erp.cost.CostDetail" id="BaseResultMap">
 		<id column="id" property="id"/>
-		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		<collection column="id" property="cdgas" select="com.zoo.mapper.erp.cost.CostDetailGoodsAllocationMapper.getByCostDetailId"></collection>
 	</resultMap>
 	<select id="getDetailByCostId" resultMap="BaseResultMap">
@@ -16,14 +16,18 @@
 			id,
 			costId,
 			detailId,
-			skuId,
-			number
+			productId,
+			number,
+			price,
+			totalMoney
 		)values(
 			#{detail.id},
 			#{detail.costId},
 			#{detail.detailId},
-			#{detail.productSku.id},
-			#{detail.number}
+			#{detail.product.id},
+			#{detail.number},
+			#{detail.price},
+			#{detail.totalMoney}
 		)
 	</insert>
 	<delete id="deleteDetailById">

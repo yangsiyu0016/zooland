@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.inventorycheck.InventoryCheckDetailMapper">
+	<resultMap type="com.zoo.model.erp.inventorycheck.InventoryCheckDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="panDianId" property="panDianId"/>
+		<result column="type" property="type"/>
+		<result column="number" property="number"/>
+		<result column="ctime" property="ctime"/>
+		<result column="costPrice" property="costPrice"/>
+		<result column="totalMoney" property="totalMoney"/>
+		<result column="description" property="description"/>
+		<result column="occupyStock" property="occupyStock"/>
+		<result column="occupyStockNumber" property="occupyStockNumber"/>
+		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		
+	</resultMap>
+	<select id="getDetailByInventoryCheckId" resultMap="BaseResultMap">
+		select 
+			detail.id,
+			detail.type,
+			detail.productId,
+			detail.goodsAllocationId,
+			detail.panDianId,
+			detail.number,
+			detail.ctime,
+			detail.description,
+			detail.occupyStock,
+			detail.occupyStockNumber,
+			CASE detail.costPrice
+			WHEN detail.costPrice is NOT NULL THEN detail.costPrice
+			Else s.costPrice
+			end costPrice,
+			CASE detail.totalMoney
+			WHEN detail.totalMoney is NOT NULL THEN detail.totalMoney
+			Else s.costPrice*detail.number
+			END totalMoney,
+			s.costPrice currentCostPrice,
+			s.costPrice*detail.number currentTotalMoney
+		from pan_dian_detail detail left join pan_dian pd on detail.panDianId=pd.id 
+									left join stock s on (s.productId = detail.productId and s.warehouseId = pd.warehouseId)
+		where detail.panDianId = #{id}
+	</select>
+	<insert id="addDetail">
+		insert into pan_dian_detail(
+			id,
+			panDianId,
+			productId,
+			type,
+			number,
+			goodsAllocationId,
+			ctime,
+			costPrice,
+			totalMoney,
+			description,
+			occupyStock,
+			occupyStockNumber
+		) values (
+			#{detail.id},
+			#{detail.panDianId},
+			#{detail.product.id},
+			#{detail.type},
+			#{detail.number},
+			#{detail.goodsAllocation.id},
+			#{detail.ctime},
+			#{detail.costPrice},
+			#{detail.totalMoney},
+			#{detail.description},
+			#{detail.occupyStock},
+			#{detail.occupyStockNumber}
+		)
+	</insert>
+	
+	<update id="updateDetail">
+		update pan_dian_detail set type=#{detail.type}, productId=#{detail.product.id},number = #{detail.number},goodsAllocationId=#{detail.goodsAllocation.id} where id=#{detail.id}
+	</update>
+	
+	<update id="updatePrice">
+		update pan_dian_detail set costPrice=#{costPrice},totalMoney=#{totalMoney} where id=#{id}
+	</update>
+	
+	<delete id="deleteDetailById">
+		delete from pan_dian_detail where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+</mapper>

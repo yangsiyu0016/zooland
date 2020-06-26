@@ -32,4 +32,5 @@ public class ProductAssembled {
 	private String codeGeneratorType;
 	private String status;
 	private String isClaimed;
+	private String processInstanceId;
 }

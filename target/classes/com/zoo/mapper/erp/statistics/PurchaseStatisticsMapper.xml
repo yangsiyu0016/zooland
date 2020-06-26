@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.statistics.PurchaseStatisticsMapper">
+	
+	<select id="page" resultType="com.zoo.model.erp.statistics.PurchaseStatistics" parameterType="map">
+		SELECT 
+			pdp.*,
+			sup.supplierName,
+			pro.name productName,
+			pro.spec,
+			pt.name productType 
+		FROM 
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+			pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+			pdp.supplierId = sup.id
+		LEFT JOIN 
+			product pro
+		ON
+			pdp.productId = pro.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			pro.typeId = pt.id 
+		WHERE deleted != 1 
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if>
+		ORDER BY 
+			ctime desc	
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="long">
+		SELECT 
+			count(*)
+		FROM 
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+			pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+			pdp.supplierId = sup.id
+		LEFT JOIN 
+			product pro
+		ON
+			pdp.productId = pro.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			pro.typeId = pt.id 
+		WHERE deleted != 1 
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if>
+	</select>
+	
+	<!-- 查询 -->
+	<select id="search" resultType="com.zoo.model.erp.statistics.PurchaseStatistics" parameterType="map">
+		SELECT 
+			pdp.*,
+			sup.supplierName,
+			pro.name productName,
+			pro.spec,
+			pt.name productType 
+		FROM 
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+			pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+			pdp.supplierId = sup.id
+		LEFT JOIN 
+			product pro
+		ON
+			pdp.productId = pro.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			pro.typeId = pt.id 
+		WHERE deleted != 1 
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if> 
+		<if test="searchData.productName != null and searchData.productName != '' ">
+			and pro.id = #{searchData.productId} 
+		</if>
+		<if test="searchData.code != null and searchData.code != '' ">
+			and pdp.code like concat('%', #{searchData.code}, '%')  
+		</if>
+		<if test="searchData.supplierName != null and searchData.supplierName != '' ">
+			and sup.supplierName like concat('%', #{searchData.supplierName},'%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]>  -->
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate}
+		</if>
+		ORDER BY 
+			pdp.ctime desc	
+		<if test="start!=null and size!=null">
+			limit #{start},#{size}
+		</if>
+	</select>
+	
+	
+	<!-- 查询总条数 -->
+	<select id="getSearchCount" resultType="long">
+		SELECT 
+			count(*)
+		FROM 
+		(SELECT  pd.id,
+			pd.productId,
+			pd.number, 
+			pd.price, 
+			pd.totalMoney, 
+			pd.notInNumber, 
+			p.code, 
+			p.supplierId,
+			p.ctime,
+			p.cuserId,
+			p.status,
+			p.companyId,
+			p.initDate
+		FROM 
+			purchase_detail pd 
+		LEFT JOIN 
+			purchase p 
+		ON
+			pd.purchaseId = p.id ) pdp 
+		LEFT JOIN 
+			supplier sup
+		ON
+			pdp.supplierId = sup.id
+		LEFT JOIN 
+			product pro
+		ON
+			pdp.productId = pro.id
+		LEFT JOIN 
+			product_type pt
+		ON
+			pro.typeId = pt.id 
+		WHERE deleted != 1 
+		<if test="companyId != null">
+			and pdp.companyId = #{companyId}
+		</if> 
+		<if test="searchData.productName != null and searchData.productName != '' ">
+			and pro.id = #{searchData.productId} 
+		</if>
+		<if test="searchData.code != null and searchData.code != '' ">
+			and pdp.code like concat('%', #{searchData.code}, '%')  
+		</if>
+		<if test="searchData.supplierName != null and searchData.supplierName != '' ">
+			and sup.supplierName like concat('%', #{searchData.supplierName},'%') 
+		</if>
+		<if test="searchData.startDate != null and searchData.endDate != null">
+			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> --> 
+			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate} 
+			
+		</if>
+	</select>
+</mapper>

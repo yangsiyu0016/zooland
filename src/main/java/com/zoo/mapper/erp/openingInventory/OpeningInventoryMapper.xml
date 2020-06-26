@@ -16,24 +16,93 @@
 		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.openingInventory.OpeningInventoryDetailMapper.getDetailByOpeningInventoryId"></collection>
+		<collection column="id" property="annexs" select="com.zoo.mapper.annex.AnnexMapper.getAnnexsByForeignKey"></collection>
 	</resultMap>
 	<select id="getOpeningInventoryByPage" resultMap="BaseResultMap">
-		select * from opening_inventory where 1=1 
-		<if test="companyId!=null">
-			and companyId = #{companyId}
+		select DISTINCT
+			oi.* 
+	from 
+		opening_inventory oi left join opening_inventory_detail oid on oid.openingInventoryId=oi.id
+							left join product p on oid.productId = p.id
+	where oi.companyId=#{companyId}
+		<if test="cuserId!=null and cuserId!=''">
+			and oi.cuserId = #{cuserId}
 		</if>
-		order by ctime desc
+		<if test="keywords!=null and keywords!=''">
+			and (oi.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			and oi.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND oi.warehouseId =#{warehouseId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND oi.status =#{status}
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND oi.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND oi.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND oi.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND oi.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
+		order by ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="Long">
-		select count(*) from opening_inventory where 1=1 
-		<if test="companyId!=null">
-			and companyId = #{companyId}
+		select 
+			count(DISTINCT oi.id) 
+		from 
+		
+			opening_inventory oi  left join opening_inventory_detail oid on oid.openingInventoryId=oi.id
+							left join product p on oid.productId = p.id
+		where oi.companyId=#{companyId}
+		<if test="cuserId!=null and cuserId!=''">
+			and oi.cuserId = #{cuserId}
 		</if>
-		<if test="cuserId!=null">
-			and cuserId = #{cuserId}
+		<if test="keywords!=null and keywords!=''">
+			and (oi.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			and oi.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND oi.warehouseId =#{warehouseId}
+		</if>
+		<if test="status!=null and status!=''">
+			AND oi.status =#{status}
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND oi.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND oi.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND oi.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND oi.ctime <![CDATA[ <= ]]> #{end_ctime}
 		</if>
 	</select>
 	<select id="getOpeningInventoryById"  resultMap="BaseResultMap">

@@ -24,4 +24,19 @@
 			#{inbound.cost.id}
 		)
 	</insert>
+	<select id="getInboundByPage" resultType="java.util.HashMap">
+		select i.code code, i.ctime ctime, ps.name from 
+		inbound i left join 
+		(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps 
+		on i.foreignKey = ps.id order by ctime desc 
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	<select id="getTotleCount" resultType="long">
+		select count(*) count from 
+		inbound i left join 
+		(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps 
+		on i.foreignKey = ps.id
+	</select>
 </mapper>

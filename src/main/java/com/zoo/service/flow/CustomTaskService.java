@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.flow.CustomTaskMapper;
+import com.zoo.model.flow.AssembledTask;
 import com.zoo.model.flow.InventoryCheckTask;
 import com.zoo.model.flow.OpeningInventoryTask;
 import com.zoo.model.flow.ProductSplitTask;
@@ -42,13 +43,20 @@ public class CustomTaskService {
 	
 	@Autowired
 	private OpeningInventoryService openingInventoryService;
-	
-	public List<OpeningInventoryTask> getOpeningInventoryTask(Integer page,Integer size){
+	public List<AssembledTask> getAssembledTask(Integer page, Integer size) {
 		Integer start = (page-1)*size;
-		return taskMapper.getOpeningInventoryTask(start, size, LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getAssembledTask(start,size,LoginInterceptor.getLoginUser().getId());
 	}
-	public long getOpeningInventoryTaskCount() {
-		return taskMapper.getOpeningInventoryTaskCount(LoginInterceptor.getLoginUser().getId());
+	public long getAssembledTaskCount() {
+		// TODO Auto-generated method stub
+		return taskMapper.getAssembledTaskCount(LoginInterceptor.getLoginUser().getId());
+	}
+	public List<OpeningInventoryTask> getOpeningInventoryTask(Integer page,Integer size,String sort,String order,String keywords){
+		Integer start = (page-1)*size;
+		return taskMapper.getOpeningInventoryTask(start, size, sort,order,keywords,LoginInterceptor.getLoginUser().getId());
+	}
+	public long getOpeningInventoryTaskCount(String keywords) {
+		return taskMapper.getOpeningInventoryTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	public List<SellTask> getSellTask(Integer page, Integer size) {
 		Integer start = (page-1)*size;
@@ -77,6 +85,9 @@ public class CustomTaskService {
 	public OpeningInventoryTask getOpeningInventoryTaskById(String taskId) {
 		// TODO Auto-generated method stub
 		return taskMapper.getOpeningInventoryTaskById(taskId);
+	}
+	public AssembledTask getAssembledTaskById(String taskId) {
+		return taskMapper.getAssembledTaskById(taskId);
 	}
 	public PurchaseTask getPurchaseTaskById(String taskId) {
 		// TODO Auto-generated method stub

@@ -1,4 +1,4 @@
-package com.zoo.listener.activiti.openinginventory;
+package com.zoo.listener.activiti.assembled;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ import com.zoo.utils.ApplicationUtil;
  * @author aa
  *
  */
-public class OpeningInventoryDDTZRejectCompleteHandler implements TaskListener {
+public class AssembledRejectCompleteHandler implements TaskListener {
 
 	/**
 	 * 

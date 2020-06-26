@@ -36,7 +36,6 @@ import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
-import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.model.erp.sell.Sell;
@@ -141,7 +140,9 @@ public class CostService {
 				
 				
 				Stock stock = stockMapper.getStock(detail.getProduct().getId(), outbound.getWarehouse().getId());
-				
+				if(stock==null) {
+					throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND);
+				}
 				detail.setPrice(stock.getCostPrice());
 				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
 				

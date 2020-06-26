@@ -6,9 +6,12 @@
 	<resultMap type="com.zoo.model.annex.Annex" id="BaseResultMap">
 		<id column="id" property="id"/>
 		<result column="title" property="title"/>
+		<result column="fileName" property="fileName"></result>
 		<result column="url" property="url"/>
 		<result column="utime" property="utime"/>
 		<result column="foreignKey" property="foreignKey"/>
+		<result column="suffix" property="suffix"></result>
+		<result column="size" property="size"></result>
 	</resultMap>
 	
 	<select id="getAnnexById" resultMap="BaseResultMap">
@@ -21,19 +24,28 @@
 		insert into annex(
 			id,
 			title,
+			fileName,
 			url,
 			utime,
-			foreignKey
+			foreignKey,
+			suffix,
+			size
 		) values(
 			#{annex.id},
 			#{annex.title},
+			#{annex.fileName},
 			#{annex.url},
 			#{annex.utime},
-			#{annex.foreignKey}
+			#{annex.foreignKey},
+			#{annex.suffix},
+			#{annex.size}
 		)
 	</insert>
 	<delete id="delAnnexById">
 		delete from annex where id = #{id}
+	</delete>
+	<delete id="delAnnexByForeignKey">
+		delete from annex where foreignKey = #{foreignKey}
 	</delete>
 	<update id="updateAnnexForeignKeyById">
 		update annex set foreignKey = #{annex.foreignKey} where id = #{annex.id}

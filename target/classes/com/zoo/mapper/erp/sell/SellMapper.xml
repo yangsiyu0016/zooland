@@ -9,10 +9,14 @@
 		<result column="initDate" property="initDate"/>
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
+		<result column="receivableType" property="receivableType"/>
+		<result column="isClaimed" property="isClaimed"/>
 		<association column="customerId" property="customer" select="com.zoo.mapper.crm.customer.CustomerMapper.getCustomerById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="receivingId" property="receiving" select="com.zoo.mapper.crm.customer.ReceivingMapper.getReceivingById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.sell.SellDetailMapper.getDetailBySellId"></collection>
+		<collection column="id" property="annexs" select="com.zoo.mapper.annex.AnnexMapper.getAnnexsByForeignKey"></collection>
+		
 	</resultMap>
 	<select id="getSellByPage" resultMap="BaseResultMap">
 		select * from sell where companyId=#{companyId}
@@ -40,7 +44,10 @@
 			status,
 			companyId,
 			receivingId,
-			receivingContext
+			receivingContext,
+			receivableType,
+			freightType,
+			description
 		)values(
 			#{sell.id},
 			#{sell.initDate},
@@ -53,11 +60,22 @@
 			#{sell.status},
 			#{sell.companyId},
 			#{sell.receiving.id},
-			#{sell.receivingContext}
+			#{sell.receivingContext},
+			#{sell.receivableType},
+			#{sell.freightType},
+			#{sell.description}
 		)
 	</insert>
 	<update id="updateSell">
-		update sell set initDate=#{sell.initDate},customerId=#{sell.customer.id},receivingId=#{sell.receiving.id},receivingContext=#{sell.receivingContext} where id=#{sell.id}	
+		update sell set 
+		initDate=#{sell.initDate},
+		customerId=#{sell.customer.id},
+		receivingId=#{sell.receiving.id},
+		receivingContext=#{sell.receivingContext},
+		receivableType=#{sell.receivableType},
+		freightType = #{sell.freightType},
+		description = #{sell.description}
+		where id=#{sell.id}	
 	</update>
 	<update id="updateProcessInstanceId">
 		update sell set processInstanceId=#{processInstanceId} where id=#{id}
@@ -67,6 +85,9 @@
 			sell 
 		SET 
 			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+			</if>
 			<if test="condition.etime!=null">
 				,etime = #{condition.etime} 
 			</if> 
@@ -79,4 +100,7 @@
             #{id}
         </foreach>
 	</delete>
+	<update id="updateSellIsClaimed">
+		update sell set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
+	</update>
 </mapper>

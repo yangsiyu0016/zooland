@@ -1,6 +1,7 @@
 package com.zoo.mapper.erp.assembled;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
@@ -40,5 +41,7 @@ public interface ProductAssembledMapper {
 	ProductAssembled getProductAssembledById(@Param("id") String id);
 	int addProductAssembled(@Param("pa")ProductAssembled pa);
 	int updateProductAssembled(@Param("pa")ProductAssembled pa);
+	int updateProcessInstanceId(@Param("id") String id,@Param("processInstanceId")String processInstanceId);
+	public int updateProductAssembledStatus(@Param("condition")Map<String, Object> condition);
 	int deleteProductAssembledById(@Param("ids")String[] ids);
 }

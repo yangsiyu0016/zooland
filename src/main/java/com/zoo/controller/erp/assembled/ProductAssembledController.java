@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.assembled.ProductAssembled;
 import com.zoo.service.erp.assembled.ProductAssembledService;
 import com.zoo.vo.RespBean;
@@ -76,6 +77,26 @@ public class ProductAssembledController {
 			return new RespBean("200","删除成功");
 		} catch (Exception e) {
 			return new RespBean("500",e.getMessage());
+		}
+	}
+	@PostMapping("startFlow")
+	public RespBean startFlow(@RequestParam("id")String id) {
+		try {
+			paService.startProcess(id);
+			return new RespBean("200","启动成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
+		}
+	}
+	//取回
+	@GetMapping("takeBack")
+	public RespBean takeBack(@RequestParam("id") String id) {
+		try {
+			paService.takeBack(id);
+			return new RespBean("200", "驳回成功");
+		} catch (ZooException e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMsg());
 		}
 	}
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.aftersales.repairorder.RepairOrderDetailMapper">
+	<resultMap type="com.zoo.model.erp.aftersales.repairorder.RepairOrderDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="repairOrderId" property="repairOrderId"/>
+		<result column="type" property="type"/>
+		<result column="number" property="number"/>
+		<result column="problemDescription" property="problemDescription"/>
+		<result column="repairResult" property="repairResult"/>
+		<result column="materialCost" property="materialCost"/>
+		<result column="manHourFee" property="manHourFee"/>
+		<result column="ctime" property="ctime"/>
+		<result column="problemDescription" property="problemDescription"/>
+		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		
+	</resultMap>
+	
+	<select id="getDetailByRepairOrderId"  resultMap="BaseResultMap">
+		select * from repair_order_detail where repairOrderId= #{repairOrderId}
+	</select>
+	
+	<select id="getDetailById"  resultMap="BaseResultMap">
+		select * from repair_order_detail where id= #{id}
+	</select>
+	
+	<insert id="addDetail">
+		insert into repair_order_detail (
+			id,
+			repairOrderId,
+			skuId,
+			type,
+			number,
+			ctime,
+			problemDescription,
+			repairResult,
+			materialCost,
+			manHourFee,
+			totalMoney
+		)values(
+			#{detail.id},
+			#{detail.repairOrderId},
+			#{detail.productSku.id},
+			#{detail.type},
+			#{detail.number},
+			#{detail.ctime},
+			#{detail.problemDescription},
+			#{detail.repairResult},
+			#{detail.materialCost},
+			#{detail.manHourFee},
+			#{detail.totalMoney}
+		)
+	</insert>
+	
+	<update id="updateDetail">
+		update repair_order_detail set	
+			skuId=#{detail.productSku.id},
+			number=#{detail.number},
+			ctime=#{detail.ctime},
+			problemDescription=#{detail.problemDescription},
+			repairResult=#{detail.repairResult},
+			materialCost=#{detail.materialCost},
+			manHourFee=#{detail.manHourFee},
+			totalMoney=#{detail.totalMoney}
+		where id=#{detail.id}
+	</update>
+	<update id="updateNumberById">
+		update repair_order_detail set number=#{number} where id=#{id}
+	</update>
+	<delete id="deleteDetailByRepairOrderId">
+		delete from repair_order_detail where repairOrderId=#{repairOrderId}
+	</delete>
+	
+	<delete id="deleteDetailById">
+		delete from repair_order_detail where id in 
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
+	
+</mapper>

@@ -9,6 +9,7 @@
 		<result column="initDate" property="initDate"/>
 		<result column="ctime" property="ctime"/>
 		<result column="etime" property="etime"/>
+		<result column="isClaimed" property="isClaimed"/>
 		<association column="supplierId" property="supplier" select="com.zoo.mapper.erp.purchase.SupplierMapper.getSupplierById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="accountId" property="supplierAccount" select="com.zoo.mapper.erp.purchase.SupplierAccountMapper.getSupplierAccountById"></association>
@@ -41,7 +42,10 @@
 			status,
 			companyId,
 			accountId,
-			accountContext
+			accountContext,
+			paymentType,
+			freightType,
+			description
 		)values(
 			#{purchase.id},
 			#{purchase.initDate},
@@ -54,7 +58,10 @@
 			#{purchase.status},
 			#{purchase.companyId},
 			#{purchase.supplierAccount.id},
-			#{purchase.accountContext}
+			#{purchase.accountContext},
+			#{purchase.paymentType},
+			#{purchase.freightType},
+			#{purchase.description}
 		)
 	</insert>
 	<update id="updatePurchase">
@@ -62,7 +69,10 @@
 			initDate=#{purchase.initDate},
 			supplierId=#{purchase.supplier.id},
 			accountId=#{purchase.supplierAccount.id},
-			accountContext=#{purchase.accountContext}
+			accountContext=#{purchase.accountContext},
+			paymentType=#{purchase.paymentType},
+			freightType=#{purchase.freightType},
+			description=#{purchase.description}
 		where id=#{purchase.id}
 	</update>
 	<update id="updateProcessInstanceId">
@@ -73,14 +83,20 @@
 			purchase 
 		SET 
 			status = #{condition.status} 
+			<if test="condition.isClaimed!=null">
+			,isClaimed = #{condition.isClaimed} 
+			</if>
 			<if test="condition.etime!=null">
 				,etime = #{condition.etime} 
 			</if> 
 			 
 		WHERE id = #{condition.id}
 	</update>
+	<update id="updatePurchaseIsClaimed">
+		update purchase set isClaimed = #{condition.isClaimed} where id = #{condition.id} 
+	</update>
 	<delete id="deletePurchaseById">
-		delete from sell where id in 
+		delete from purchase where id in 
 		<foreach collection="ids" separator="," open="(" close=")" item="id">
             #{id}
         </foreach>

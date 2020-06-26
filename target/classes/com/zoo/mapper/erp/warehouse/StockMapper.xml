@@ -8,7 +8,8 @@
 		<result column="usableNumber" property="usableNumber" />
 		<result column="lockedNumber" property="lockedNumber" />
 		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>		
-		<association column="skuId" property="productSku" select="com.zoo.mapper.erp.product.ProductSkuMapper.getSkuById"></association>
+		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.warehouse.StockDetailMapper.getDetailsByStockId"></collection>
 	</resultMap>
 	<select id="getStockByPage" resultMap="BaseResultMap">
 		select s.* from stock s left join warehouse w on s.warehouseId=w.id  where w.companyId=#{companyId} 
@@ -20,7 +21,7 @@
 		select count(*) from stock s left join warehouse w on s.warehouseId=w.id where w.companyId=#{companyId}
 	</select>
 	<select id="getStock" resultMap="BaseResultMap">
-		select * from stock where skuId=#{skuId} and warehouseId = #{warehouseId}
+		select * from stock where productId=#{productId} and warehouseId = #{warehouseId}
 	</select>
 	<select id="getStockById" resultMap="BaseResultMap">
 		select * from stock where id=#{id}
@@ -30,7 +31,7 @@
 			stock
 			(
 				id,
-				skuId,
+				productId,
 				warehouseId,
 				usableNumber,
 				lockedNumber,
@@ -40,7 +41,7 @@
 			VALUES
 			(
 				#{stock.id},
-				#{stock.productSku.id},
+				#{stock.product.id},
 				#{stock.warehouse.id},
 				#{stock.usableNumber},
 				#{stock.lockedNumber},

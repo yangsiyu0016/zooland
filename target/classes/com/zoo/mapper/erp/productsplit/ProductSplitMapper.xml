@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoo.mapper.erp.productsplit.ProductSplitMapper">
+	<resultMap type="com.zoo.model.erp.productsplit.ProductSplit" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="splitTime" property="splitTime"/>
+		<result column="number" property="number"/>
+		<result column="batchNumber" property="batchNumber"/>
+		<result column="status" property="status"/>
+		<result column="ctime" property="ctime"/>
+		<result column="etime" property="etime"/>
+		<result column="companyId" property="companyId"/>
+		<result column="description" property="description"/>
+		<result column="isClaimed" property="isClaimed"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="notOutNumber" property="notOutNumber"/>
+		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="splitManId"   property="splitMan" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailByProductSplitId"></collection>
+	</resultMap>
+	
+	<select id="getProductSplitByPage" resultMap="BaseResultMap">
+		select ps.* from product_split ps left join product p on ps.productId = p.id where 1=1
+		<if test="companyId != null">
+			and ps.companyId = #{companyId}
+		</if>
+		<if test="keywords != null and keywords != '' ">
+			and (ps.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and ps.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and ps.warehouseId = #{warehouseId} 
+		</if>
+		<if test="status != null and status != '' ">
+			and ps.status = #{status} 
+		</if>
+		<if test="start_splitTime != null and start_splitTime != '' ">
+			and ps.splitTime &gt;= #{start_splitTime}
+		</if>
+		<if test="end_splitTime != null and end_splitTime != '' ">
+			and ps.splitTime &lt;= #{end_splitTime}
+		</if>
+		<if test="start_ctime != null and start_ctime != '' ">
+			and ps.ctime &gt;= #{start_ctime}
+		</if>
+		<if test="end_ctime != null and end_ctime != '' ">
+			and ps.ctime &lt;= #{end_ctime}
+		</if>
+		order by ${sort} ${order}
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select>
+	
+	<select id="getCount" resultType="Long">
+		select count(*) from product_split ps left join product p on ps.productId = p.id where 1=1 
+		<if test="companyId != null">
+			and ps.companyId = #{companyId}
+		</if>
+		<if test="keywords != null and keywords != '' ">
+			and (ps.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and ps.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and ps.warehouseId = #{warehouseId} 
+		</if>
+		<if test="status != null and status != '' ">
+			and ps.status = #{status} 
+		</if>
+		<if test="start_splitTime != null and start_splitTime != '' ">
+			and ps.splitTime &gt;= #{start_splitTime}
+		</if>
+		<if test="end_splitTime != null and end_splitTime != '' ">
+			and ps.splitTime &lt;= #{end_splitTime}
+		</if>
+		<if test="start_ctime != null and start_ctime != '' ">
+			and ps.ctime &gt;= #{start_ctime}
+		</if>
+		<if test="end_ctime != null and end_ctime != '' ">
+			and ps.ctime &lt;= #{end_ctime}
+		</if>
+	</select>
+	
+	<select id="getProductSplitById" resultMap="BaseResultMap">
+		select * from product_split where id = #{id}
+	</select>
+	
+	<insert id="addProductSplit">
+		insert into product_split(
+			id,
+			code,
+			warehouseId,
+			splitTime,
+			number,
+			batchNumber,
+			splitManId,
+			ctime,
+			etime,
+			status,
+			description,
+			companyId,
+			isClaimed,
+			processInstanceId,
+			notOutNumber,
+			goodsAllocationId,
+			productId
+		)values(
+			#{productSplit.id},
+			#{productSplit.code},
+			#{productSplit.warehouse.id},
+			#{productSplit.splitTime},
+			#{productSplit.number},
+			#{productSplit.batchNumber},
+			#{productSplit.splitManId},
+			#{productSplit.ctime},
+			#{productSplit.etime},
+			#{productSplit.status},
+			#{productSplit.description},
+			#{productSplit.companyId},
+			#{productSplit.isClaimed},
+			#{productSplit.processInstanceId},
+			#{productSplit.notOutNumber},
+			#{productSplit.goodsAllocation.id},
+			#{productSplit.product.id}
+		)
+	</insert>
+	
+	<update id="updatePeoductSplit">
+		update product_split set 
+			warehouseId = #{productSplit.warehouse.id},
+			splitTime = #{productSplit.splitTime},
+			notOutNumber = #{productSplit.notOutNumber},
+			number = #{productSplit.number},
+			description = #{productSplit.description},
+			productId = #{productSplit.product.id}
+		where
+			id = #{productSplit.id}
+	</update>
+	
+	<update id="updateProcessInstanceId">
+		update product_split set processInstanceId = #{processInstanceId} where id = #{id}
+	</update>
+	
+	<update id="updateProductSplitStatus">
+		update product_split set 
+			status = #{condition.status}
+			<if test="condition.isClaimed != null">
+				, isClaimed = #{condition.isClaimed}
+			</if>
+			<if test="condition.etime != null">
+				, etime = #{condition.etime}
+			</if>
+		where 
+			id = #{condition.id}
+	</update>
+	
+	<update id="updateProductSplitIsClaimed">
+		update product_split set
+			isClaimed = #{condition.isClaimed} 
+		where 
+			id = #{id}
+	</update>
+	
+	<update id="updateNotOutNumberById">
+		update product_split set
+			notOutNumber = #{notOutNumber}
+		where
+			id = #{id}
+	</update>
+	
+	<delete id="deleteProductSplitByIds">
+		delete from product_split where id in
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+			#{id}
+		</foreach>
+	</delete>
+	
+</mapper>

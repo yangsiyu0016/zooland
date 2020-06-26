@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="purchase" name="采购流程" isExecutable="true">
-    <startEvent id="startevent1" name="Start" activiti:initiator="applyUserId"></startEvent>
+    <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
     <userTask id="purchasecgjl" name="采购经理审批">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.PurchaseCGJLHandler"></activiti:taskListener>
@@ -38,7 +38,7 @@
     <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow6" sourceRef="purchasecgnq" targetRef="parallelgateway2"></sequenceFlow>
     <sequenceFlow id="flow7" sourceRef="purchaseinbound" targetRef="parallelgateway2"></sequenceFlow>
-    <endEvent id="endevent1" name="End"></endEvent>
+    <endEvent id="endevent1" name="结束"></endEvent>
     <sequenceFlow id="flow8" sourceRef="parallelgateway2" targetRef="endevent1">
       <extensionElements>
         <activiti:executionListener event="take" class="com.zoo.listener.activiti.PurchaseENDHandler"></activiti:executionListener>
@@ -144,7 +144,7 @@
         <omgdi:waypoint x="365.0" y="338.0"></omgdi:waypoint>
         <omgdi:waypoint x="420.0" y="337.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="365.0" y="338.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="24.0" x="365.0" y="338.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
