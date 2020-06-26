@@ -283,6 +283,7 @@ public class OpeningInventoryService {
 		// TODO Auto-generated method stub
 		OpeningInventory openingInventory = this.getOpeningInventoryById(id);
 		Task task = taskService.createTaskQuery().processInstanceId(openingInventory.getProcessInstanceId()).active().singleResult();
+		if(task==null) throw new ZooException("任务不存在");
 		if(task.getTaskDefinitionKey().equals("openinginventoryckzg")) {
 			if(StringUtil.isEmpty(task.getAssignee())) {
 				Map<String,Object> condition = new HashMap<String, Object>();

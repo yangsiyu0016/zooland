@@ -25,9 +25,6 @@ import com.zoo.model.flow.ProductSplitTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
-import com.zoo.service.erp.openingInventory.OpeningInventoryService;
-import com.zoo.service.erp.purchase.PurchaseService;
-import com.zoo.service.erp.sell.SellService;
 import com.zoo.service.flow.CustomTaskService;
 import com.zoo.vo.RespBean;
 
@@ -41,15 +38,6 @@ public class TaskController {
 	
 	@Autowired
 	InventoryCheckService inventoryCheckService;
-	
-	@Autowired
-	private SellService sellService;
-	
-	@Autowired
-	private PurchaseService purchaseService;
-	
-	@Autowired
-	private OpeningInventoryService openingInventoryService;
 	@GetMapping("getAssembledTask")
 	public Map<String,Object> getAssembledTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -234,49 +222,24 @@ public class TaskController {
 	 * RespBean("500",e.getExceptionEnum().message()); } }
 	 */
 	//作废
-	@PostMapping("destory")
-	public RespBean destory(@RequestParam("taskId")String taskId,@RequestParam("comment")String comment, @RequestParam("idea") String idea, @RequestParam("id") String id, @RequestParam("code") String code) {
-		try {
-			Map<String, Object> variables = new HashMap<String, Object>();
-			if(!"".equals(idea) && idea != null) {
-				variables.put("msg", idea);
-				
-				if(StringUtils.isNotBlank(comment)){
-					variables.put("comment", comment);
-				}
-				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
-				String processInstanceId=task.getProcessInstanceId();
-				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
-				taskService.addComment(taskId, processInstanceId, comment);
-				taskService.complete(taskId,variables);
-			}	
-			if("PD".equals(code)) {
-				inventoryCheckService.destory(id);
-			}else if ("XS".equals(code)) {
-				sellService.destroy(id);
-			}else if ("CG".equals(code)) {
-				purchaseService.destroy(id);
-			}else if ("QC".equals(code)) {
-				openingInventoryService.destroy(id);
-			}
-			return new RespBean("200", "订单已作废");
-		} catch (ZooException e) {
-			return new RespBean("500",e.getExceptionEnum().message());
-		}
-	}
-	public static void main(String[] args) {
-		float i=1;
-		float z= 100000;
-		float total = z;
-		float bei = (float) 1.2;
-		System.out.println("第"+i+"期:总压注"+total+";当期压注："+z+";盈利："+(z*6-total));
-		while(i<20) {
-			z=z*bei;
-			if(i==7) bei = (float) 1.2;
-			i++;
-			total= (float) (total+z);
-			System.out.println("第"+i+"期:总压注"+total+";当期压注："+z+";盈利："+(z*6-total));
-			
-		}
-	}
+	/*
+	 * @PostMapping("destory") public RespBean destory(@RequestParam("taskId")String
+	 * taskId,@RequestParam("comment")String comment, @RequestParam("idea") String
+	 * idea, @RequestParam("id") String id, @RequestParam("code") String code) { try
+	 * { Map<String, Object> variables = new HashMap<String, Object>();
+	 * if(!"".equals(idea) && idea != null) { variables.put("msg", idea);
+	 * 
+	 * if(StringUtils.isNotBlank(comment)){ variables.put("comment", comment); }
+	 * Task task=taskService.createTaskQuery().taskId(taskId).singleResult(); String
+	 * processInstanceId=task.getProcessInstanceId();
+	 * Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId()
+	 * ); taskService.addComment(taskId, processInstanceId, comment);
+	 * taskService.complete(taskId,variables); } if("PD".equals(code)) {
+	 * inventoryCheckService.destory(id); }else if ("XS".equals(code)) {
+	 * sellService.destroy(id); }else if ("CG".equals(code)) {
+	 * purchaseService.destroy(id); }else if ("QC".equals(code)) {
+	 * openingInventoryService.destroy(id); } return new RespBean("200", "订单已作废"); }
+	 * catch (ZooException e) { return new
+	 * RespBean("500",e.getExceptionEnum().message()); } }
+	 */
 }
