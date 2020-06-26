@@ -51,12 +51,12 @@ public class CustomTaskService {
 		// TODO Auto-generated method stub
 		return taskMapper.getAssembledTaskCount(LoginInterceptor.getLoginUser().getId());
 	}
-	public List<OpeningInventoryTask> getOpeningInventoryTask(Integer page,Integer size){
+	public List<OpeningInventoryTask> getOpeningInventoryTask(Integer page,Integer size,String sort,String order,String keywords){
 		Integer start = (page-1)*size;
-		return taskMapper.getOpeningInventoryTask(start, size, LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getOpeningInventoryTask(start, size, sort,order,keywords,LoginInterceptor.getLoginUser().getId());
 	}
-	public long getOpeningInventoryTaskCount() {
-		return taskMapper.getOpeningInventoryTaskCount(LoginInterceptor.getLoginUser().getId());
+	public long getOpeningInventoryTaskCount(String keywords) {
+		return taskMapper.getOpeningInventoryTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	public List<SellTask> getSellTask(Integer page, Integer size) {
 		Integer start = (page-1)*size;

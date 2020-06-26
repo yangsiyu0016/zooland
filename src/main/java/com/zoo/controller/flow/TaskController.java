@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.pagehelper.util.StringUtil;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.flow.AssembledTask;
@@ -94,10 +95,15 @@ public class TaskController {
 		return map;
 	}
 	@GetMapping("getOpeningInventoryTask")
-	public Map<String,Object> getOpeningInventoryTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> getOpeningInventoryTask(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order,
+			@RequestParam("keywords")String keywords){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<OpeningInventoryTask> tasks = customTaskService.getOpeningInventoryTask(page, size);
-		long count = customTaskService.getOpeningInventoryTaskCount();
+		List<OpeningInventoryTask> tasks = customTaskService.getOpeningInventoryTask(page, size,sort,order,keywords);
+		long count = customTaskService.getOpeningInventoryTaskCount(keywords);
 		map.put("tasks", tasks);
 		map.put("count", count);
 		return map;
@@ -146,8 +152,15 @@ public class TaskController {
 	@PostMapping("claim")
 	public RespBean claim(@RequestParam("taskId")String taskId) {
 		try {
-			taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
-			return new RespBean("200","签收成功");
+			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+			if(StringUtil.isNotEmpty(task.getAssignee())) {
+				return new RespBean("500","任务已被签收，不能重复签收");
+			}else {
+				taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
+				return new RespBean("200","签收成功");
+			}
+			
+			
 		} catch (Exception e) {
 			return new RespBean("500","签收失败");
 		}

@@ -4,15 +4,14 @@
     <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
     <userTask id="openinginventoryckzg" name="仓库主管人员审核" activiti:formKey="flow/task/tockzgforopeninginventory">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.OpeningInventoryCKZGHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.OpeningInventoryCKZGCompleteHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.openinginventory.OpeningInventoryCKZGHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <endEvent id="endevent1" name="结束"></endEvent>
     <userTask id="openinginventorycw" name="财务录入成本" activiti:formKey="flow/task/tocwforopeninginventory">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.OpeningInventoryCWHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.OpeningInventoryCWCompleteHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.openinginventory.OpeningInventoryCWHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.openinginventory.OpeningInventoryCWCompleteHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow4" sourceRef="openinginventorycw" targetRef="endevent1"></sequenceFlow>
@@ -24,7 +23,7 @@
     </sequenceFlow>
     <userTask id="oireject" name="订单调整" activiti:assignee="${applyUserId}">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.OpeningInventoryDDTZRejectHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.openinginventory.OpeningInventoryDDTZRejectHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow8" name="驳回" sourceRef="exclusivegateway1" targetRef="oireject">

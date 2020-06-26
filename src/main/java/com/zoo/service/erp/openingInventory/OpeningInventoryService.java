@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.UUID;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +58,8 @@ public class OpeningInventoryService {
 	SystemParameterService systemParameterService;
 	@Autowired
 	AnnexMapper annexMapper;
+	@Autowired
+	TaskService taskService;
 	public List<OpeningInventory> getOpeningInventoryByPage(
 			Integer page,
 			Integer size,
@@ -132,21 +136,26 @@ public class OpeningInventoryService {
 	}
 	public void startProcess(String id) {
 		OpeningInventory openingInventory = this.getOpeningInventoryById(id);
-		UserInfo user = LoginInterceptor.getLoginUser();
-		Map<String, Object> variables=new HashMap<String,Object>();
-		// 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
-        identityService.setAuthenticatedUserId(user.getId());
-		String businessKey = id;
-		variables.put("CODE", openingInventory.getCode());
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance processInstance = runtimeService
-        		.startProcessInstanceByKeyAndTenantId("openingInventory",businessKey,variables, user.getCompanyId());
-        String processInstanceId = processInstance.getId();
-        this.openingInventoryMapper.updateProcessInstanceId(id, processInstanceId);
-        Map<String,Object> condition = new HashMap<String,Object>();
-        condition.put("id", id);
-		condition.put("status", OpeningInventoryStatus.ZGSH);
-		this.updateOpeningInventoryStatus(condition);
+		if(StringUtil.isNotEmpty(openingInventory.getProcessInstanceId())) {
+			throw new ZooException("流程已启动");
+		}else {
+			UserInfo user = LoginInterceptor.getLoginUser();
+			Map<String, Object> variables=new HashMap<String,Object>();
+			// 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
+	        identityService.setAuthenticatedUserId(user.getId());
+			String businessKey = id;
+			variables.put("CODE", openingInventory.getCode());
+			RuntimeService runtimeService = processEngine.getRuntimeService();
+			ProcessInstance processInstance = runtimeService
+	        		.startProcessInstanceByKeyAndTenantId("openingInventory",businessKey,variables, user.getCompanyId());
+	        String processInstanceId = processInstance.getId();
+	        this.openingInventoryMapper.updateProcessInstanceId(id, processInstanceId);
+	        Map<String,Object> condition = new HashMap<String,Object>();
+	        condition.put("id", id);
+			condition.put("status", OpeningInventoryStatus.ZGSH);
+			this.updateOpeningInventoryStatus(condition);
+		}
+		
 	}
 	public int  updateOpeningInventoryStatus(Map<String, Object> condition) {
 		return this.openingInventoryMapper.updateOpeningInventoryStatus(condition);
@@ -170,6 +179,10 @@ public class OpeningInventoryService {
 	public void deleteOiById(String ids) {
 		String[] split = ids.split(",");
 		for(String openingInventoryId:split) {
+			OpeningInventory oi = this.getOpeningInventoryById(openingInventoryId);
+			if(StringUtil.isNotEmpty(oi.getProcessInstanceId())) {
+				throw new ZooException("流程已启动,不能删除");
+			}
 			//删除产品详情
 			detailMapper.deleteDetailByOpeningInventoryId(openingInventoryId);
 			//删除物流信息
@@ -269,17 +282,26 @@ public class OpeningInventoryService {
 	public void reset(String id) {
 		// TODO Auto-generated method stub
 		OpeningInventory openingInventory = this.getOpeningInventoryById(id);
-		Map<String,Object> condition = new HashMap<String, Object>();
-		condition.put("id", id);
-		condition.put("status", OpeningInventoryStatus.WTJ);
-		condition.put("isClaimed", "N");//设置是否签收
-		openingInventoryMapper.updateOpeningInventoryStatus(condition);
+		Task task = taskService.createTaskQuery().processInstanceId(openingInventory.getProcessInstanceId()).active().singleResult();
+		if(task.getTaskDefinitionKey().equals("openinginventoryckzg")) {
+			if(StringUtil.isEmpty(task.getAssignee())) {
+				Map<String,Object> condition = new HashMap<String, Object>();
+				condition.put("id", id);
+				condition.put("status", OpeningInventoryStatus.WTJ);
+				openingInventoryMapper.updateOpeningInventoryStatus(condition);
+				
+				//删除流程
+				RuntimeService runtimeService = processEngine.getRuntimeService();
+				runtimeService.deleteProcessInstance(openingInventory.getProcessInstanceId(), "待定");
+				
+				openingInventoryMapper.updateProcessInstanceId(id, null);
+			}else {
+				throw new ZooException("审批人已签收不能取回");
+			}
+		}else {
+			throw new ZooException("当前节点不能取回");
+		}
 		
-		//删除流程
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.deleteProcessInstance(openingInventory.getProcessInstanceId(), "待定");
-		
-		openingInventoryMapper.updateProcessInstanceId(id, null);
 	}
 
 	

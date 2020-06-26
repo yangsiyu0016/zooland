@@ -5,9 +5,10 @@ import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.model.erp.openingInventory.OpeningInventory;
@@ -15,11 +16,12 @@ import com.zoo.service.erp.openingInventory.OpeningInventoryService;
 import com.zoo.utils.ApplicationUtil;
 
 /**
- * 订单重新提交
+ * 订单作废
  * @author aa
  *
  */
-public class OpeningInventoryDestroyHandler implements TaskListener {
+@Component("OpeningInventoryDestroyHandler")
+public class OpeningInventoryDestroyHandler implements ExecutionListener {
 
 	/**
 	 * 
@@ -31,13 +33,13 @@ public class OpeningInventoryDestroyHandler implements TaskListener {
 	private OpeningInventoryService oiService;
 	
 	@Override
-	public void notify(DelegateTask delegateTask) {
+	public void notify(DelegateExecution execution) {
 		// TODO Auto-generated method stub
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		oiService = (OpeningInventoryService)ApplicationUtil.getBean("openingInventoryService");
 		
-		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
 		OpeningInventory openingInventory = oiService.getOpeningInventoryById(key);
 		//delegateTask.setAssignee(ic.getCuserId());

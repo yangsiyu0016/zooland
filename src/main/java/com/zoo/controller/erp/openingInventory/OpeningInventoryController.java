@@ -77,8 +77,8 @@ public class OpeningInventoryController {
 		try {
 			oiService.deleteOiById(ids);
 			return new RespBean("200","删除成功");
-		} catch (Exception e) {
-			return new RespBean("500",e.getMessage());
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
 		}
 	}
 	@PostMapping("startFlow")
@@ -86,8 +86,8 @@ public class OpeningInventoryController {
 		try {
 			oiService.startProcess(id);
 			return new RespBean("200","启动成功");
-		} catch (Exception e) {
-			return new RespBean("500","启动失败");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
 		}
 	}
 	@PostMapping("deleteFlow")
@@ -111,9 +111,9 @@ public class OpeningInventoryController {
 		try {
 			oiService.reset(id);
 			return new RespBean("200", "取回成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 }
