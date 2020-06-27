@@ -87,14 +87,32 @@ public class SellService {
 			annexMapper.addAnnex(annex);
 		}
 	}
-	public List<Sell> getSellByPage(Integer page, Integer size) {
+	public List<Sell> getSellByPage(
+			Integer page, Integer size,
+			String cuserId,String keywords,
+			String code,String productCode,
+			String productName,String customerName,
+			String start_initDate,String end_initDate,
+			String start_ctime,String end_ctime,
+			String status,String sort,String order) {
 		Integer start = (page-1)*size;
-		List<Sell> sells = sellMapper.getSellByPage(start,size,LoginInterceptor.getLoginUser().getCompanyId());
+		List<Sell> sells = sellMapper.getSellByPage(start,size,
+				LoginInterceptor.getLoginUser().getCompanyId(),cuserId,
+				keywords,code,
+				productCode,productName,
+				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status.split(","),sort,order);
 		return sells;
 	}
-	public long getCount() {
+	public long getCount(String cuserId,String keywords,
+			String code,String productCode,
+			String productName,String customerName,
+			String start_initDate,String end_initDate,
+			String start_ctime,String end_ctime,
+			String status) {
 		// TODO Auto-generated method stub
-		return sellMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+		return sellMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(),cuserId,keywords,code,
+				productCode,productName,
+				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status.split(","));
 	}
 	public void deleteSellById(String ids) {
 		String[] split = ids.split(",");

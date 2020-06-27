@@ -19,13 +19,98 @@
 		
 	</resultMap>
 	<select id="getSellByPage" resultMap="BaseResultMap">
-		select * from sell where companyId=#{companyId}
+		select DISTINCT
+			s.* 
+		from 
+			sell s left join sell_detail sd on sd.sellId = s.id 
+					left join product p on sd.productId = p.id
+					left join customer c on s.customerId = c.id
+		where s.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND (s.code like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or c.name like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND s.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="customerName!=null and customerName!=''">
+			AND c.name like concat('%',#{customerName},'%')
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND s.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND s.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND s.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND s.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
+		<if test="status!=null and status.length>0">
+			AND s.status in 
+			<foreach collection="status" separator="," open="(" close=")" item="status">
+            	#{status}
+        	</foreach>
+		</if>
+		<if test="cuserId!=null and cuserId!=''">
+			AND s.cuserId = #{cuserId}
+		</if>
+		ORDER BY ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="long">
-		select count(*) from sell where companyId=#{companyId}
+		select 
+			count(DISTINCT s.id) 
+		from 
+			sell s left join sell_detail sd on sd.sellId = s.id 
+					left join product p on sd.productId = p.id
+					left join customer c on s.customerId = c.id
+		where s.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND (s.code like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or c.name like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND s.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="customerName!=null and customerName!=''">
+			AND c.name like concat('%',#{customerName},'%')
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND s.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND s.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND s.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND s.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
+		<if test="status!=null and status.length>0">
+			AND s.status in 
+			<foreach collection="status" separator="," open="(" close=")" item="status">
+            	#{status}
+        	</foreach>
+		</if>
+		<if test="cuserId!=null and cuserId!=''">
+			AND s.cuserId = #{cuserId}
+		</if>
 	</select>
 	<select id="getSellById" resultMap="BaseResultMap">
 	

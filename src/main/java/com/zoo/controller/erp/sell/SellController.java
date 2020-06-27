@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.exception.ZooException;
+import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.erp.sell.Sell;
 import com.zoo.service.erp.sell.SellService;
 import com.zoo.vo.RespBean;
@@ -26,10 +27,29 @@ public class SellController {
 	@Autowired
 	SellService sellService;
 	@GetMapping("page")
-	public Map<String,Object> page(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> page(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("keywords")String keywords,
+			@RequestParam("code")String code,
+			@RequestParam("productCode")String productCode,
+			@RequestParam("productName")String productName,
+			@RequestParam("customerName")String customerName,
+			@RequestParam("start_initDate")String start_initDate,
+			@RequestParam("end_initDate")String end_initDate,
+			@RequestParam("start_ctime")String start_ctime,
+			@RequestParam("end_ctime")String end_ctime,
+			@RequestParam("status")String status,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Sell> sells = sellService.getSellByPage(page,size);
-		long count = sellService.getCount();
+		List<Sell> sells = sellService.getSellByPage(page,size,
+				LoginInterceptor.getLoginUser().getId(),keywords,
+				code,productCode,productName,
+				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status,sort,order);
+		long count = sellService.getCount(LoginInterceptor.getLoginUser().getId(),keywords,
+				code,productCode,productName,
+				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status);
 		map.put("sells", sells);
 		map.put("count", count);
 		return map;
