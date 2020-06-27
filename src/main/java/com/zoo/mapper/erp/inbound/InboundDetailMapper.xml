@@ -3,6 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoo.mapper.erp.inbound.InboundDetailMapper">
+	<resultMap type="com.zoo.model.erp.inbound.InboundDetail" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<result column="number" property="number"/>
+		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
+		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
+	</resultMap>
+	<select id="getDetailByInboundId" resultMap="BaseResultMap">
+		select * from inbound_detail where inboundId=#{inboundId}
+	</select>
 	<insert id="addDetail">
 		insert into inbound_detail (
 			id,
@@ -26,4 +35,13 @@
 			#{detail.ctime}
 		)
 	</insert>
+	<update id="update">
+		update inbound_detail set 
+			number = #{detail.number}
+		where id = #{detail.id}
+	</update>
+	
+	<select id="getDetailById" resultMap="BaseResultMap">
+		select * from inbound_detail where id = #{id}
+	</select>
 </mapper>

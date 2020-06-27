@@ -15,4 +15,6 @@ public interface InboundMapper {
 	//分页获取入库信息
 	List<Map<String, Object>> getInboundByPage(@Param("start") Integer start, @Param("size") Integer size);
 	Long getTotleCount();
+	
+	Inbound getInboundByForeignKey(@Param("foreignKey") String foreignKey);
 }

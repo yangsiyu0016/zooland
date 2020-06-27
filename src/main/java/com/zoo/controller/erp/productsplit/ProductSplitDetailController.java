@@ -1,17 +1,22 @@
 package com.zoo.controller.erp.productsplit;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
 import com.zoo.service.erp.productsplit.ProductSplitDetailService;
 import com.zoo.vo.RespBean;
@@ -60,6 +65,17 @@ public class ProductSplitDetailController {
 		}
 	}
 	
+	@GetMapping("updateNotInNumberById")
+	public RespBean updateNotInNumberById(@RequestParam("notInNumber") BigDecimal notInNumber, @RequestParam("id") String id) {
+		try {
+			detailService.updateNotInNumberById(notInNumber, id);
+			return new RespBean("200", "更新成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
+	
 	/**
 	 * 批量删除
 	 * @param ids
@@ -74,5 +90,24 @@ public class ProductSplitDetailController {
 			// TODO: handle exception
 			return new RespBean("500", e.getMessage());
 		}
+	}
+	
+	@PostMapping("addInbound")
+	public RespBean addInbound(@RequestBody Inbound inbound, @RequestParam("number") BigDecimal number, @RequestParam("goodsAllocationId") String goodsAllocationId) {
+		try {
+			detailService.addInbound(inbound, goodsAllocationId, number);
+			return new RespBean("200", "添加成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
+	@GetMapping("getInboundByProductSplitId")
+	public Map<String, Object> getInboundByProductSplitId(@RequestParam("id") String id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<Inbound> list = detailService.getInboundByProductSplitId(id);
+		map.put("status", 200);
+		map.put("inbounds", list);
+		return map;
 	}
 }

@@ -10,4 +10,6 @@ public interface InboundDetailMapper {
 
 	int addDetail(@Param("detail")InboundDetail detail);
 	
+	int update(@Param("detail") InboundDetail detail);
+	
 }

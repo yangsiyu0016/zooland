@@ -66,5 +66,7 @@
 	<delete id="deleteByProductSplitId">
 		delete from product_split_detail where productSplitId = #{productSplitId}
 	</delete>
-	
+	<select id="getDetailById" resultMap="BaseResultMap">
+		select * from product_split_detail where id = #{id}
+	</select>
 </mapper>

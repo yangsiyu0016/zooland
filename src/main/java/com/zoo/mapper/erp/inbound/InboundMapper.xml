@@ -3,6 +3,12 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoo.mapper.erp.inbound.InboundMapper">
+	<resultMap type="com.zoo.model.erp.inbound.Inbound" id="BaseResultMap">
+		<id column="id" property="id"/>
+		<id column="foreignKey" property="foreignKey"/>
+		<association column="foreignKey"   property="splitDetail" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailById"></association>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.inbound.InboundDetailMapper.getDetailByInboundId"></collection>
+	</resultMap>
 	<insert id="addInbound">
 		insert into inbound (
 			id,
@@ -38,5 +44,8 @@
 		inbound i left join 
 		(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps 
 		on i.foreignKey = ps.id
+	</select>
+	<select id="getInboundByForeignKey" resultMap="BaseResultMap">
+		select * from inbound where foreignKey=#{foreignKey}
 	</select>
 </mapper>
