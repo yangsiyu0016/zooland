@@ -21,12 +21,24 @@
 		<if test="typeId != null and typeId != '' ">
 			and typeId = #{typeId} 
 		</if>
-		<if test="key != null and key != '' ">
-			and name like concat('%', #{key}, '%')   
+		<if test="keywords != null and keywords != '' ">
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
 		</if>
 		order by ctime desc
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
+		</if>
+	</select>
+	<select id="getCount" resultType="Long">
+		select count(*) from product where  deleted!=1
+		<if test="companyId!=null">
+			and companyId = #{companyId}
+		</if>
+		<if test="typeId != null and typeId != '' ">
+			and typeId = #{typeId} 
+		</if>
+		<if test="keywords != null and keywords != '' ">
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
 		</if>
 	</select>
 	<select id="getProductByTypeId" resultMap="BaseResultMap">
@@ -53,18 +65,7 @@
 	<select id="getProductById" resultMap="BaseResultMap">
 		select * from product where id=#{id}
 	</select>
-	<select id="getCount" resultType="Long">
-		select count(*) from product where  deleted!=1
-		<if test="companyId!=null">
-			and companyId = #{companyId}
-		</if>
-		<if test="typeId != null and typeId != '' ">
-			and typeId = #{typeId} 
-		</if>
-		<if test="key != null and key != '' ">
-			and name like concat('%', #{key}, '%')   
-		</if>
-	</select>
+	
 	<insert id="addProduct">
 		insert into 
 			product (

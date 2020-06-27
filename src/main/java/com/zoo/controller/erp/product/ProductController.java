@@ -37,11 +37,11 @@ public class ProductController {
     public Map<String,Object> getProductByPage(
     		@RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(value = "key", required = false) String key,
+            @RequestParam(value = "keywords", required = false) String keywords,
             @RequestParam(value = "typeId", required = false) String typeId){
     	Map<String,Object> map = new HashMap<String,Object>();
-    	List<Product> products = productService.getProductByPage(page, size, key, typeId);
-    	long count = productService.getCount(key, typeId);
+    	List<Product> products = productService.getProductByPage(page, size, keywords, typeId);
+    	long count = productService.getCount(keywords, typeId);
     	map.put("products", products);
     	map.put("count", count);
     	return map;
