@@ -96,11 +96,13 @@ public class SellService {
 			String start_ctime,String end_ctime,
 			String status,String sort,String order) {
 		Integer start = (page-1)*size;
+		//System.out.println(status.length());
+		//System.out.println(status.split(",").length);
 		List<Sell> sells = sellMapper.getSellByPage(start,size,
 				LoginInterceptor.getLoginUser().getCompanyId(),cuserId,
 				keywords,code,
 				productCode,productName,
-				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status.split(","),sort,order);
+				customerName,start_initDate,end_initDate,start_ctime,end_ctime,status.length()>0?status.split(","):null,sort,order);
 		return sells;
 	}
 	public long getCount(String cuserId,String keywords,
