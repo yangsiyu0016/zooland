@@ -17,12 +17,18 @@
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow7" sourceRef="productsplitreject" targetRef="exclusivegateway2"></sequenceFlow>
     <sequenceFlow id="flow8" name="重新提交" sourceRef="exclusivegateway2" targetRef="productsplitckzg">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.productsplit.ProductSplitResubmitHandler"></activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="productsplit" name="拆分" activiti:assignee="${applyUserId}"></userTask>
     <sequenceFlow id="flow9" sourceRef="productsplitckll" targetRef="productsplit"></sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow11" name="作废" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.productsplit.ProductSplitDestroyHandler"></activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="productsplitrk" name="材料入库"></userTask>
@@ -70,14 +76,14 @@
         <omgdi:waypoint x="472.0" y="337.0"></omgdi:waypoint>
         <omgdi:waypoint x="570.0" y="337.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="511.0" y="346.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="24.0" x="511.0" y="346.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
         <omgdi:waypoint x="452.0" y="357.0"></omgdi:waypoint>
         <omgdi:waypoint x="452.0" y="420.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="460.0" y="379.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="24.0" x="460.0" y="379.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">

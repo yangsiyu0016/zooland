@@ -14,6 +14,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zoo.controller.erp.constant.JournalAccountType;
 import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -25,6 +26,7 @@ import com.zoo.mapper.erp.productsplit.ProductSplitMapper;
 import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
 import com.zoo.mapper.erp.warehouse.StockDetailMapper;
 import com.zoo.mapper.erp.warehouse.StockMapper;
+import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.productsplit.ProductSplit;
@@ -33,6 +35,7 @@ import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
+import com.zoo.service.erp.JournalAccountService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
 
@@ -65,6 +68,9 @@ public class ProductSplitService {
 	
 	@Autowired
 	GoodsAllocationMapper gaMapper;
+	
+	@Autowired
+	private JournalAccountService journalAccountService;
 	/*
 	 * public List<ProductSplit> getProductSplitByPage(Integer page, Integer size){
 	 * Integer start = null; if(page != null) { start = (page - 1) * size; } return
@@ -323,6 +329,22 @@ public class ProductSplitService {
 			stockDetailMapper.updateStockDetail(stockDetail);
 		}
 		/*--------------更新货位库存结束----------------*/
+		
+		/*------------------库存变动明细开始----------------------*/
+		JournalAccount account = new JournalAccount();
+		account.setId(UUID.randomUUID().toString());
+		account.setType(JournalAccountType.SPLIT);
+		account.setOrderDetailId(split.getId());
+		account.setOrderCode(split.getCode());
+		account.setStock(stock);
+		account.setCkNumber(stock.getUsableNumber());
+		account.setCkPrice(stock.getCostPrice());
+		account.setCkTotalMoney(stock.getTotalMoney());
+		account.setCtime(new Date());
+		account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+		account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		journalAccountService.addJournalAccount(account);
+		/*------------------库存变动明细结束----------------------*/
 	}
 
 	

@@ -109,6 +109,7 @@ public class ProductSplitCLRKCompleteHandler implements TaskListener {
 		//更新订单状态
 		Map<String,Object> condition = new HashMap<String,Object>();
 		condition.put("id", split.getId());
+		condition.put("etime", new Date());
 		condition.put("status", ProductSplitStatus.FINISHED);
 		productSplitService.updateProductSplitStatus(condition);
 	}

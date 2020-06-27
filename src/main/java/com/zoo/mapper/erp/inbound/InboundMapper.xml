@@ -5,8 +5,9 @@
 <mapper namespace="com.zoo.mapper.erp.inbound.InboundMapper">
 	<resultMap type="com.zoo.model.erp.inbound.Inbound" id="BaseResultMap">
 		<id column="id" property="id"/>
+		<id column="foreignKey" property="foreignKey"/>
 		<association column="foreignKey"   property="splitDetail" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailById"></association>
-		<collection column="id" property="details" select="com.zoo.mapper.erp.inbound.InboundDetailMapper.getDetailByOutboundId"></collection>
+		<collection column="id" property="details" select="com.zoo.mapper.erp.inbound.InboundDetailMapper.getDetailByInboundId"></collection>
 	</resultMap>
 	<insert id="addInbound">
 		insert into inbound (
