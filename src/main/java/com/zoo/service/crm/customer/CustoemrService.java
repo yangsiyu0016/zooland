@@ -90,14 +90,18 @@ public class CustoemrService {
 		}
 		customerMapper.updateCustomer(customer);
 	}
-	public List<Customer> getCustomerByPage(Integer page, Integer size) {
+	public List<Customer> getCustomerByPage(Integer page, Integer size,
+			String keywords,String customerName,String linkman,
+			String owner,String start_gtime,String end_gtime,
+			String start_created,String end_created,String sort,String order) {
 		Integer start = (page-1)*size;
-		List<Customer> customers = customerMapper.getCustomerByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Customer> customers = customerMapper.getCustomerByPage(
+				start, size, LoginInterceptor.getLoginUser().getCompanyId(),
+				keywords,customerName,linkman,owner,start_gtime,end_gtime,start_created,end_created,sort,order);
 		
 		for(Customer customer: customers) {
 			if(customer.getCountry()!=null) {
 				List<String> area = new ArrayList<String>();
-				
 				area.add(customer.getCountryId());
 				area.add(customer.getProvinceId());
 				area.add(customer.getCityId());
@@ -109,8 +113,6 @@ public class CustoemrService {
 				customer.setAreaPath(customer.getCountry().getName()+"/"+customer.getProvince().getName()+"/"+customer.getCity().getName()+"/"+customer.getCounty().getName());
 				
 			}
-			
-			
 			List<Receiving> receivings = customer.getReceivings();
 			for(Receiving receiving:receivings) {
 				List<String> areas = new ArrayList<String>();
@@ -128,7 +130,9 @@ public class CustoemrService {
 		}
 		return customers;
 	}
-	public long getCount() {
-		return customerMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+	public long getCount(String keywords,String customerName,String linkman,
+			String owner,String start_gtime,String end_gtime,
+			String start_created,String end_created) {
+		return customerMapper.getCount(keywords,customerName,linkman,owner,start_gtime,end_gtime,start_created,end_created,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 }

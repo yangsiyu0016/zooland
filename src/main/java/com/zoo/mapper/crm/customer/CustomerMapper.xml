@@ -29,20 +29,76 @@
 		
 	</resultMap>
 	<select id="getCustomerByPage" resultMap="BaseResultMap">
-		select * from customer where 1=1 
+		select DISTINCT
+			c.* 
+		from 
+			customer c left join linkman lk on lk.customerId = c.id                                                   
+		where 1=1 
 		<if test="companyId!=null">
-			and companyId=#{companyId}
+			and c.companyId=#{companyId}
 		</if>
-		order by created desc
+		<if test="keywords!=null and keywords!=''">
+			and (c.name like concat('%',#{keywords},'%') or lk.realName like concat('%',#{keywords},'%'))
+		</if>
+		<if test="customerName!=null and customerName!=''">
+			and c.name like concat('%',#{customerName},'%')
+		</if>
+		<if test="linkman!=null and linkman!=''">
+			and lk.realName like concat('%',#{linkman},'%')
+		</if>
+		<if test="start_gtime!=null and start_gtime!=''">
+			AND c.gtime <![CDATA[ >= ]]> #{start_gtime}
+		</if>
+		<if test="end_gtime!=null and end_gtime!=''">
+			AND c.gtime <![CDATA[ <= ]]> #{end_gtime}
+		</if>
+		<if test="start_created!=null and start_created!=''">
+			AND c.created <![CDATA[ >= ]]> #{start_created}
+		</if>
+		<if test="end_created!=null and end_created!=''">
+			AND c.created<![CDATA[ <= ]]> #{end_created}
+		</if>
+		<if test="owner!=null and owner!=''">
+			AND c.owner = #{owner}
+		</if>
+		order by ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 		
 	</select>
 	<select id="getCount" resultType="long">
-		select count(*) from customer where 1=1
+		select 
+			count( DISTINCT c.id) 
+		from 
+			customer c  left join linkman lk on lk.customerId = c.id
+		where 1=1
 		<if test="companyId!=null">
 			and companyId=#{companyId}
+		</if>
+		<if test="keywords!=null and keywords!=''">
+			and (c.name like concat('%',#{keywords},'%') or lk.realName like concat('%',#{keywords},'%'))
+		</if>
+		<if test="customerName!=null and customerName!=''">
+			and c.name like concat('%',#{customerName},'%')
+		</if>
+		<if test="linkman!=null and linkman!=''">
+			and lk.realName like concat('%',#{linkman},'%')
+		</if>
+		<if test="start_gtime!=null and start_gtime!=''">
+			AND c.gtime <![CDATA[ >= ]]> #{start_gtime}
+		</if>
+		<if test="end_gtime!=null and end_gtime!=''">
+			AND c.gtime <![CDATA[ <= ]]> #{end_gtime}
+		</if>
+		<if test="start_created!=null and start_created!=''">
+			AND c.created <![CDATA[ >= ]]> #{start_created}
+		</if>
+		<if test="end_created!=null and end_created!=''">
+			AND c.created<![CDATA[ <= ]]> #{end_created}
+		</if>
+		<if test="owner!=null and owner!=''">
+			AND c.owner = #{owner}
 		</if>
 	</select>
 	<select id="getCustomerById" resultMap="BaseResultMap">

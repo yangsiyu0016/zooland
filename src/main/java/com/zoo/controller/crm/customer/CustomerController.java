@@ -23,10 +23,22 @@ public class CustomerController {
 	@Autowired
 	CustoemrService customerService;
 	@GetMapping("page")
-	public Map<String,Object> page(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> page(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("keywords")String keywords,
+			@RequestParam("customerName")String customerName,
+			@RequestParam("linkman")String linkman,
+			@RequestParam("owner")String owner,
+			@RequestParam("start_gtime")String start_gtime,
+			@RequestParam("end_gtime")String end_gtime,
+			@RequestParam("start_created")String start_created,
+			@RequestParam("end_created")String end_created,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<Customer> customers = customerService.getCustomerByPage(page,size);
-		long count = customerService.getCount();
+		List<Customer> customers = customerService.getCustomerByPage(page,size,keywords,customerName,linkman,owner,start_gtime,end_gtime,start_created,end_created,sort,order);
+		long count = customerService.getCount(keywords,customerName,linkman,owner,start_gtime,end_gtime,start_created,end_created);
 		map.put("customers", customers);
 		map.put("count", count);
 		return map;
