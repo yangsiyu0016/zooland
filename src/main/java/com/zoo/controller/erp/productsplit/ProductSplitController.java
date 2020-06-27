@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.service.erp.productsplit.ProductSplitService;
@@ -142,5 +143,17 @@ public class ProductSplitController {
 			return new RespBean("500", e.getMessage());
 		}
 	}
+	
+	//取回
+		@GetMapping("reset")
+		public RespBean reject(@RequestParam("id") String id) {
+			try {
+				splitService.reset(id);
+				return new RespBean("200", "取回成功");
+			} catch (ZooException e) {
+				// TODO: handle exception
+				return new RespBean("500", e.getMsg());
+			}
+		}
 	
 }
