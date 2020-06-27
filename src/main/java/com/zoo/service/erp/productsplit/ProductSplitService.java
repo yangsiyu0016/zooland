@@ -10,11 +10,15 @@ import java.util.UUID;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.util.StringUtil;
 import com.zoo.controller.erp.constant.JournalAccountType;
+import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -71,6 +75,9 @@ public class ProductSplitService {
 	
 	@Autowired
 	private JournalAccountService journalAccountService;
+	
+	@Autowired
+	TaskService taskService;
 	/*
 	 * public List<ProductSplit> getProductSplitByPage(Integer page, Integer size){
 	 * Integer start = null; if(page != null) { start = (page - 1) * size; } return
@@ -345,6 +352,29 @@ public class ProductSplitService {
 		account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		journalAccountService.addJournalAccount(account);
 		/*------------------库存变动明细结束----------------------*/
+	}
+
+	public void reset(String id) {
+		// TODO Auto-generated method stub
+		ProductSplit split = this.getProductSplitById(id);
+		Task task = taskService.createTaskQuery().processInstanceId(split.getProcessInstanceId()).active().singleResult();
+		if(task==null) throw new ZooException("任务不存在");
+		if(task.getTaskDefinitionKey().equals("productsplitckzg")) {
+			if(StringUtil.isEmpty(task.getAssignee())) {
+				Map<String,Object> condition = new HashMap<String, Object>();
+				condition.put("id", id);
+				condition.put("status", OpeningInventoryStatus.WTJ);
+				productSplitMapper.updateProductSplitStatus(condition);
+				//删除流程
+				RuntimeService runtimeService = processEngine.getRuntimeService();
+				runtimeService.deleteProcessInstance(split.getProcessInstanceId(), "待定");
+				productSplitMapper.updateProcessInstanceId(id, null);
+			}else {
+				throw new ZooException("审批人已签收不能取回");
+			}
+		}else {
+			throw new ZooException("当前节点不能取回");
+		}
 	}
 
 	
