@@ -74,10 +74,15 @@ public class TaskController {
 		return map;
 	}
 	@GetMapping("getSellTask")
-	public Map<String,Object> getSellTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> getSellTask(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order,
+			@RequestParam("keywords")String keywords){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<SellTask> tasks = customTaskService.getSellTask(page,size);
-		long count = customTaskService.getSellTaskCount();
+		List<SellTask> tasks = customTaskService.getSellTask(page,size,sort,order,keywords);
+		long count = customTaskService.getSellTaskCount(keywords);
 		map.put("tasks", tasks);
 		map.put("count", count);
 		return map;

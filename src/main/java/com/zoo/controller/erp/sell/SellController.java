@@ -81,8 +81,8 @@ public class SellController {
 		try {
 			sellService.deleteSellById(ids);
 			return new RespBean("200","删除成功");
-		} catch (Exception e) {
-			return new RespBean("500",e.getMessage());
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
 		}
 	}
 	@PostMapping("startFlow")
@@ -100,9 +100,9 @@ public class SellController {
 		try {
 			sellService.reset(id);
 			return new RespBean("200", "驳回成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	//作废订单
