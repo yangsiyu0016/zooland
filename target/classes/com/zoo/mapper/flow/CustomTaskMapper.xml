@@ -284,8 +284,10 @@
 		    	AND I.TYPE_='candidate'
 		    	AND (I.USER_ID_=#{userId} OR I.GROUP_ID_ IN(SELECT up.positionId FROM system_user su LEFT JOIN u_p up ON su.id=up.userId WHERE su.id=#{userId}))
 				AND ARP.KEY_='sell'
-			) t
-		
+			) t where 1=1
+			<if test="keywords!=null and keywords!=''">
+				AND t.code like concat('%',#{keywords},'%')
+			</if>
 	</select>
 	<select id="getSellTask" resultType="com.zoo.model.flow.SellTask">
 		SELECT DISTINCT
@@ -354,7 +356,10 @@
 		WHERE 1=1 
 			
 			
-		ORDER BY t.CREATE_TIME_ DESC 
+		<if test="keywords!=null and keywords!=''">
+			AND t.code like concat('%',#{keywords},'%')
+		</if>
+		ORDER BY ${sort} ${order}
 		<if test="start!=null and size!=null">
 			LIMIT #{start},#{size} 
 		</if>

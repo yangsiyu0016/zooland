@@ -11,7 +11,9 @@ import javax.transaction.Transactional;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +54,8 @@ public class SellService {
 	AnnexService annexService;
 	@Autowired
 	SystemParameterService systemParameterService;
+	@Autowired
+	TaskService taskService;
 	public void addSell(Sell sell) {
 		String id = UUID.randomUUID().toString();
 		sell.setId(id);
@@ -119,6 +123,10 @@ public class SellService {
 	public void deleteSellById(String ids) {
 		String[] split = ids.split(",");
 		for(String sellId:split) {
+			Sell sell= this.getSellById(sellId);
+			if(StringUtil.isNotEmpty(sell.getProcessInstanceId())) {
+				throw new ZooException("流程已启动,不能删除");
+			}
 			//删除产品详情
 			detailMapper.deleteDetailBySellId(sellId);
 			//删除物流信息
@@ -205,19 +213,31 @@ public class SellService {
 	}
 	//流程取回
 	public void reset(String id) {
-		// TODO Auto-generated method stub
+		
 		Sell sell = this.getSellById(id);
-		Map<String,Object> condition = new HashMap<String, Object>();
-		condition.put("id", id);
-		condition.put("status", SellStatus.WTJ);
-		condition.put("isClaimed", "N");//设置是否签收
-		sellMapper.updateSellStatus(condition);
 		
-		//删除流程
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+		Task task = taskService.createTaskQuery().processInstanceId(sell.getProcessInstanceId()).active().singleResult();
+		if(task==null) throw new ZooException("任务不存在");
+		if(task.getTaskDefinitionKey().equals("sellcwreceive")) {
+			if(StringUtil.isEmpty(task.getAssignee())) {
+				Map<String,Object> condition = new HashMap<String, Object>();
+				condition.put("id", id);
+				condition.put("status", SellStatus.WTJ);
+				//condition.put("isClaimed", "N");//设置是否签收
+				sellMapper.updateSellStatus(condition);
+				
+				//删除流程
+				RuntimeService runtimeService = processEngine.getRuntimeService();
+				runtimeService.deleteProcessInstance(sell.getProcessInstanceId(), "待定");
+				
+				sellMapper.updateProcessInstanceId(id, null);
+			}else {
+				throw new ZooException("审批人已签收不能取回");
+			}
+		}else {
+			throw new ZooException("当前节点不能取回");
+		}
 		
-		sellMapper.updateProcessInstanceId(id, null);
 	}
 	public void updateSellIsClaimed(Map<String, Object> variables) {
 		// TODO Auto-generated method stub

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="sell" name="销售流程" isExecutable="true">
-    <startEvent id="startevent1" name="Start" activiti:initiator="applyUserId"></startEvent>
+    <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
     <userTask id="selloutbound" name="仓库发货">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.SellKGHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.sell.SellKGCompleteHandler"></activiti:taskListener>
       </extensionElements>
       <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="warehouseIds" activiti:elementVariable="warehouseId">
         <completionCondition>${nrOfCompletedInstances/nrOfInstances &gt;= 1}</completionCondition>
       </multiInstanceLoopCharacteristics>
     </userTask>
-    <endEvent id="endevent1" name="End"></endEvent>
+    <endEvent id="endevent1" name="结束"></endEvent>
     <sequenceFlow id="flow3" sourceRef="selloutbound" targetRef="endevent1">
       <extensionElements>
         <activiti:executionListener event="take" class="com.zoo.listener.activiti.SellENDHandler"></activiti:executionListener>
@@ -18,8 +19,7 @@
     </sequenceFlow>
     <userTask id="sellcwreceive" name="财务收款">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.SellCWHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.SellCWCompleteHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.sell.SellCWHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow4" sourceRef="startevent1" targetRef="sellcwreceive"></sequenceFlow>
@@ -30,8 +30,7 @@
     </sequenceFlow>
     <userTask id="sellreject" name="订单调整" activiti:assignee="${applyUserId}">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.SellDDTZRejectHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.SellDDTZRejectCompleteHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.sell.SellDDTZRejectHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow8" name="驳回" sourceRef="exclusivegateway1" targetRef="sellreject">
@@ -40,9 +39,15 @@
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow9" sourceRef="sellreject" targetRef="exclusivegateway2"></sequenceFlow>
     <sequenceFlow id="flow10" name="作废" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.sell.SellDestroyHandler"></activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow11" name="重新提交" sourceRef="exclusivegateway2" targetRef="sellcwreceive">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.sell.SellResubmitHandler"></activiti:executionListener>
+      </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
     </sequenceFlow>
   </process>
@@ -103,7 +108,7 @@
         <omgdi:waypoint x="490.0" y="507.0"></omgdi:waypoint>
         <omgdi:waypoint x="625.0" y="507.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="24.0" x="529.0" y="511.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="529.0" y="511.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
@@ -111,7 +116,7 @@
         <omgdi:waypoint x="302.0" y="506.0"></omgdi:waypoint>
         <omgdi:waypoint x="302.0" y="315.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="48.0" x="251.0" y="401.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="251.0" y="401.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

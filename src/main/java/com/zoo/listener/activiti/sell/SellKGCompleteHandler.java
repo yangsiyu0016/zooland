@@ -2,10 +2,7 @@ package com.zoo.listener.activiti.sell;
 
 
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
@@ -16,17 +13,15 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.SellStatus;
-import com.zoo.model.erp.sell.Sell;
-import com.zoo.model.erp.sell.SellDetail;
 import com.zoo.service.erp.sell.SellService;
 import com.zoo.utils.ApplicationUtil;
 /**
- * 财务审核完成
+ * 出库完成
  * @author 52547
  *
  */
-@Component("sellCWCompleteHandler")
-public class SellCWCompleteHandler implements TaskListener {
+@Component("sellKGCompleteHandler")
+public class SellKGCompleteHandler implements TaskListener {
 
 	/**
 	 * 
@@ -44,21 +39,11 @@ public class SellCWCompleteHandler implements TaskListener {
 		//sellDetailService = (SellDetailService) ApplicationUtil.getBean("sellDetailService");
 		ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String key = pi.getBusinessKey();
-		Sell sell= sellService.getSellById(key);
-		List<SellDetail> details =sell.getDetails(); //sellDetailService.getSellDetailBySellId(sell.getId());
-		List<String> warehouseIdList = new ArrayList<String>();
-		for(SellDetail detail:details){
-			if(!warehouseIdList.contains(detail.getWarehouse().getId())) warehouseIdList.add(detail.getWarehouse().getId());
-		}
-		Map<String, Object> variables = delegateTask.getVariables();
-		 
-		variables.put("warehouseIds", warehouseIdList);
-		delegateTask.setVariables(variables);
-		sell.setStatus(SellStatus.OUT);
+	
 		Map<String,Object> condition = new HashMap<String,Object>();
-		condition.put("id", sell.getId());
-		condition.put("status", SellStatus.OUT);
-		condition.put("cwtgtime", new Date());
+		condition.put("id", key);
+		condition.put("status", SellStatus.FINISHED);
+		//condition.put("cwtgtime", new Date());
 		sellService.updateSellStatus(condition);
 	}
 	
