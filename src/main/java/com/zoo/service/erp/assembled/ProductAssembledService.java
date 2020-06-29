@@ -128,10 +128,7 @@ public class ProductAssembledService {
 		condition.put("status", ProductAssembledStatus.ZGSH);
 		this.updateProductAssembledStatus(condition);
 	}
-	private int updateProductAssembledStatus(Map<String, Object> condition) {
-		return paMapper.updateProductAssembledStatus(condition);
-		
-	}
+	
 	//流程取回
 	public void takeBack(String id) {
 		// TODO Auto-generated method stub
@@ -158,5 +155,9 @@ public class ProductAssembledService {
 		
 		
 		
+	}
+	
+	public int updateProductAssembledStatus(Map<String, Object> condition) {
+		return paMapper.updateProductAssembledStatus(condition);
 	}
 }
