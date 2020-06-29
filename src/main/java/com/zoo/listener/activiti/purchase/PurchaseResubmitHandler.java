@@ -1,8 +1,5 @@
 package com.zoo.listener.activiti.purchase;
 
-
-
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,44 +7,48 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
-
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.PurchaseStatus;
-
 import com.zoo.service.erp.purchase.PurchaseService;
 import com.zoo.utils.ApplicationUtil;
+
 /**
- * 流程完成
- * @author 52547
+ * 订单调整完成
+ * @author aa
  *
- */
-@Component("purchaseENDHandler")
-public class PurchaseENDHandler implements ExecutionListener {
+ */@Component("purchaseResubmitCompleteHandler")
+public class PurchaseResubmitHandler implements ExecutionListener {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2754046546477315871L;
 
-	
 	private ProcessEngine processEngine;
+	
 	private PurchaseService purchaseService;
 	
 	@Override
 	public void notify(DelegateExecution execution) {
-		processEngine =  (ProcessEngine) ApplicationUtil.getBean("processEngine");
+		// TODO Auto-generated method stub
+		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		purchaseService = (PurchaseService) ApplicationUtil.getBean("purchaseService");
 		
-		ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
-		String key = pi.getBusinessKey();
-		Map<String,Object> condition = new HashMap<String,Object>();
-		condition.put("id", key);
-		condition.put("status", PurchaseStatus.FINISHED);
-		condition.put("etime", new Date());
-		purchaseService.updatePurchaseStatus(condition);
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
+		String key = result.getBusinessKey();
 		
+		
+		Map<String,Object> condition = new HashMap<String,Object>();
+		
+		//更新sell表中下一节点办理人
+		condition = new HashMap<String,Object>();
+		condition.put("id", key);
+		condition.put("status", PurchaseStatus.CGJLSH);
+		
+		purchaseService.updatePurchaseStatus(condition);
 	}
+
 }

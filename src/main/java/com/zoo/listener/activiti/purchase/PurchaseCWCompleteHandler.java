@@ -3,7 +3,6 @@ package com.zoo.listener.activiti.purchase;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
-import com.zoo.controller.erp.constant.PurchaseStatus;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
 import com.zoo.service.erp.purchase.PurchaseService;
@@ -52,12 +50,6 @@ public class PurchaseCWCompleteHandler implements TaskListener {
 		 
 		variables.put("warehouseIds", warehouseIdList);
 		delegateTask.setVariables(variables);
-		//sell.setStatus(SellStatus.OUT);
-		Map<String,Object> condition = new HashMap<String,Object>();
-		condition.put("id", purchase.getId());
-		condition.put("status", PurchaseStatus.IN);
-		//condition.put("cwtgtime", new Date());
-		purchaseService.updatePurchaseStatus(condition);
 	}
 	
 }
