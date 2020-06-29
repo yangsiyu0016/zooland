@@ -44,9 +44,9 @@ public class ProductSplitCKLLCompleteHandler implements TaskListener {
 	private static final long serialVersionUID = 6117303043818737751L;
 
 	private ProcessEngine processEngine;
-	private StockService stockService;
-	private StockDetailService stockDetailService;
-	private JournalAccountService journalAccountService;
+	//private StockService stockService;
+	//private StockDetailService stockDetailService;
+	//private JournalAccountService journalAccountService;
 	private ProductSplitService productSplitService;
 
 	@Override
@@ -57,10 +57,10 @@ public class ProductSplitCKLLCompleteHandler implements TaskListener {
 		ProcessInstance result = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
-		stockService = (StockService) ApplicationUtil.getBean("stockService");
-		stockDetailService = (StockDetailService) ApplicationUtil.getBean("stockDetailService");
+		//stockService = (StockService) ApplicationUtil.getBean("stockService");
+		//stockDetailService = (StockDetailService) ApplicationUtil.getBean("stockDetailService");
 		productSplitService = (ProductSplitService) ApplicationUtil.getBean("productSplitService");
-		journalAccountService = (JournalAccountService) ApplicationUtil.getBean("journalAccountService");
+		//journalAccountService = (JournalAccountService) ApplicationUtil.getBean("journalAccountService");
 
 		// 获取拆分单
 		ProductSplit split = productSplitService.getProductSplitById(key);
