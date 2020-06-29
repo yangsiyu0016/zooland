@@ -13,7 +13,7 @@ import lombok.Data;
 public class Supplier {
 	
 	private String id; //主键
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;//创建时间
 	private String supplierAddress;//供货商地址
 	private String supplierTelphone;//供货商电话
@@ -21,7 +21,7 @@ public class Supplier {
 	private String supplierEmail;//供货商邮箱
 	private String cellphone;//联系电话
 	private String type;//类型
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date gtime;//获取时间
 	private String countryId;//国家id
 	private String cityId;//城市id

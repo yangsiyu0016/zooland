@@ -27,12 +27,23 @@ public class SupplierController {
 	
 	//供货商管理-分页查询数据
 	@GetMapping("page")
-	public Map<String, Object> page(@RequestParam("page")Integer page, @RequestParam("size")Integer size) {
+	public Map<String, Object> page(@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("keywords")String keywords,
+			@RequestParam("supplierName")String supplierName,
+			@RequestParam("linkman")String linkman,
+			@RequestParam("owner")String owner,
+			@RequestParam("start_gtime")String start_gtime,
+			@RequestParam("end_gtime")String end_gtime,
+			@RequestParam("start_createTime")String start_createTime,
+			@RequestParam("end_createTime")String end_createTime,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order) {
 		Map<String,Object> map = new HashMap<String, Object>();
 		
-		List<Supplier> suppliers = supplierService.getSupplierByPage(page,size);
+		List<Supplier> suppliers = supplierService.getSupplierByPage(page,size,keywords,supplierName,linkman,owner,start_gtime,end_gtime,start_createTime,end_createTime,sort,order);
 		
-		long count = supplierService.getCount();
+		long count = supplierService.getCount(keywords,supplierName,linkman,owner,start_gtime,end_gtime,start_createTime,end_createTime);
 		
 		map.put("suppliers", suppliers);
 		

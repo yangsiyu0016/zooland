@@ -29,7 +29,7 @@ public class Customer {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date created;
 	private String type;
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date gtime;
 	private String systemUserId;
 	private SystemUser cuser;
