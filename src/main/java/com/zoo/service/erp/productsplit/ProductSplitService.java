@@ -255,7 +255,6 @@ public class ProductSplitService {
 	 * 作废
 	 * @param id
 	 */
-	@Autowired
 	public void destroy(String id) {
 		//获取拆分单
 		ProductSplit split = this.getProductSplitById(id);
