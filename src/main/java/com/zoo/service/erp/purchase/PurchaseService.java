@@ -81,18 +81,37 @@ public class PurchaseService {
 		}
 	}
 
-	public List<Purchase> getPurchaseByPage(Integer page, Integer size) {
+	public List<Purchase> getPurchaseByPage(
+			Integer page, Integer size,
+			String cuserId,String keywords,
+			String code,String productCode,
+			String productName,String supplierName,
+			String start_initDate,String end_initDate,
+			String start_ctime,String end_ctime,
+			String status,String sort,String order) {
 		Integer start = null;
 		if(page!=null) {
 			start = (page-1)*size;
 		}
-		List<Purchase> purchases = purchaseMapper.getPurchaseByPage(start,size,LoginInterceptor.getLoginUser().getCompanyId());
+		List<Purchase> purchases = purchaseMapper.getPurchaseByPage(
+				start,size,
+				LoginInterceptor.getLoginUser().getCompanyId(),cuserId,
+				keywords,code,
+				productCode,productName,
+				supplierName,start_initDate,end_initDate,start_ctime,end_ctime,status.length()>0?status.split(","):null,sort,order);
 		return purchases;
 	}
 
-	public long getCount() {
+	public long getCount(String cuserId,String keywords,
+			String code,String productCode,
+			String productName,String supplierName,
+			String start_initDate,String end_initDate,
+			String start_ctime,String end_ctime,
+			String status) {
 		// TODO Auto-generated method stub
-		return purchaseMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
+		return purchaseMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(),cuserId,keywords,code,
+				productCode,productName,
+				supplierName,start_initDate,end_initDate,start_ctime,end_ctime,status.split(","));
 	}
 
 	public void updatePurchaseStatus(Map<String, Object> condition) {
@@ -191,6 +210,10 @@ public class PurchaseService {
 	public void deletePurchaseById(String ids) {
 		String[] split = ids.split(",");
 		for(String purchaseId:split) {
+			Purchase purchase = this.getPurchaseById(purchaseId);
+			if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())) {
+				throw new ZooException("流程已启动,不能删除");
+			}
 			//删除产品详情
 			detailMapper.deleteDetailByPurchaseId(purchaseId);
 			//删除物流信息

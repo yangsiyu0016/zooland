@@ -17,13 +17,89 @@
 		<collection column="id" property="annexs" select="com.zoo.mapper.annex.AnnexMapper.getAnnexsByForeignKey"></collection>
 	</resultMap>
 	<select id="getPurchaseByPage" resultMap="BaseResultMap">
-		select * from purchase where companyId=#{companyId}
+		select DISTINCT
+			pur.* 
+		from 
+			purchase pur left join purchase_detail pd on pd.purchaseId=pur.id
+						left join product p on pd.productId = p.id
+						left join supplier s on pur.supplierId = s.id
+		where pur.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND (pur.code like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or s.supplierName like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND pur.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="supplierName!=null and supplierName!=''">
+			AND s.supplierName like concat('%',#{supplierName},'%')
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND pur.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND pur.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND pur.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND pur.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
+		<if test="status!=null and status.length>0">
+			AND pur.status in 
+			<foreach collection="status" separator="," open="(" close=")" item="status">
+            	#{status}
+        	</foreach>
+		</if>
+		<if test="cuserId!=null and cuserId!=''">
+			AND pur.cuserId = #{cuserId}
+		</if>
+		ORDER BY ${sort} ${order} 
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="long">
-		select count(*) from purchase where companyId=#{companyId}
+		select 
+			count(DISTINCT pur.id) 
+		from 
+			purchase pur left join purchase_detail pd on pd.purchaseId=pur.id
+						left join product p on pd.productId = p.id
+						left join supplier s on pur.supplierId = s.id
+		where pur.companyId=#{companyId}
+		<if test="keywords!=null and keywords!=''">
+			AND (pur.code like concat('%',#{keywords},'%') or p.code like concat('%',#{keywords},'%') or p.name like concat('%',#{keywords},'%') or s.supplierName like concat('%',#{keywords},'%'))
+		</if>
+		<if test="code!=null and code!=''">
+			AND pur.code like concat('%',#{code},'%')
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND p.code like concat('%',#{productCode},'%')
+		</if>
+		<if test="productName!=null and productName!=''">
+			AND p.name like concat('%',#{productName},'%')
+		</if>
+		<if test="supplierName!=null and supplierName!=''">
+			AND s.supplierName like concat('%',#{supplierName},'%')
+		</if>
+		<if test="start_initDate!=null and start_initDate!=''">
+			AND pur.initDate <![CDATA[ >= ]]> #{start_initDate}
+		</if>
+		<if test="end_initDate!=null and end_initDate!=''">
+			AND pur.initDate <![CDATA[ <= ]]> #{end_initDate}
+		</if>
+		<if test="start_ctime!=null and start_ctime!=''">
+			AND pur.ctime <![CDATA[ >= ]]> #{start_ctime}
+		</if>
+		<if test="end_ctime!=null and end_ctime!=''">
+			AND pur.ctime <![CDATA[ <= ]]> #{end_ctime}
+		</if>
 	</select>
 	<select id="getPurchaseById" resultMap="BaseResultMap">
 	

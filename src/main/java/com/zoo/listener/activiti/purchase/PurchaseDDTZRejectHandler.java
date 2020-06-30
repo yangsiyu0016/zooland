@@ -45,7 +45,7 @@ public class PurchaseDDTZRejectHandler implements TaskListener {
 		
 		Map<String,Object> condition = new HashMap<String,Object>();
 		
-		delegateTask.addCandidateUser(purchase.getCuserId());
+		//delegateTask.addCandidateUser(purchase.getCuserId());
 		condition = new HashMap<String,Object>();
 		condition.put("id", purchase.getId());
 		condition.put("status", PurchaseStatus.REJECT);

@@ -66,13 +66,13 @@ public class CustomTaskService {
 		// TODO Auto-generated method stub
 		return taskMapper.getSellTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
-	public List<PurchaseTask> getPruchaseTask(Integer page, Integer size) {
+	public List<PurchaseTask> getPruchaseTask(Integer page, Integer size,String sort,String order,String keywords) {
 		Integer start = (page-1)*size;
-		return taskMapper.getPurchaseTask(start,size,LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getPurchaseTask(start,size,sort,order,keywords,LoginInterceptor.getLoginUser().getId());
 	}
-	public long getPurchaseTaskCount() {
+	public long getPurchaseTaskCount(String keywords) {
 		// TODO Auto-generated method stub
-		return taskMapper.getPurchaseTaskCount(LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getPurchaseTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	public List<InventoryCheckTask> getInventoryCheckTask(Integer page, Integer size) {
 		Integer start = (page-1)*size;

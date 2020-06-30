@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.util.StringUtil;
-import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.model.flow.AssembledTask;
 import com.zoo.model.flow.InventoryCheckTask;
@@ -48,10 +47,14 @@ public class TaskController {
 		return map;
 	}
 	@GetMapping("getPurchaseTask")
-	public Map<String,Object> getPurchaseTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> getPurchaseTask(@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order,
+			@RequestParam("keywords")String keywords){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<PurchaseTask> tasks =  customTaskService.getPruchaseTask(page,size);
-		long count  = customTaskService.getPurchaseTaskCount();
+		List<PurchaseTask> tasks =  customTaskService.getPruchaseTask(page,size,sort,order,keywords);
+		long count  = customTaskService.getPurchaseTaskCount(keywords);
 		map.put("tasks", tasks);
 		map.put("count", count);
 		return map;
@@ -170,34 +173,27 @@ public class TaskController {
 		try {
 			Map<String, Object> variables = new HashMap<String, Object>();
 			if(!"".equals(idea) && idea != null) {
-				variables.put("msg", idea);
-				
-				if(StringUtils.isNotBlank(comment)){
-					variables.put("comment", comment);
-				}
-				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
-				String processInstanceId=task.getProcessInstanceId();
-				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
-				taskService.addComment(taskId, processInstanceId, comment);
-				taskService.complete(taskId,variables);
-				
-			}else {
-				if(StringUtils.isNotBlank(comment)){
-					variables.put("comment", comment);
-				}
-				Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
-				String processInstanceId=task.getProcessInstanceId();
-				Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
-				taskService.addComment(taskId, processInstanceId, comment);
-				taskService.complete(taskId,variables);
+				variables.put("msg", idea);	
 			}
+			if(StringUtils.isNotBlank(comment)){
+				variables.put("comment", comment);
+			}
+			Task task=taskService.createTaskQuery().taskId(taskId).singleResult();
+			if(task==null) {
+				return new RespBean("500","任务不存在");
+			}
+			String processInstanceId=task.getProcessInstanceId();
+			Authentication.setAuthenticatedUserId(LoginInterceptor.getLoginUser().getId());
+			taskService.addComment(taskId, processInstanceId, comment);
+			taskService.complete(taskId,variables);
+			
 			if("UNAGREE".equals(idea)) {
 				return new RespBean("200", "办理已驳回");
 			}else {
 				return new RespBean("200", "办理成功");
 			}
-		} catch (ZooException e) {
-			return new RespBean("500",e.getExceptionEnum().message());
+		} catch (Exception e) {
+			return new RespBean("500",e.getMessage());
 		}
 	}
 	

@@ -32,8 +32,13 @@ public interface CustomTaskMapper {
 			@Param("keywords")String keywords,
 			@Param("userId")String userId);
 	long getSellTaskCount(@Param("keywords")String keywords,@Param("userId")String userId);
-	List<PurchaseTask> getPurchaseTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
-	long getPurchaseTaskCount(@Param("userId")String userId);
+	List<PurchaseTask> getPurchaseTask(@Param("start")Integer start, 
+			@Param("size")Integer size, 
+			@Param("sort")String sort,
+			@Param("order")String order,
+			@Param("keywords")String keywords,
+			@Param("userId")String userId);
+	long getPurchaseTaskCount(@Param("keywords")String keywords,@Param("userId")String userId);
 	
 	List<InventoryCheckTask> getInventoryCheckTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
 	long getInventoryCheckTaskCount(@Param("userId")String userId);

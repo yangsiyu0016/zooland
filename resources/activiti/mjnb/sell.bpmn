@@ -4,7 +4,7 @@
     <startEvent id="startevent1" name="开始" activiti:initiator="applyUserId"></startEvent>
     <userTask id="selloutbound" name="仓库发货">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.zoo.listener.activiti.SellKGHandler"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.sell.SellKGHandler"></activiti:taskListener>
         <activiti:taskListener event="complete" class="com.zoo.listener.activiti.sell.SellKGCompleteHandler"></activiti:taskListener>
       </extensionElements>
       <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="warehouseIds" activiti:elementVariable="warehouseId">
@@ -20,6 +20,7 @@
     <userTask id="sellcwreceive" name="财务收款">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.sell.SellCWHandler"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.sell.SellCWCompleteHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow4" sourceRef="startevent1" targetRef="sellcwreceive"></sequenceFlow>

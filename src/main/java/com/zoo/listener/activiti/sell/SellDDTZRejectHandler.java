@@ -47,7 +47,7 @@ public class SellDDTZRejectHandler implements TaskListener {
 		
 		Map<String,Object> condition = new HashMap<String,Object>();
 		//添加当前办理人id
-		delegateTask.addCandidateUser(sell.getCuserId());
+		//delegateTask.addCandidateUser(sell.getCuserId());
 		//更新状态
 		condition = new HashMap<String,Object>();
 		condition.put("id", sell.getId());

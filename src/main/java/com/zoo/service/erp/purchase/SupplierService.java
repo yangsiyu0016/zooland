@@ -34,14 +34,18 @@ public class SupplierService {
 	private ContactMapper contactMapper;
 	
 	//分页查询数据
-	public List<Supplier> getSupplierByPage(Integer page, Integer size) {
+	public List<Supplier> getSupplierByPage(Integer page, Integer size,
+			String keywords,String supplierName,String linkman,
+			String owner,String start_gtime,String end_gtime,
+			String start_createTime,String end_createTime,String sort,String order) {
 		// TODO Auto-generated method stub
 		
 		Integer start = 0;
 		if(page >= 0 ) {//判断页数
 			start = (page - 1) * size;
 		}
-		List<Supplier> suppliers = supplierMapper.getSupplierByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Supplier> suppliers = supplierMapper.getSupplierByPage(start, size, LoginInterceptor.getLoginUser().getCompanyId(),
+				keywords,supplierName,linkman,owner,start_gtime,end_gtime,start_createTime,end_createTime,sort,order);
 		
 		for(Supplier supplier : suppliers) {
 			if(supplier.getCounty() != null) {
@@ -68,9 +72,11 @@ public class SupplierService {
 	}
 
 	//获取总数
-	public long getCount() {
+	public long getCount(String keywords,String supplierName,String linkman,
+			String owner,String start_gtime,String end_gtime,
+			String start_createTime,String end_createTime) {
 		// TODO Auto-generated method stub
-		Long count = supplierMapper.getCount();
+		Long count = supplierMapper.getCount(keywords,supplierName,linkman,owner,start_gtime,end_gtime,start_createTime,end_createTime,LoginInterceptor.getLoginUser().getCompanyId());
 		return count;
 	}
 

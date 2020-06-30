@@ -50,18 +50,4 @@ public class PurchaseENDHandler implements ExecutionListener {
 		purchaseService.updatePurchaseStatus(condition);
 		
 	}
-	public static void main(String[] args) {
-		while(true) {
-			try {
-				Thread.sleep(1000);
-				int a = (int) (Math.random()*6)+1;
-				int b = (int) (Math.random()*6)+1;
-				int c = (int) (Math.random()*6)+1;
-				System.out.println(a+"+"+b+"+"+c+"="+(a+b+c));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 }
