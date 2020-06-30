@@ -1,11 +1,14 @@
 package com.zoo.controller.flow;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.zoo.model.flow.CustomProcessDefinition;
 import com.zoo.model.system.company.Company;
+import com.zoo.service.flow.DeploymentService;
 import com.zoo.service.system.company.CompanyService;
 
 import net.sf.json.JSONObject;
@@ -30,6 +34,8 @@ public class DeploymentController {
 	CompanyService companyService;
 	@Autowired
 	RepositoryService repositoryService;
+	@Autowired
+	DeploymentService deploymentService;
 	@GetMapping("page")
 	public Map<String,Object> queryDeploymentByPage(@RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size){
@@ -74,5 +80,21 @@ public class DeploymentController {
 		} catch (IOException e) {
 			return false;
 		}
+	}
+	@GetMapping("viewImage")
+	public void viewImage(@RequestParam("processDefinitionId")String processDefinitionId,String type,HttpServletResponse response) {
+		InputStream in = deploymentService.readResource(processDefinitionId, type);
+		byte[] b = new byte[1024];
+        int len = -1;
+        int lenEnd = 1024;
+        while (true) {
+            try {
+                if (!((len = in.read(b, 0, lenEnd)) != -1)) break;
+                response.getOutputStream().write(b, 0, len);
+            } catch (IOException e) {
+               e.printStackTrace();
+            }
+        }
+
 	}
 }
