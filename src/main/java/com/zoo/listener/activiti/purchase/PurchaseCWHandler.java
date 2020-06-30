@@ -67,7 +67,7 @@ public class PurchaseCWHandler implements TaskListener {
 
 		condition = new HashMap<String,Object>();
 		condition.put("id", key);
-		condition.put("status", PurchaseStatus.REJECT);
+		condition.put("status", PurchaseStatus.CWSH);
 		
 		purchaseService.updatePurchaseStatus(condition);
 	}

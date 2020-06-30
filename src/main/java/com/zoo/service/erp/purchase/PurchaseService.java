@@ -10,7 +10,9 @@ import javax.transaction.Transactional;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,8 @@ public class PurchaseService {
 	AnnexService annexService;
 	@Autowired
 	SystemParameterService systemParameterService;
+	@Autowired
+	TaskService taskService;
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
@@ -194,17 +198,29 @@ public class PurchaseService {
 	public void reset(String id) {
 		// TODO Auto-generated method stub
 		Purchase purchase = this.getPurchaseById(id);
-		Map<String,Object> condition = new HashMap<String, Object>();
-		condition.put("id", id);
-		condition.put("status", PurchaseStatus.WTJ);
-		condition.put("isClaimed", "N");//设置是否签收
-		purchaseMapper.updatePurchaseStatus(condition);
+		Task task = taskService.createTaskQuery().processInstanceId(purchase.getProcessInstanceId()).active().singleResult();
+		if(task==null) throw new ZooException("任务不存在");
+		if(task.getTaskDefinitionKey().equals("purchasecgjl")) {
+			if(StringUtil.isEmpty(task.getAssignee())) {
+				Map<String,Object> condition = new HashMap<String, Object>();
+				condition.put("id", id);
+				condition.put("status", PurchaseStatus.WTJ);
+				condition.put("isClaimed", "N");//设置是否签收
+				purchaseMapper.updatePurchaseStatus(condition);
+				
+				//删除流程
+				RuntimeService runtimeService = processEngine.getRuntimeService();
+				runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(), "待定");
+				
+				purchaseMapper.updateProcessInstanceId(id, null);
+			}else {
+				throw new ZooException("审批人已签收不能取回");
+			}
+		}else {
+			throw new ZooException("当前节点不能取回");
+		}
 		
-		//删除流程
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(), "待定");
 		
-		purchaseMapper.updateProcessInstanceId(id, null);
 	}
 
 	public void deletePurchaseById(String ids) {
