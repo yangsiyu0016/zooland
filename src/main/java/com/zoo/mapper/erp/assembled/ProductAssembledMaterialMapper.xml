@@ -8,6 +8,7 @@
 		<result column="productAssembledId" property="productAssembledId"/>
 		<result column="number" property="number"/>
 		<result column="needNumber" property="needNumber"/>
+		<result column="notOutNumber" property="notOutNumber"/>
 		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		
 	</resultMap>
@@ -21,17 +22,28 @@
 				productAssembledId,
 				number,
 				needNumber,
-				productId	
+				productId,
+				notOutNumber	
 		) values(
 			#{pam.id},
 			#{pam.productAssembledId},
 			#{pam.number},
 			#{pam.needNumber},
-			#{pam.product.id}
+			#{pam.product.id},
+			#{pam.notOutNumber}
 		)
 	</insert>
 	
 	<delete id="deleteMaterialByAllembledId">
 		delete from product_assembled_material where productAssembledId=#{productAssembledId}
 	</delete>
+	<update id="updateNotOutNumber">
+		update product_assembled_material set 
+			notOutNumber = #{notOutNumber}
+		where 
+			id = #{id}
+	</update>
+	<select id="getMaterialById" resultMap="BaseResultMap">
+		select * from product_assembled_material where id = #{id}
+	</select>
 </mapper>

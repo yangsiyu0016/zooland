@@ -118,13 +118,13 @@ public class ProductSplitDetailService {
 			inboundDetailMapper.addDetail(inboundDetail);
 		}
 		/*--------------更新仓库库存开始----------------*/
-		Stock stock = stockMapper.getStock(split.getProduct().getId(), split.getWarehouse().getId());
+		Stock stock = stockMapper.getStock(splitDetail.getProduct().getId(), split.getWarehouse().getId());
 		
 		if(stock != null) {
 			//更新后使用数量
-			BigDecimal after_usableNumber = stock.getUsableNumber().subtract(number);
+			BigDecimal after_usableNumber = stock.getUsableNumber().add(number);
 			//更新后总额
-			BigDecimal after_totalMoney = stock.getTotalMoney().subtract(after_usableNumber.multiply(stock.getCostPrice()));
+			BigDecimal after_totalMoney = stock.getTotalMoney().add(after_usableNumber.multiply(stock.getCostPrice()));
 			
 			stock.setUsableNumber(after_usableNumber);
 			stock.setTotalMoney(after_totalMoney);
@@ -138,7 +138,7 @@ public class ProductSplitDetailService {
 		StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), goodsAllocationId);
 		if(stockDetail != null) {
 			//更新可用数量
-			stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(number));
+			stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(number));
 			stockDetailMapper.updateStockDetail(stockDetail);
 		}
 		/*--------------更新货位库存结束----------------*/

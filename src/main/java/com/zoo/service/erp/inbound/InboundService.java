@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zoo.mapper.erp.inbound.InboundMapper;
+import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.utils.Date2StringUtils;
 
 @Service
@@ -32,5 +33,9 @@ public class InboundService {
 	public Long getTotleCount() {
 		Long totleCount = inboundMapper.getTotleCount();
 		return totleCount;
+	}
+	
+	public Inbound getInboundByForeignKey(String id) {
+		return inboundMapper.getInboundByForeignKey(id);
 	}
 }

@@ -1,5 +1,6 @@
 package com.zoo.mapper.erp.assembled;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -44,4 +45,5 @@ public interface ProductAssembledMapper {
 	int updateProcessInstanceId(@Param("id") String id,@Param("processInstanceId")String processInstanceId);
 	public int updateProductAssembledStatus(@Param("condition")Map<String, Object> condition);
 	int deleteProductAssembledById(@Param("ids")String[] ids);
+	int updateNotInNumber(@Param("notInNumber") BigDecimal notInNumber, @Param("id") String id);
 }

@@ -13,6 +13,8 @@
 		<result column="companyId" property="companyId"/>
 		<result column="status" property="status"/>
 		<result column="isClaimed" property="isClaimed"/>
+		<result column="processInstanceId" property="processInstanceId"/>
+		<result column="notInNumber" property="notInNumber"/>
 		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
@@ -111,7 +113,8 @@
 			warehouseId,
 			productId,
 			cuserId,
-			status
+			status,
+			notInNumber
 		) values(
 			#{pa.id},
 			#{pa.code},
@@ -122,7 +125,8 @@
 			#{pa.warehouse.id},
 			#{pa.product.id},
 			#{pa.cuserId},
-			#{pa.status}
+			#{pa.status},
+			#{pa.notInNumber}
 		)
 	</insert>
 	<update id="updateProductAssembled">
@@ -132,7 +136,8 @@
 			number=#{pa.number},
 			warehouseId=#{pa.warehouse.id},
 			productId=#{pa.product.id},
-			description=#{pa.description}
+			description=#{pa.description},
+			notInNumber=#{pa.notInNumber}
 		where id=#{pa.id}
 	</update>
 	<update id="updateProcessInstanceId">
@@ -151,6 +156,12 @@
 			</if> 
 			 
 		WHERE id = #{condition.id}
+	</update>
+	<update id="updateNotInNumber">
+		update product_assembled set 
+			notInNumber = #{notInNumber} 
+		where 
+			id = #{id}
 	</update>
 	<delete id="deleteProductAssembledById">
 		delete from product_assembled where id in 

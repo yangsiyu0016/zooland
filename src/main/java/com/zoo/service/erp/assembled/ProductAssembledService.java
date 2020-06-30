@@ -1,5 +1,6 @@
 package com.zoo.service.erp.assembled;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.util.StringUtil;
 import com.zoo.controller.erp.constant.AssembledStatus;
+import com.zoo.controller.erp.constant.JournalAccountType;
 import com.zoo.controller.erp.constant.ProductAssembledStatus;
 import com.zoo.controller.erp.constant.SellStatus;
 import com.zoo.enums.ExceptionEnum;
@@ -26,9 +28,22 @@ import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.assembled.ProductAssembledMapper;
 import com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper;
+import com.zoo.mapper.erp.inbound.InboundDetailMapper;
+import com.zoo.mapper.erp.inbound.InboundMapper;
+import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
+import com.zoo.mapper.erp.warehouse.StockDetailMapper;
+import com.zoo.mapper.erp.warehouse.StockMapper;
+import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.assembled.ProductAssembled;
 import com.zoo.model.erp.assembled.ProductAssembledMaterial;
+import com.zoo.model.erp.inbound.Inbound;
+import com.zoo.model.erp.inbound.InboundDetail;
+import com.zoo.model.erp.outbound.OutboundDetail;
+import com.zoo.model.erp.warehouse.GoodsAllocation;
+import com.zoo.model.erp.warehouse.Stock;
+import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
+import com.zoo.service.erp.JournalAccountService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
 
@@ -47,6 +62,21 @@ public class ProductAssembledService {
 	ProcessEngine processEngine;
 	@Autowired
 	TaskService taskService;
+	
+	@Autowired
+	StockMapper stockMapper;
+	@Autowired
+	StockDetailMapper stockDetailMapper;
+	
+	@Autowired
+	private InboundMapper inboundMapper;
+	@Autowired
+	private InboundDetailMapper inboundDetailMapper;
+	@Autowired
+	private JournalAccountService journalAccountService;
+	@Autowired
+	GoodsAllocationMapper gaMapper;
+	
 	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size,String keywords,
 			String code,String productCode,String productName,String status,String warehouseId,
 			String start_assembledTime,String end_assembledTime,String start_ctime,String end_ctime,String sort,String order) {
@@ -77,6 +107,7 @@ public class ProductAssembledService {
 		}
 		productAssembled.setCuserId(LoginInterceptor.getLoginUser().getId());
 		productAssembled.setCtime(new Date());
+		productAssembled.setNotInNumber(productAssembled.getNumber());
 		productAssembled.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		productAssembled.setStatus(AssembledStatus.WTJ);
 		paMapper.addProductAssembled(productAssembled);
@@ -84,6 +115,7 @@ public class ProductAssembledService {
 		for(ProductAssembledMaterial material:productAssembled.getMaterials()) {
 			material.setId(UUID.randomUUID().toString());
 			material.setProductAssembledId(id);
+			material.setNotOutNumber(material.getNeedNumber());
 			pamMapper.addMaterial(material);
 		}
 	}
@@ -94,6 +126,7 @@ public class ProductAssembledService {
 		for(ProductAssembledMaterial material:productAssembled.getMaterials()) {
 			material.setId(UUID.randomUUID().toString());
 			material.setProductAssembledId(productAssembled.getId());
+			material.setNotOutNumber(material.getNeedNumber());
 			pamMapper.addMaterial(material);
 		}
 	}
@@ -160,4 +193,97 @@ public class ProductAssembledService {
 	public int updateProductAssembledStatus(Map<String, Object> condition) {
 		return paMapper.updateProductAssembledStatus(condition);
 	}
+	
+	/**
+	 * 更新未入库数量
+	 * @param notInNumber
+	 * @param id
+	 */
+	public void updateNotInNumber(BigDecimal notInNumber, String id) {
+		paMapper.updateNotInNumber(notInNumber, id);
+	}
+	
+	public void addInbound(Inbound inbound, String goodsAllocationId, BigDecimal number) {
+		//获取入库单
+		Inbound ib = inboundMapper.getInboundByForeignKey(inbound.getForeignKey());
+		//获取组装单
+		ProductAssembled assembled = this.getProductAssembledById(inbound.getForeignKey());
+		//获取货位
+		GoodsAllocation goodsAllocation = gaMapper.getGoodsAllocationById(goodsAllocationId);
+		
+		InboundDetail inboundDetail = new InboundDetail();
+		if(ib != null) {
+			for(InboundDetail detail: ib.getDetails()) {
+				if(detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
+					detail.setNumber(detail.getNumber().add(number));
+					inboundDetailMapper.update(detail);
+					break;
+				}else if (!detail.getGoodsAllocation().getId().equals(goodsAllocation)) {
+					inboundDetail.setId(UUID.randomUUID().toString());
+					inboundDetail.setCtime(new Date());
+					inboundDetail.setGoodsAllocation(goodsAllocation);
+					inboundDetail.setNumber(number);
+					inboundDetail.setInboundId(ib.getId());
+					inboundDetail.setProduct(assembled.getProduct());
+					inboundDetailMapper.addDetail(inboundDetail);
+					break;
+				}
+			}
+		}else {
+			inbound.setId(UUID.randomUUID().toString());
+			inbound.setCode(assembled.getCode());
+			inbound.setType("ZZ");
+			inbound.setCuserId(LoginInterceptor.getLoginUser().getId());
+			inbound.setCtime(new Date());
+			inbound.setWarehouse(assembled.getWarehouse());
+			inboundMapper.addInbound(inbound);
+			inboundDetail.setId(UUID.randomUUID().toString());
+			inboundDetail.setCtime(new Date());
+			inboundDetail.setGoodsAllocation(goodsAllocation);
+			inboundDetail.setNumber(number);
+			inboundDetail.setInboundId(inbound.getId());
+			inboundDetail.setProduct(assembled.getProduct());
+			inboundDetailMapper.addDetail(inboundDetail);
+		}
+		/*--------------更新仓库库存开始----------------*/
+		Stock stock = stockMapper.getStock(assembled.getProduct().getId(), assembled.getWarehouse().getId());
+		
+		if(stock != null) {
+			//更新后使用数量
+			BigDecimal after_usableNumber = stock.getUsableNumber().add(number);
+			//更新后总额
+			BigDecimal after_totalMoney = stock.getTotalMoney().add(number.multiply(stock.getCostPrice()));
+			stock.setUsableNumber(after_usableNumber);
+			stock.setTotalMoney(after_totalMoney);
+			stockMapper.updateStock(stock);
+		}else {
+			throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND);
+		}
+		/*--------------更新仓库库存结束----------------*/
+		/*--------------更新货位库存开始----------------*/
+		//获取货位库存
+		StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), goodsAllocationId);
+		if(stockDetail != null) {
+			stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(number));
+			stockDetailMapper.updateStockDetail(stockDetail);
+		}
+		/*--------------更新货位库存结束----------------*/
+		
+		/*------------------库存变动明细开始----------------------*/
+		JournalAccount journalAccount = new JournalAccount();
+		journalAccount.setId(UUID.randomUUID().toString());
+		journalAccount.setType(JournalAccountType.ASSEMBLED);
+		journalAccount.setOrderCode(assembled.getCode());
+		journalAccount.setOrderDetailId(assembled.getId());
+		journalAccount.setStock(stock);
+		journalAccount.setCkNumber(stock.getUsableNumber());
+		journalAccount.setCkPrice(stock.getCostPrice());
+		journalAccount.setTotalMoney(stock.getTotalMoney());
+		journalAccount.setCtime(new Date());
+		journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+		journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		journalAccountService.addJournalAccount(journalAccount);
+		/*------------------库存变动明细结束----------------------*/
+	}
+	
 }
