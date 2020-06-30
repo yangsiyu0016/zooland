@@ -33,4 +33,5 @@ public class ProductAssembled {
 	private String status;
 	private String isClaimed;
 	private String processInstanceId;
+	private BigDecimal notInNumber;
 }

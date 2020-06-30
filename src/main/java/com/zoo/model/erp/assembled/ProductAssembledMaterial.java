@@ -13,4 +13,5 @@ public class ProductAssembledMaterial {
 	private Product product;
 	private BigDecimal number;
 	private BigDecimal needNumber;
+	private BigDecimal notOutNumber;
 }

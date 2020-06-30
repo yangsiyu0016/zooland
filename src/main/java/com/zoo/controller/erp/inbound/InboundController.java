@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.service.erp.inbound.InboundService;
 
 
@@ -38,5 +39,10 @@ public class InboundController {
 			respMap.put("msg", e.getMessage());
 			return respMap;
 		}
+	}
+	
+	@GetMapping("getInboundByForeignKey")
+	public Inbound getInboundByForeignKey(@RequestParam("id") String id) {
+		return inboundService.getInboundByForeignKey(id);
 	}
 }
