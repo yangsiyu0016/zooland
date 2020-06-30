@@ -26,6 +26,34 @@ import com.zoo.vo.RespBean;
 public class PurchaseController {
 	@Autowired
 	PurchaseService purchaseService;
+	@GetMapping("all")
+	public Map<String,Object> all(
+			@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("keywords")String keywords,
+			@RequestParam("code")String code,
+			@RequestParam("productCode")String productCode,
+			@RequestParam("productName")String productName,
+			@RequestParam("supplierName")String supplierName,
+			@RequestParam("start_initDate")String start_initDate,
+			@RequestParam("end_initDate")String end_initDate,
+			@RequestParam("start_ctime")String start_ctime,
+			@RequestParam("end_ctime")String end_ctime,
+			@RequestParam("status")String status,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order){
+		Map<String,Object> map = new HashMap<String,Object>();
+		List<Purchase> purchases = purchaseService.getPurchaseByPage(page,size,
+				null,keywords,
+				code,productCode,productName,
+				supplierName,start_initDate,end_initDate,start_ctime,end_ctime,status,sort,order);
+		long count = purchaseService.getCount(null,keywords,
+				code,productCode,productName,
+				supplierName,start_initDate,end_initDate,start_ctime,end_ctime,status);
+		map.put("purchases", purchases);
+		map.put("count", count);
+		return map;
+	}
 	@GetMapping("page")
 	public Map<String,Object> page(
 			@RequestParam("page")Integer page,

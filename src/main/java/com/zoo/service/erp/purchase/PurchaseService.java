@@ -1,5 +1,6 @@
 package com.zoo.service.erp.purchase;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +26,18 @@ import com.zoo.mapper.erp.purchase.PurchaseMapper;
 import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.model.annex.Annex;
+import com.zoo.model.erp.cost.Cost;
+import com.zoo.model.erp.cost.CostDetail;
+import com.zoo.model.erp.cost.CostDetailGoodsAllocation;
 import com.zoo.model.erp.purchase.Purchase;
 import com.zoo.model.erp.purchase.PurchaseDetail;
+import com.zoo.model.erp.warehouse.Stock;
+import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.annex.AnnexService;
+import com.zoo.service.erp.cost.CostService;
+import com.zoo.service.erp.warehouse.StockDetailService;
+import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
 import org.activiti.engine.ProcessEngine;
@@ -52,6 +61,12 @@ public class PurchaseService {
 	SystemParameterService systemParameterService;
 	@Autowired
 	TaskService taskService;
+	@Autowired
+	CostService costService;
+	@Autowired
+	StockService stockService;
+	@Autowired
+	StockDetailService stockDetailService;
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
@@ -165,6 +180,32 @@ public class PurchaseService {
 
 	public void destroy(String id) {
 		Purchase purchase = purchaseMapper.getPurchaseById(id);
+		
+		List<Cost> costs = costService.getCostByForeignKey(id);
+		for(Cost cost:costs) {
+			if(cost.getFinished()) {
+				List<CostDetail> costDetails = cost.getDetails();
+				for(CostDetail costDetail:costDetails) {
+					Stock stock = stockService.getStock(costDetail.getProduct().getId(), cost.getWarehouse().getId());
+					if(stock.getUsableNumber().subtract(costDetail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {//库存不足
+						throw new ZooException(costDetail.getProduct().getName()+"库存不足，不能作废");
+					}else {
+						List<CostDetailGoodsAllocation> cdgas = costDetail.getCdgas();
+						for(CostDetailGoodsAllocation cdga:cdgas) {
+							StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), cdga.getGoodsAllocation().getId());
+							if(stockDetail.getUsableNumber().subtract(cdga.getNumber()).compareTo(BigDecimal.ZERO)==-1) {//货位库存不足
+								
+							}else {
+								
+							}
+						}
+					}
+					
+				}
+			}
+			
+		}
+		
 		Map<String,Object> condition = new HashMap<String,Object>();
 		condition.put("id", id);
 		condition.put("status", PurchaseStatus.DESTROY);
@@ -175,13 +216,6 @@ public class PurchaseService {
 		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(),"待定");
 		
 		purchaseMapper.updateProcessInstanceId(id, null);
-		
-		//设置是否被签收表示
-		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
-		isClaimedCondition.put("code", purchase.getCode());
-		isClaimedCondition.put("isClaimed", "N");
-		
-		purchaseMapper.updatePurchaseIsClaimed(isClaimedCondition);
 	}
 
 	public void updatePurchaseIsClaimed(Map<String, Object> variables) {
