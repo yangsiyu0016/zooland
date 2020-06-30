@@ -9,10 +9,13 @@ import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
+import com.zoo.controller.erp.constant.PurchaseStatus;
 import com.zoo.model.system.position.Position;
 import com.zoo.model.system.user.SystemUser;
+import com.zoo.service.erp.purchase.PurchaseService;
 import com.zoo.service.system.position.PositionService;
 import com.zoo.service.system.user.SystemUserService;
 import com.zoo.utils.ApplicationUtil;
@@ -36,12 +39,14 @@ public class PurchaseCWHandler implements TaskListener {
 	private SystemUserService systemUserService;
 
 	private PositionService positionService;
+	private PurchaseService purchaseService;
 	@Override
 	public void notify(DelegateTask delegateTask) {
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		systemUserService = (SystemUserService) ApplicationUtil.getBean("systemUserService");
 		positionService = (PositionService) ApplicationUtil.getBean("positionService");
+		purchaseService =(PurchaseService)ApplicationUtil.getBean("purchaseService");
 		String applyUserId =  (String)runtimeService.getVariable(delegateTask.getExecutionId(), "applyUserId");
 		//String key = (String)runtimeService.getVariable(delegateTask.getExecutionId(), "key");
 		//String from = (String)runtimeService.getVariable(delegateTask.getExecutionId(), "from");
@@ -56,8 +61,15 @@ public class PurchaseCWHandler implements TaskListener {
 		}
 		delegateTask.addCandidateGroups(groupIds);
 		
-		//Map<String,Object> variables = pi.getProcessVariables();
-		//delegateTask.setVariables(variables);
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+		String key = result.getBusinessKey();
+		condition = new HashMap<String,Object>();
+
+		condition = new HashMap<String,Object>();
+		condition.put("id", key);
+		condition.put("status", PurchaseStatus.REJECT);
+		
+		purchaseService.updatePurchaseStatus(condition);
 	}
 	
 }

@@ -73,11 +73,13 @@
       <extensionElements>
         <activiti:executionListener event="take" class="com.zoo.listener.activiti.purchase.PurchaseResubmitHandler"></activiti:executionListener>
       </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow20" name="作废" sourceRef="exclusivegateway3" targetRef="endevent1">
       <extensionElements>
         <activiti:executionListener event="take" class="com.zoo.listener.activiti.purchase.PurchaseDestroyHandler"></activiti:executionListener>
       </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_purchase">
@@ -173,7 +175,7 @@
         <omgdi:waypoint x="610.0" y="338.0"></omgdi:waypoint>
         <omgdi:waypoint x="660.0" y="337.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="100.0" x="610.0" y="338.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="24.0" x="610.0" y="338.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">

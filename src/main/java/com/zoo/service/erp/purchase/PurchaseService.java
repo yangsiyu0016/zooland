@@ -210,6 +210,10 @@ public class PurchaseService {
 	public void deletePurchaseById(String ids) {
 		String[] split = ids.split(",");
 		for(String purchaseId:split) {
+			Purchase purchase = this.getPurchaseById(purchaseId);
+			if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())) {
+				throw new ZooException("流程已启动,不能删除");
+			}
 			//删除产品详情
 			detailMapper.deleteDetailByPurchaseId(purchaseId);
 			//删除物流信息
