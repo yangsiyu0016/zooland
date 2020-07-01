@@ -5,7 +5,6 @@
     <userTask id="assembledckzg" name="仓库主管审核">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledCKZGHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.assembled.AssembledCKZGCompleteHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="assembledckzg"></sequenceFlow>

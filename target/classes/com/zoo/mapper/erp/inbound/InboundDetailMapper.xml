@@ -44,7 +44,4 @@
 	<select id="getDetailById" resultMap="BaseResultMap">
 		select * from inbound_detail where id = #{id}
 	</select>
-	<delete id="deleteDetailByInboundId">
-		delete from inbound_detail where inboundId=#{inboundId}
-	</delete>
 </mapper>

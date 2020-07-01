@@ -5,7 +5,6 @@
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundMapper">
 	<resultMap type="com.zoo.model.erp.outbound.Outbound" id="BaseResultMap">
 		<id column="id" property="id"/>
-		<association column="foreignKey"   property="productAssembledMaterial" select="com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper.getMaterialById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.outbound.OutboundDetailMapper.getDetailByOutboundId"></collection>
 	</resultMap>
 	<select id="getOutboundsByPage" resultType="java.util.HashMap">
@@ -52,5 +51,4 @@
 	<delete id="deleteByCostId">
 		delete from outbound where costId=#{costId}
 	</delete>
-	
 </mapper>

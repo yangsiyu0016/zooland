@@ -297,6 +297,9 @@ public class ProductSplitService {
 				if (splitDetail.getNumber().subtract(usableNumber).compareTo(BigDecimal.ZERO) == 1) {
 					throw new ZooException(ExceptionEnum.STOCK_NOT_ENOUGH);
 				}else {
+					stock2.setUsableNumber(usableNumber.subtract(splitDetail.getNumber()));
+					stock2.setTotalMoney(stock2.getTotalMoney().subtract(splitDetail.getNumber().multiply(stock2.getCostPrice())));
+					stockMapper.updateStock(stock2);
 					for(InboundDetail inboundDetail: inbound.getDetails()) {
 						StockDetail stockDetail = stockDetailMapper.getDetail(stock2.getId(), inboundDetail.getGoodsAllocation().getId());
 						BigDecimal usableNumber2 = stockDetail.getUsableNumber();
@@ -305,10 +308,6 @@ public class ProductSplitService {
 						}else {
 							stockDetail.setUsableNumber(usableNumber2.subtract(inboundDetail.getNumber()));
 							stockDetailMapper.updateStockDetail(stockDetail);
-							
-							stock2.setUsableNumber(usableNumber.subtract(splitDetail.getNumber()));
-							stock2.setTotalMoney(stock2.getTotalMoney().subtract(splitDetail.getNumber().multiply(stock2.getCostPrice())));
-							stockMapper.updateStock(stock2);
 						}
 					}
 				}
