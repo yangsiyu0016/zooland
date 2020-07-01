@@ -16,5 +16,7 @@ public interface InboundMapper {
 	List<Map<String, Object>> getInboundByPage(@Param("start") Integer start, @Param("size") Integer size);
 	Long getTotleCount();
 	
-	Inbound getInboundByForeignKey(@Param("foreignKey") String foreignKey);
+	List<Inbound> getInboundByForeignKey(@Param("foreignKey") String foreignKey);
+
+	int deleteInboundByForeignKey(@Param("foreignKey")String foreignKey);
 }

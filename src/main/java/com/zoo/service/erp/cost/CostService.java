@@ -15,7 +15,6 @@ import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.cost.CostDetailGoodsAllocationMapper;
-import com.zoo.mapper.erp.cost.CostDetailMapper;
 import com.zoo.mapper.erp.cost.CostMapper;
 import com.zoo.mapper.erp.inbound.InboundDetailMapper;
 import com.zoo.mapper.erp.inbound.InboundMapper;
@@ -51,7 +50,7 @@ public class CostService {
 	@Autowired
 	CostMapper costMapper;
 	@Autowired
-	CostDetailMapper detailMapper;
+	CostDetailService detailService;
 	@Autowired
 	SellMapper sellMapper;
 	@Autowired
@@ -102,7 +101,7 @@ public class CostService {
 				detail.setId(UUID.randomUUID().toString());
 				detail.setCostId(cost.getId());
 				
-				detailMapper.addCostDetail(detail);
+				detailService.addCostDetail(detail);
 				
 				purchaseDetailMapper.updateNotOutNumber(pdetail.getId(), notOutNumber);
 				
@@ -146,7 +145,7 @@ public class CostService {
 				detail.setPrice(stock.getCostPrice());
 				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
 				
-				detailMapper.addCostDetail(detail);
+				detailService.addCostDetail(detail);
 				for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
 					cdga.setId(UUID.randomUUID().toString());
 					cdga.setCostDetailId(detail.getId());
@@ -245,6 +244,9 @@ public class CostService {
 		for(CostDetail detail:cost.getDetails()) {
 			PurchaseDetail purchaseDetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
 			
+			detail.setPrice(purchaseDetail.getPrice());
+			detail.setTotalMoney(purchaseDetail.getPrice().multiply(detail.getNumber()));
+			detailService.updateCostDetail(detail);
 			for(CostDetailGoodsAllocation cdga:detail.getCdgas()) {
 				InboundDetail inboundDetail = new InboundDetail();
 				inboundDetail.setId(UUID.randomUUID().toString());
@@ -323,17 +325,18 @@ public class CostService {
 				BigDecimal notInNumber = purchaseDetail.getNotInNumber().subtract(cdga.getNumber());
 				purchaseDetailMapper.updateNotInNumber(purchaseDetail.getId(), notInNumber);
 			}
-			costMapper.updateFinished(cost.getId(),true);
+			
 		}
+		costMapper.updateFinished(cost.getId(),true);
 	}
 	public void deleteCostFromPurchase(String id) {
-		List<CostDetail> details = detailMapper.getDetailByCostId(id);
+		List<CostDetail> details = detailService.getDetailByCostId(id);
 		for(CostDetail detail:details) {
 			PurchaseDetail purchaseDetail = purchaseDetailMapper.getDetailById(detail.getDetailId());
 			BigDecimal notOutNumber = purchaseDetail.getNotOutNumber().add(detail.getNumber());
 					
 			purchaseDetailMapper.updateNotOutNumber(detail.getDetailId(), notOutNumber);
-			detailMapper.deleteDetailById(detail.getId());
+			detailService.deleteDetailById(detail.getId());
 		}
 		costMapper.deleteCostById(id);
 	}
@@ -373,7 +376,7 @@ public class CostService {
 			//删除出库单
 			outboundService.deleteByCostId(id);
 			
-			detailMapper.deleteDetailById(detail.getId());
+			detailService.deleteDetailById(detail.getId());
 			
 			JournalAccount journalAccount = new JournalAccount();
 			journalAccount.setId(UUID.randomUUID().toString());
@@ -401,7 +404,7 @@ public class CostService {
 		for(Cost cost:costs) {
 			List<CostDetail> details = cost.getDetails();
 			for(CostDetail detail:details) {
-				detailMapper.deleteDetailById(detail.getId());
+				detailService.deleteDetailById(detail.getId());
 			}
 			costMapper.deleteCostById(cost.getId());
 		}

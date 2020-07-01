@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.util.StringUtil;
+import com.zoo.controller.erp.constant.JournalAccountType;
 import com.zoo.controller.erp.constant.PurchaseStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
@@ -26,6 +27,7 @@ import com.zoo.mapper.erp.purchase.PurchaseMapper;
 import com.zoo.mapper.annex.AnnexMapper;
 import com.zoo.mapper.erp.purchase.PurchaseDetailMapper;
 import com.zoo.model.annex.Annex;
+import com.zoo.model.erp.JournalAccount;
 import com.zoo.model.erp.cost.Cost;
 import com.zoo.model.erp.cost.CostDetail;
 import com.zoo.model.erp.cost.CostDetailGoodsAllocation;
@@ -35,7 +37,9 @@ import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.annex.AnnexService;
+import com.zoo.service.erp.JournalAccountService;
 import com.zoo.service.erp.cost.CostService;
+import com.zoo.service.erp.inbound.InboundService;
 import com.zoo.service.erp.warehouse.StockDetailService;
 import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.service.system.parameter.SystemParameterService;
@@ -67,6 +71,10 @@ public class PurchaseService {
 	StockService stockService;
 	@Autowired
 	StockDetailService stockDetailService;
+	@Autowired
+	JournalAccountService journalAccountService;
+	@Autowired
+	InboundService inboundService;
 	public void addPurchase(Purchase purchase) {
 		String id = UUID.randomUUID().toString();
 		purchase.setId(id);
@@ -194,11 +202,42 @@ public class PurchaseService {
 						for(CostDetailGoodsAllocation cdga:cdgas) {
 							StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), cdga.getGoodsAllocation().getId());
 							if(stockDetail.getUsableNumber().subtract(cdga.getNumber()).compareTo(BigDecimal.ZERO)==-1) {//货位库存不足
-								
+								throw new ZooException(costDetail.getProduct().getName()+"在货位:"+cdga.getGoodsAllocation().getName()+"上库存不足");
 							}else {
-								
+								stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(cdga.getNumber()));
+								stockDetailService.updateStockDetail(stockDetail);
 							}
 						}
+						BigDecimal after_usableNumber = stock.getUsableNumber().subtract(costDetail.getNumber());
+						BigDecimal after_totalMoney;
+						BigDecimal after_costPrice;
+						if(after_usableNumber.compareTo(BigDecimal.ZERO)==1) {
+							after_totalMoney = stock.getTotalMoney().subtract(costDetail.getTotalMoney());
+							after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+							
+						}else {
+							after_totalMoney = new BigDecimal("0");
+							after_costPrice = stock.getCostPrice();
+						}
+						stock.setUsableNumber(after_usableNumber);
+						stock.setCostPrice(after_costPrice);
+						stock.setTotalMoney(after_totalMoney);
+						stockService.updateStock(stock);
+						
+						JournalAccount journalAccount = new JournalAccount();
+						journalAccount.setId(UUID.randomUUID().toString());
+						journalAccount.setType(JournalAccountType.PURCHASEDESTROY);
+						journalAccount.setOrderDetailId(costDetail.getDetailId());
+						journalAccount.setOrderCode(purchase.getCode());
+						journalAccount.setStock(stock);
+						journalAccount.setCkNumber(costDetail.getNumber());
+						journalAccount.setCkPrice(costDetail.getPrice());
+						journalAccount.setCkTotalMoney(costDetail.getTotalMoney());
+						journalAccount.setCtime(new Date());
+						journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+						journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+						journalAccountService.addJournalAccount(journalAccount);
+
 					}
 					
 				}
@@ -212,10 +251,13 @@ public class PurchaseService {
 		condition.put("etime", new Date());
 		purchaseMapper.updatePurchaseStatus(condition);
 		//删除流程实例
-		RuntimeService runtimeService = processEngine.getRuntimeService();
-		runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(),"待定");
+		if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())) {
+			RuntimeService runtimeService = processEngine.getRuntimeService();
+			runtimeService.deleteProcessInstance(purchase.getProcessInstanceId(),"待定");
+			
+			purchaseMapper.updateProcessInstanceId(id, null);
+		}
 		
-		purchaseMapper.updateProcessInstanceId(id, null);
 	}
 
 	public void updatePurchaseIsClaimed(Map<String, Object> variables) {
@@ -261,15 +303,16 @@ public class PurchaseService {
 		String[] split = ids.split(",");
 		for(String purchaseId:split) {
 			Purchase purchase = this.getPurchaseById(purchaseId);
-			if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())) {
+			if(StringUtil.isNotEmpty(purchase.getProcessInstanceId())&&!purchase.getStatus().equals(PurchaseStatus.DESTROY)) {
 				throw new ZooException("流程已启动,不能删除");
 			}
 			//删除产品详情
 			detailMapper.deleteDetailByPurchaseId(purchaseId);
 			//删除物流信息
-			//costService.deleteByForeignKey(sellId);
+			costService.deleteByForeignKey(purchaseId);
 			//删除附件
 			annexService.delAnnexByForeignKey(purchaseId);
+			inboundService.deleteInboundByForeignKey(purchaseId);
 		}
 		purchaseMapper.deletePurchaseById(split);
 		

@@ -9,4 +9,5 @@ import com.zoo.model.erp.cost.CostDetailGoodsAllocation;
 public interface CostDetailGoodsAllocationMapper {
 	int addCostDetailGoodsAllocation(@Param("costDetailGoodsAllocation") CostDetailGoodsAllocation costDetailGoodsAllocation);
 	int deleteCostDetailGoodsAllocationById(@Param("id") String id);
+	int deleteCostDetailGoodsAllocationByDetailId(@Param("detailId")String detailId);
 }
