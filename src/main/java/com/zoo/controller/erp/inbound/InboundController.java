@@ -42,7 +42,7 @@ public class InboundController {
 	}
 	
 	@GetMapping("getInboundByForeignKey")
-	public Inbound getInboundByForeignKey(@RequestParam("foreignKey") String foreignKey) {
-		return inboundService.getInboundByForeignKey(foreignKey);
+	public List<Inbound> getInboundByForeignKey(@RequestParam("id") String id) {
+		return inboundService.getInboundByForeignKey(id);
 	}
 }

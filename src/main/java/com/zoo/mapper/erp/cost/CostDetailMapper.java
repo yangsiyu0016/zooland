@@ -13,5 +13,7 @@ public interface CostDetailMapper {
 
 	List<CostDetail> getDetailByCostId(@Param("costId")String costId);
 
-	void deleteDetailById(@Param("id")String id);
+	int deleteDetailById(@Param("id")String id);
+
+	int updateCostDetail(@Param("detail")CostDetail detail);
 }

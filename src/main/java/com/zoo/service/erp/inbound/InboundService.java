@@ -17,7 +17,8 @@ public class InboundService {
 	
 	@Autowired
 	private InboundMapper inboundMapper;
-	
+	@Autowired
+	private InboundDetailService inbouncDetailService;
 	//分页获取入库数据
 	public List<Map<String, Object>> getInboundByPage(Integer page, Integer size) {
 		Integer start = (page - 1) * size;
@@ -35,7 +36,16 @@ public class InboundService {
 		return totleCount;
 	}
 	
-	public Inbound getInboundByForeignKey(String id) {
+	public List<Inbound> getInboundByForeignKey(String id) {
 		return inboundMapper.getInboundByForeignKey(id);
+	}
+	public void deleteInboundByForeignKey(String foreignKey) {
+		
+		List<Inbound> inbounds = inboundMapper.getInboundByForeignKey(foreignKey);
+		for(Inbound inbound:inbounds) {
+			inbouncDetailService.deleteDetailByInboundId(inbound.getId());
+		}
+		
+		inboundMapper.deleteInboundByForeignKey(foreignKey);	
 	}
 }

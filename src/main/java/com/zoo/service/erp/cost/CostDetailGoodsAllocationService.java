@@ -23,5 +23,8 @@ public class CostDetailGoodsAllocationService {
 	public void deleteCostDetailGoodsAllocation(String id) {
 		costDetailGoodsAllocationMapper.deleteCostDetailGoodsAllocationById(id);
 	}
+	public int deleteCostDetailGoodsAllocationByDetailId(String detailId) {
+		return costDetailGoodsAllocationMapper.deleteCostDetailGoodsAllocationByDetailId(detailId);	
+	}
 
 }
