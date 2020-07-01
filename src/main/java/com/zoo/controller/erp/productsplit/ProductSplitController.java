@@ -5,12 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,8 +55,8 @@ public class ProductSplitController {
 		return map;
 	}
 	
-	@GetMapping("getProducrSplitById")
-	public ProductSplit getProducrSplitById(@RequestParam("id") String id) {
+	@GetMapping("getProductSplitById")
+	public ProductSplit getProductSplitById(@RequestParam("id") String id) {
 		return splitService.getProductSplitById(id);
 	}
 	
@@ -111,9 +109,9 @@ public class ProductSplitController {
 		try {
 			splitService.startProcess(id);
 			return new RespBean("200", "启动成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	
@@ -138,9 +136,9 @@ public class ProductSplitController {
 		try {
 			splitService.deleteDetailById(ids);
 			return new RespBean("200", "删除成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	

@@ -103,15 +103,15 @@ public class CustomTaskService {
 	}
 	/*--------------拆分单流程任务代码开始-----------------*/
 	//分页查询
-	public List<ProductSplitTask> getProductSplitTask(Integer page, Integer size) {
+	public List<ProductSplitTask> getProductSplitTask(Integer page,Integer size,String sort,String order,String keywords) {
 		// TODO Auto-generated method stub
 		Integer start = (page-1)*size;
-		return taskMapper.getProductSplitTask(start, size, LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getProductSplitTask(start,size,sort,order,keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	//总数量
-	public Long getProductSplitTaskCount() {
+	public Long getProductSplitTaskCount(String keywords) {
 		// TODO Auto-generated method stub
-		return taskMapper.getProductSplitTaskCount(LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getProductSplitTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	//根据任务id获取数据
 	public ProductSplitTask getProductSplitTaskById(String taskId) {

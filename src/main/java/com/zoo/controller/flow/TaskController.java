@@ -66,10 +66,14 @@ public class TaskController {
 	 * @return
 	 */
 	@GetMapping("getProductSplitTask")
-	public Map<String, Object> getProductSplitTask(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+	public Map<String, Object> getProductSplitTask(@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order,
+			@RequestParam("keywords")String keywords) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<ProductSplitTask> tasks = customTaskService.getProductSplitTask(page, size);
-		Long count = customTaskService.getProductSplitTaskCount();
+		List<ProductSplitTask> tasks = customTaskService.getProductSplitTask(page,size,sort,order,keywords);
+		Long count = customTaskService.getProductSplitTaskCount(keywords);
 		
 		map.put("tasks", tasks);
 		map.put("count", count);

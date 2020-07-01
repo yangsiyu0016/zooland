@@ -23,4 +23,7 @@
 	<delete id="deleteCostDetailGoodsAllocationById">
 		delete from cost_detail_goods_allocation where id=#{id}
 	</delete>
+	<delete id="deleteCostDetailGoodsAllocationByDetailId">
+		delete from cost_detail_goods_allocation where costDetailId=#{detailId}
+	</delete>
 </mapper>

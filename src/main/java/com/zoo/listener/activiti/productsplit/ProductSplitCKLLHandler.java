@@ -13,7 +13,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.ProductSplitStatus;
-import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.warehouse.Warehouse;
 import com.zoo.model.system.user.SystemUser;
 import com.zoo.service.erp.productsplit.ProductSplitService;
@@ -35,13 +34,13 @@ public class ProductSplitCKLLHandler implements TaskListener {
 
 	private ProcessEngine processEngine;
 	private WarehouseService warehouseService;
-	
+	private ProductSplitService productSplitService;
 	@Override
 	public void notify(DelegateTask delegateTask) {
 		// TODO Auto-generated method stub
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		
+		productSplitService = (ProductSplitService) ApplicationUtil.getBean("productSplitService");
 		warehouseService = (WarehouseService)ApplicationUtil.getBean("warehouseService");
 		String warehouseId = (String)runtimeService.getVariable(delegateTask.getExecutionId(), "warehouseId");
 		
@@ -52,6 +51,16 @@ public class ProductSplitCKLLHandler implements TaskListener {
 			userIds.add(user.getId());
 		}
 		delegateTask.addCandidateUsers(userIds);
+		
+		ProcessInstance result = runtimeService.createProcessInstanceQuery()
+				.processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+		String key = result.getBusinessKey();
+		
+		// 更新订单状态
+		Map<String, Object> condition = new HashMap<String, Object>();
+		condition.put("id", key);
+		condition.put("status", ProductSplitStatus.CKLL);
+		productSplitService.updateProductSplitStatus(condition);
 	}
 
 }

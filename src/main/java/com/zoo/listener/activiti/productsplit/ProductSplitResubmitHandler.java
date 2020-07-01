@@ -10,7 +10,6 @@ import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
-import com.zoo.controller.erp.constant.OpeningInventoryStatus;
 import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.service.erp.productsplit.ProductSplitService;
@@ -43,7 +42,7 @@ public class ProductSplitResubmitHandler implements ExecutionListener {
 		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(execution.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
 		ProductSplit split = productSplitService.getProductSplitById(key);
-		
+		execution.setVariable("warehouseId", split.getWarehouse().getId());
 		Map<String,Object> condition = new HashMap<String,Object>();
 		
 		condition = new HashMap<String,Object>();

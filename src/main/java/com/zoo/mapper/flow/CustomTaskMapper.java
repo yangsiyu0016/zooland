@@ -48,8 +48,14 @@ public interface CustomTaskMapper {
 	SellTask getSellTaskById(@Param("taskId")String taskId);
 	InventoryCheckTask getInventoryCheckTaskById(@Param("taskId")String taskId);
 	/*--------------拆分单流程任务代码开始-----------------*/
-	List<ProductSplitTask> getProductSplitTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
-	Long getProductSplitTaskCount(@Param("userId")String userId);
+	List<ProductSplitTask> getProductSplitTask(
+			@Param("start")Integer start, 
+			@Param("size")Integer size, 
+			@Param("sort")String sort,
+			@Param("order")String order,
+			@Param("keywords")String keywords,
+			@Param("userId")String userId);
+	Long getProductSplitTaskCount(@Param("keywords")String keywords,@Param("userId")String userId);
 	ProductSplitTask getProductSplitTaskById(@Param("taskId")String taskId);
 	/*--------------拆分单流程任务代码结束-----------------*/
 	

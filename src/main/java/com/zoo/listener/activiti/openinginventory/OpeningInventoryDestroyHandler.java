@@ -1,5 +1,6 @@
 package com.zoo.listener.activiti.openinginventory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ public class OpeningInventoryDestroyHandler implements ExecutionListener {
 		condition = new HashMap<String,Object>();
 		condition.put("id", openingInventory.getId());
 		condition.put("status", OpeningInventoryStatus.DESTROY);
+		condition.put("etime", new Date());
 		oiService.updateOpeningInventoryStatus(condition);
 	}
 

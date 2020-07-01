@@ -1,5 +1,6 @@
 package com.zoo.listener.activiti.productsplit;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class ProductSplitDestroyHandler implements ExecutionListener {
 		condition = new HashMap<String,Object>();
 		condition.put("id", split.getId());
 		condition.put("status", ProductSplitStatus.DESTROY);
-		
+		condition.put("etime", new Date());
 		productSplitService.updateProductSplitStatus(condition);
 	}
 
