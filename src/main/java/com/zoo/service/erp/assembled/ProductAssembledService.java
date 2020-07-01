@@ -30,6 +30,8 @@ import com.zoo.mapper.erp.assembled.ProductAssembledMapper;
 import com.zoo.mapper.erp.assembled.ProductAssembledMaterialMapper;
 import com.zoo.mapper.erp.inbound.InboundDetailMapper;
 import com.zoo.mapper.erp.inbound.InboundMapper;
+import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
+import com.zoo.mapper.erp.outbound.OutboundMapper;
 import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
 import com.zoo.mapper.erp.warehouse.StockDetailMapper;
 import com.zoo.mapper.erp.warehouse.StockMapper;
@@ -38,6 +40,7 @@ import com.zoo.model.erp.assembled.ProductAssembled;
 import com.zoo.model.erp.assembled.ProductAssembledMaterial;
 import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.inbound.InboundDetail;
+import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.erp.warehouse.Stock;
@@ -76,6 +79,10 @@ public class ProductAssembledService {
 	private JournalAccountService journalAccountService;
 	@Autowired
 	GoodsAllocationMapper gaMapper;
+	@Autowired
+	private OutboundMapper outboundMapper;
+	@Autowired
+	private OutboundDetailMapper outboundDetailMapper;
 	
 	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size,String keywords,
 			String code,String productCode,String productName,String status,String warehouseId,
@@ -286,4 +293,67 @@ public class ProductAssembledService {
 		/*------------------库存变动明细结束----------------------*/
 	}
 	
+	/**
+	 * 作废
+	 * @param id
+	 */
+	public void destroy(String id) {
+		//获取组装单
+		ProductAssembled assembled = this.getProductAssembledById(id);
+		String status = assembled.getStatus();
+		//获取组装入库单
+		Inbound inbound = inboundMapper.getInboundByForeignKey(id);
+		if(status.equals(ProductAssembledStatus.FINISHED)) {//如果是完成状态
+			Stock stock = stockMapper.getStock(assembled.getProduct().getId(), assembled.getWarehouse().getId());
+			//设置库存可用数量
+			if(stock.getUsableNumber().subtract(assembled.getNumber()).compareTo(BigDecimal.ZERO) == 1) {
+				throw new ZooException(ExceptionEnum.STOCK_NOT_ENOUGH);//库存不足
+			}else {
+				//设置库存可用数量
+				stock.setUsableNumber(stock.getUsableNumber().subtract(assembled.getNumber()));
+				//设置库存总额
+				stock.setTotalMoney(stock.getTotalMoney().add(assembled.getNumber().multiply(stock.getCostPrice())));
+				stockMapper.updateStock(stock);
+			}
+			for(InboundDetail inboundDetail: inbound.getDetails()) {
+				//获取库存详情表
+				StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), inboundDetail.getGoodsAllocation().getId());
+				if(inboundDetail.getNumber().subtract(assembled.getNumber()).compareTo(BigDecimal.ZERO) == 1) {
+					throw new ZooException(ExceptionEnum.STOCK_DETAIL_NO_ENOUGH);//货位库存不足
+				}else {
+					//设置货位可用数量
+					stockDetail.setUsableNumber(inboundDetail.getNumber().subtract(assembled.getNumber()));
+					stockDetailMapper.updateStockDetail(stockDetail);
+				}
+			}
+			//添加拆分出库的库存变动明细
+			JournalAccount account = new JournalAccount();
+			account.setId(UUID.randomUUID().toString());
+			account.setType(JournalAccountType.ASSEMBLED);
+			account.setOrderCode(assembled.getCode());
+			account.setOrderDetailId(assembled.getId());
+			account.setCkNumber(assembled.getNumber());
+			account.setCkPrice(stock.getCostPrice());
+			account.setTotalMoney(stock.getTotalMoney());
+			account.setCtime(new Date());
+			account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+			account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			journalAccountService.addJournalAccount(account);
+			
+			for(ProductAssembledMaterial material: assembled.getMaterials()) {
+				Outbound outbound = outboundMapper.getOutboundByForeignKey(material.getId());
+				Stock stock2 = stockMapper.getStock(material.getProduct().getId(), assembled.getWarehouse().getId());
+				BigDecimal usableNumber = stock2.getUsableNumber();
+				stock2.setUsableNumber(usableNumber.add(material.getNumber()));
+				stock2.setTotalMoney(stock2.getTotalMoney().add(material.getNumber().multiply(stock2.getCostPrice())));
+				stockMapper.updateStock(stock2);
+				for(OutboundDetail outboundDetail: outbound.getDetails()) {
+					StockDetail stockDetail = stockDetailMapper.getDetail(stock2.getId(), outboundDetail.getGoodsAllocation().getId());
+					BigDecimal usableNumber2 = stockDetail.getUsableNumber();
+					stockDetail.setUsableNumber(usableNumber2.add(outboundDetail.getNumber()));
+					stockDetailMapper.updateStockDetail(stockDetail);
+				}
+			}
+		}
+	}
 }
