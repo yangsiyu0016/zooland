@@ -14,4 +14,5 @@ public class JournalAccountType {
 	public static final String CFDESTROY = "CFDESTROY";//拆分单作废
 	public static final String ASSEMBLED = "ASSEMBLED";//组装单
 	public static final String PURCHASEDESTROY = "PURCHASEDESTROY";//采购单作废
+	public static final String SPLITCK = "SPLITCK";//拆分单出库
 }

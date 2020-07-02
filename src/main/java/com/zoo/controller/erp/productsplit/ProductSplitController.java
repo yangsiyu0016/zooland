@@ -72,13 +72,13 @@ public class ProductSplitController {
 	}
 	
 	@PostMapping("addOutbound")
-	public RespBean addOutbound(@RequestBody Outbound outbound,@RequestParam("number") BigDecimal number, @RequestParam("goodsAllocationId") String goodsAllocationId) {
+	public RespBean addOutbound(@RequestBody Outbound outbound) {
 		try {
-			splitService.addOutbound(outbound, goodsAllocationId, number);
+			splitService.addOutbound(outbound);
 			return new RespBean("200", "添加成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	

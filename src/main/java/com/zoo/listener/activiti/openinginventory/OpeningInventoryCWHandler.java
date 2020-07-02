@@ -69,7 +69,7 @@ public class OpeningInventoryCWHandler implements TaskListener {
 		
 		condition = new HashMap<String,Object>();
 		condition.put("id", openingInventory.getId());
-		condition.put("status", OpeningInventoryStatus.FINISHED);
+		condition.put("status", OpeningInventoryStatus.CWSH);
 		condition.put("etime", new Date());
 		openingInventoryService.updateOpeningInventoryStatus(condition);
 	}

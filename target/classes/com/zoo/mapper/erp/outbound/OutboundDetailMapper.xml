@@ -5,11 +5,13 @@
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundDetailMapper">
 	<resultMap type="com.zoo.model.erp.outbound.OutboundDetail" id="BaseResultMap">
 		<id column="id" property="id"/>
-		<result column="totalNumber" property="totalNumber"/>
+		<result column="number" property="number"/>
 		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
 	</resultMap>
-	
+	<select id="getDetailByOuboundForeignKey" resultMap="BaseResultMap">
+		select od.* from outbound_detail od left join outbound o on od.outboundId=o.id where o.foreignKey=#{foreignKey}
+	</select>
 	<select id="getDetailByOutboundId" resultMap="BaseResultMap">
 		select * from outbound_detail where outboundId=#{outboundId}
 	</select>

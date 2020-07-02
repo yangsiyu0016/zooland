@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
@@ -44,10 +46,15 @@ import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.erp.JournalAccountService;
+import com.zoo.service.erp.outbound.OutboundDetailService;
+import com.zoo.service.erp.outbound.OutboundService;
+import com.zoo.service.erp.warehouse.StockDetailService;
+import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
 
 @Service
+@Transactional
 public class ProductSplitService {
 
 	@Autowired
@@ -62,17 +69,17 @@ public class ProductSplitService {
 	@Autowired
 	IdentityService identityService;
 	@Autowired
-	StockMapper stockMapper;
+	StockService stockService;
 	@Autowired
-	StockDetailMapper stockDetailMapper;
+	StockDetailService stockDetailService;
 	@Autowired
 	SystemParameterService systemParameterService;
 	
 	@Autowired
-	OutboundMapper outboundMapper;
+	OutboundService outboundService;
 	
 	@Autowired
-	OutboundDetailMapper outboundDetailMapper;
+	OutboundDetailService outboundDetailService;
 	
 	@Autowired
 	GoodsAllocationMapper gaMapper;
@@ -85,17 +92,6 @@ public class ProductSplitService {
 	
 	@Autowired
 	private InboundMapper inboundMapper;
-	/*
-	 * public List<ProductSplit> getProductSplitByPage(Integer page, Integer size){
-	 * Integer start = null; if(page != null) { start = (page - 1) * size; } return
-	 * productSplitMapper.getProductSplitByPage(start, size,
-	 * LoginInterceptor.getLoginUser().getCompanyId()); }
-	 * 
-	 * 
-	 * public Long getCount() { return
-	 * productSplitMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId());
-	 * }
-	 */
 	
 	/**
 	 * 分页查询
@@ -338,78 +334,93 @@ public class ProductSplitService {
 		}
 	}
 
-	//添加出库单
-	public void addOutbound(String splitId, String goodsAllocationId, BigDecimal number) {
+	/**
+	 * 添加入库单 减库存 加出库明细
+	 * @param outbound
+	 */
+	public void addOutbound(Outbound outbound) {
+		ProductSplit split = this.getProductSplitById(outbound.getForeignKey());
+		outbound.setId(UUID.randomUUID().toString());
+		outbound.setCode(split.getCode());
+		outbound.setCtime(new Date());
+		outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
+		outbound.setWarehouse(split.getWarehouse());
+		outbound.setType("CF");
+		outboundService.addOutBound(outbound);
 		
-		/*
-		 * Outbound ob =
-		 * outboundMapper.getOutboundByForeignKey(outbound.getForeignKey());
-		 * 
-		 * ProductSplit split = this.getProductSplitById(outbound.getForeignKey());
-		 * 
-		 * GoodsAllocation goodsAllocation =
-		 * gaMapper.getGoodsAllocationById(goodsAllocationId);
-		 * 
-		 * OutboundDetail outboundDetail = new OutboundDetail(); if(ob != null) {
-		 * for(OutboundDetail detail: ob.getDetails()) {
-		 * if(detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
-		 * detail.setNumber(detail.getNumber().add(number));
-		 * outboundDetailMapper.update(detail); break; }else if
-		 * (!detail.getGoodsAllocation().getId().equals(goodsAllocationId)) {
-		 * outboundDetail.setId(UUID.randomUUID().toString());
-		 * outboundDetail.setCtime(new Date());
-		 * outboundDetail.setGoodsAllocation(goodsAllocation);
-		 * outboundDetail.setNumber(number); outboundDetail.setOutboundId(ob.getId());
-		 * outboundDetail.setProduct(split.getProduct());
-		 * outboundDetailMapper.addDetail(outboundDetail); break; } }
-		 * 
-		 * }else { outbound.setId(UUID.randomUUID().toString());
-		 * outbound.setCode(split.getCode()); outbound.setType("CF");
-		 * outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
-		 * outbound.setCtime(new Date()); outbound.setWarehouse(split.getWarehouse());
-		 * outboundMapper.addOutbound(outbound);
-		 * outboundDetail.setId(UUID.randomUUID().toString());
-		 * outboundDetail.setCtime(new Date());
-		 * outboundDetail.setGoodsAllocation(goodsAllocation);
-		 * outboundDetail.setNumber(number);
-		 * outboundDetail.setOutboundId(outbound.getId());
-		 * outboundDetail.setProduct(split.getProduct());
-		 * outboundDetailMapper.addDetail(outboundDetail); }
-		 * 
-		 * Stock stock = stockMapper.getStock(split.getProduct().getId(),
-		 * split.getWarehouse().getId());
-		 * 
-		 * if(stock != null) {
-		 * 
-		 * BigDecimal after_usableNumber = stock.getUsableNumber().subtract(number);
-		 * 
-		 * BigDecimal after_totalMoney =
-		 * stock.getTotalMoney().subtract(after_usableNumber.multiply(stock.getCostPrice
-		 * ()));
-		 * 
-		 * stock.setUsableNumber(after_usableNumber);
-		 * stock.setTotalMoney(after_totalMoney); stockMapper.updateStock(stock); }else
-		 * { throw new ZooException(ExceptionEnum.STOCK_NOT_FOUND); }
-		 * 
-		 * StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(),
-		 * goodsAllocationId); if(stockDetail != null) {
-		 * 
-		 * stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(number));
-		 * stockDetailMapper.updateStockDetail(stockDetail); }
-		 * 
-		 * JournalAccount account = new JournalAccount();
-		 * account.setId(UUID.randomUUID().toString());
-		 * account.setType(JournalAccountType.SPLIT);
-		 * account.setOrderDetailId(split.getId());
-		 * account.setOrderCode(split.getCode()); account.setStock(stock);
-		 * account.setCkNumber(stock.getUsableNumber());
-		 * account.setCkPrice(stock.getCostPrice());
-		 * account.setCkTotalMoney(stock.getTotalMoney()); account.setCtime(new Date());
-		 * account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==
-		 * null?new BigDecimal("0"):stock.getLockedNumber()));
-		 * account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-		 * journalAccountService.addJournalAccount(account);
-		 */
+		for(OutboundDetail detail:outbound.getDetails()) {
+			detail.setId(UUID.randomUUID().toString());
+			detail.setCtime(new Date());
+			detail.setOutboundId(outbound.getId());
+			detail.setProduct(split.getProduct());
+			Stock stock = stockService.getStock(split.getProduct().getId(), split.getWarehouse().getId());
+			
+			if(stock!=null) {
+				if(stock.getUsableNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+					throw new ZooException(split.getProduct().getName()+"库存不足");
+				}else {
+					StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), detail.getGoodsAllocation().getId());
+					if(stockDetail!=null) {
+						if(stockDetail.getUsableNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+							throw new ZooException(ExceptionEnum.STOCK_DETAIL_NO_ENOUGH);
+						}else {
+							stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(detail.getNumber()));
+							stockDetailService.updateStockDetail(stockDetail);
+							
+							BigDecimal after_usableNumber = stock.getUsableNumber().subtract(detail.getNumber());
+							BigDecimal after_totalMoney,after_costPrice;
+							stock.setUsableNumber(after_usableNumber);
+							
+							BigDecimal ckTotalMoney,ckPrice;
+							if(after_usableNumber.compareTo(BigDecimal.ZERO)==0) {
+								ckTotalMoney = stock.getTotalMoney();
+								ckPrice = stock.getCostPrice();
+								after_totalMoney = new BigDecimal("0");
+								after_costPrice = stock.getCostPrice();
+							}else {
+								ckPrice = stock.getCostPrice();
+								ckTotalMoney = ckPrice.multiply(detail.getNumber());
+								after_totalMoney = stock.getTotalMoney().subtract(ckTotalMoney);
+								after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+							}
+							stock.setCostPrice(after_costPrice);
+							stock.setTotalMoney(after_totalMoney);
+							stockService.updateStock(stock);
+							
+							detail.setPrice(ckPrice);
+							detail.setTotalMoney(ckTotalMoney);
+							outboundDetailService.addDetail(detail);
+							
+							
+							JournalAccount journalAccount = new JournalAccount();
+							journalAccount.setId(UUID.randomUUID().toString());
+							journalAccount.setType(JournalAccountType.SPLITCK);
+							journalAccount.setOrderDetailId(detail.getId());
+							journalAccount.setOrderCode(split.getCode());
+							journalAccount.setStock(stock);
+							journalAccount.setCkNumber(detail.getNumber());
+							journalAccount.setCkPrice(ckPrice);
+							journalAccount.setCkTotalMoney(ckTotalMoney);
+							journalAccount.setCtime(new Date());
+							journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+							journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+							journalAccountService.addJournalAccount(journalAccount);
+							
+							BigDecimal notOutNumber = split.getNotOutNumber().subtract(detail.getNumber());
+							
+							this.updateNotOutNumberById(notOutNumber, split.getId());
+							
+							
+						}
+					}else {
+						throw new ZooException(detail.getGoodsAllocation().getName()+"货位库存不存在");
+					}
+				}
+			}else {
+				throw new ZooException(split.getProduct().getName()+"库存不存在");
+			}
+
+		}
 	}
 
 	public void reset(String id) {

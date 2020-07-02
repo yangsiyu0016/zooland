@@ -11,8 +11,30 @@ import com.zoo.model.erp.outbound.Outbound;
 @Component
 public interface OutboundMapper {
 	int addOutbound(@Param("outbound")Outbound outbound);
-	List<Map<String, Object>> getOutboundsByPage(@Param("start") Integer start, @Param("size") Integer size);
-	Long getTotalCount();
+	List<Map<String, Object>> getOutboundsByPage(
+			@Param("start") Integer start, 
+			@Param("size") Integer size, 
+			@Param("sort") String sort, 
+			@Param("order") String order, 
+			@Param("companyId") String companyId, 
+			@Param("keywords") String keywords, 
+			@Param("code") String code, 
+			@Param("productCode") String productCode, 
+			@Param("productName") String productName, 
+			@Param("type") String type, 
+			@Param("warehouseId") String warehouseId, 
+			@Param("start_ctime") String start_ctime, 
+			@Param("end_ctime") String end_ctime);
+	Long getTotalCount(
+			@Param("companyId") String companyId, 
+			@Param("keywords") String keywords, 
+			@Param("code") String code, 
+			@Param("productCode") String productCode, 
+			@Param("productName") String productName, 
+			@Param("type") String type, 
+			@Param("warehouseId") String warehouseId, 
+			@Param("start_ctime") String start_ctime, 
+			@Param("end_ctime") String end_ctime);
 	int deleteByCostId(@Param("costId")String costId);
 	Outbound getOutboundByCostId(@Param("costId")String costId);
 	Outbound getOutboundByForeignKey(@Param("foreignKey") String foreignKey);

@@ -21,11 +21,23 @@ public class OutboundController {
 	private OutboundService outBoundService;
 	
 	@RequestMapping("page")
-	public Map<String, Object> getOutboundsByPage(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+	public Map<String, Object> getOutboundsByPage(
+			@RequestParam("page") Integer page, 
+			@RequestParam("size") Integer size, 
+			@RequestParam("sort") String sort, 
+			@RequestParam("order") String order, 
+			@RequestParam("keywords") String keywords, 
+			@RequestParam("code") String code, 
+			@RequestParam("productCode") String productCode, 
+			@RequestParam("productName") String productName, 
+			@RequestParam("type") String type, 
+			@RequestParam("warehouseId") String warehouseId, 
+			@RequestParam("start_ctime") String start_ctime, 
+			@RequestParam("end_ctime") String end_ctime) {
 		Map<String, Object> respMap = new HashMap<String, Object>();
 		try {
-			List<Map<String,Object>> list = outBoundService.getOutboundsByPage(page, size);
-			Long count = outBoundService.getTotalCount();
+			List<Map<String,Object>> list = outBoundService.getOutboundsByPage(page, size,sort,order,keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
+			Long count = outBoundService.getTotalCount(keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
 			respMap.put("outbounds", list);
 			respMap.put("count", count);
 			respMap.put("status", "200");
