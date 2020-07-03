@@ -6,6 +6,7 @@ import java.util.List;
 import com.zoo.model.erp.cost.Cost;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
 import com.zoo.model.erp.warehouse.Warehouse;
+import com.zoo.model.system.user.SystemUser;
 
 import lombok.Data;
 @Data
@@ -14,7 +15,7 @@ public class Inbound {
 	private String code;
 	private Date ctime;
 	private String cuserId;
-	private System cuser;
+	private SystemUser cuser;
 	private Warehouse warehouse;
 	private String type;
 	private String foreignKey;

@@ -22,12 +22,24 @@ public class InboundController {
 	private InboundService inboundService;
 	
 	@GetMapping("page")
-	public Map<String, Object> getInboundByPage(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+	public Map<String, Object> getInboundByPage(
+			@RequestParam("page") Integer page, 
+			@RequestParam("size") Integer size,
+			@RequestParam("sort") String sort,
+			@RequestParam("order") String order,
+			@RequestParam("keywords") String keywords,
+			@RequestParam("code") String code,
+			@RequestParam("productCode") String productCode,
+			@RequestParam("productName") String productName,
+			@RequestParam("type") String type,
+			@RequestParam("warehouseId") String warehouseId,
+			@RequestParam("start_ctime") String start_ctime,
+			@RequestParam("end_ctime") String end_ctime) {
 		Map<String, Object> respMap = new HashMap<String, Object>();
 		try {
-			List<Map<String, Object>> inboundList = inboundService.getInboundByPage(page, size);
-			Long count = inboundService.getTotleCount();
-			respMap.put("inbounds", inboundList);
+			List<Inbound> list = inboundService.getInboundByPage(page, size, sort, order, keywords, code, productCode, productName, type, warehouseId, start_ctime, end_ctime);
+			Long count = inboundService.getTotleCount(keywords,code, productCode, productName, type, warehouseId, start_ctime, end_ctime);
+			respMap.put("inbounds", list);
 			respMap.put("count", count);
 			respMap.put("status", "200");
 			respMap.put("msg", "获取成功");
@@ -44,5 +56,10 @@ public class InboundController {
 	@GetMapping("getInboundByForeignKey")
 	public List<Inbound> getInboundByForeignKey(@RequestParam("id") String id) {
 		return inboundService.getInboundByForeignKey(id);
+	}
+	
+	@GetMapping("getInboundById")
+	public Inbound getInboundById(@RequestParam("id") String id) {
+		return inboundService.getInboundById(id);
 	}
 }
