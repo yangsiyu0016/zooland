@@ -5,7 +5,8 @@
 <mapper namespace="com.zoo.mapper.erp.outbound.OutboundMapper">
 	<resultMap type="com.zoo.model.erp.outbound.Outbound" id="BaseResultMap">
 		<id column="id" property="id"/>
-		
+		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
+		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.outbound.OutboundDetailMapper.getDetailByOutboundId"></collection>
 	</resultMap>
 	<select id="getOutboundsByPage" resultMap="BaseResultMap">

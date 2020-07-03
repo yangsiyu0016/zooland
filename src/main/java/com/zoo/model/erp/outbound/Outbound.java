@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zoo.model.erp.cost.Cost;
 import com.zoo.model.erp.warehouse.Warehouse;
+import com.zoo.model.system.user.SystemUser;
 
 import lombok.Data;
 
@@ -21,4 +22,5 @@ public class Outbound {
 	private String type;
 	private Cost cost;
 	private List<OutboundDetail> details;
+	private SystemUser cuser;
 }
