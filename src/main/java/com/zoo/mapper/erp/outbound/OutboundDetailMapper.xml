@@ -47,4 +47,7 @@
 			number = #{detail.number}
 		where id = #{detail.id}
 	</update>
+	<delete id="deleteDetailById">
+		delete from outbound_detail where id=#{id}
+	</delete>
 </mapper>

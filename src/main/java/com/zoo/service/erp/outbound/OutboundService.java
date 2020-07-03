@@ -65,4 +65,24 @@ public class OutboundService {
 		outboundMapper.addOutbound(outbound);
 		
 	}
+
+	public Outbound getOutboundById(String id) {
+		// TODO Auto-generated method stub
+		return outboundMapper.getOutboundById(id);
+	}
+
+	public boolean checkHasDetails(String id) {
+		long count = outboundMapper.getDetailCount(id);
+		if(count>0) {
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+
+	public void deleteById(String id) {
+		outboundMapper.deleteById(id);
+		outboundDetailMapper.deleteByOutboundId(id);
+	}
 }

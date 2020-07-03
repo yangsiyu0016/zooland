@@ -242,21 +242,6 @@ public class ProductSplitService {
 		}
 		
 	}
-	
-	/**
-	 * 更改签收状态
-	 * @param variables
-	 */
-	public void updateProductSplitIsClaimed(Map<String, Object> variables) {
-		Map<String, Object> condition = new HashMap<String, Object>();
-		// TODO Auto-generated method stub
-		
-		condition.put("id", variables.get("id"));
-		condition.put("isClaimed", "Y");
-		
-		productSplitMapper.updateProductSplitIsClaimed(condition);
-	}
-	
 	/**
 	 * 作废
 	 * @param id
@@ -422,7 +407,62 @@ public class ProductSplitService {
 
 		}
 	}
-
+	public BigDecimal deleteOut(String splitId,String outboundDetailId,String type) {
+		ProductSplit split = this.getProductSplitById(splitId);
+		BigDecimal notOutNumber = split.getNotOutNumber();
+		OutboundDetail outboundDetail = outboundDetailService.getDetailById(outboundDetailId);
+		Outbound outbound = outboundService.getOutboundById(outboundDetail.getOutboundId());
+		if(type.equals("only")) {
+			
+			this.deleteOutDetail(outboundDetail, outbound);
+			
+			outboundDetailService.deleteDetailById(outboundDetailId);
+			
+			boolean hasDetails = outboundService.checkHasDetails(outbound.getId());
+			if(!hasDetails) {
+				outboundService.deleteById(outbound.getId());
+			}
+			notOutNumber  = notOutNumber.add(outboundDetail.getNumber());
+			this.updateNotOutNumberById(notOutNumber, splitId);
+		}else {
+			for(OutboundDetail detail:outbound.getDetails()) {
+				this.deleteOutDetail(detail, outbound);
+				notOutNumber= notOutNumber.add(detail.getNumber());
+			}
+			outboundService.deleteById(outbound.getId());
+		}
+		return notOutNumber;
+		
+	}
+	private void deleteOutDetail(OutboundDetail outboundDetail,Outbound outbound) {
+		Stock stock = stockService.getStock(outboundDetail.getProduct().getId(), outbound.getWarehouse().getId());
+		
+		StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), outboundDetail.getGoodsAllocation().getId());
+		stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(outboundDetail.getNumber()));
+		stockDetailService.updateStockDetail(stockDetail);
+		
+		BigDecimal after_usableNumber = stock.getUsableNumber().add(outboundDetail.getNumber());
+		BigDecimal after_totalMoney = stock.getTotalMoney().add(outboundDetail.getTotalMoney());
+		BigDecimal after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+		stock.setUsableNumber(after_usableNumber);
+		stock.setTotalMoney(after_totalMoney);
+		stock.setCostPrice(after_costPrice);
+		stockService.updateStock(stock);
+		
+		JournalAccount journalAccount = new JournalAccount();
+		journalAccount.setId(UUID.randomUUID().toString());
+		journalAccount.setType(JournalAccountType.SPLITCKDELETE);
+		journalAccount.setOrderDetailId("");
+		journalAccount.setOrderCode(outbound.getCode());
+		journalAccount.setStock(stock);
+		journalAccount.setRkNumber(outboundDetail.getNumber());
+		journalAccount.setRkPrice(outboundDetail.getPrice());
+		journalAccount.setRkTotalMoney(outboundDetail.getTotalMoney());
+		journalAccount.setCtime(new Date());
+		journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+		journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		journalAccountService.addJournalAccount(journalAccount);
+	}
 	public void reset(String id) {
 		// TODO Auto-generated method stub
 		ProductSplit split = this.getProductSplitById(id);

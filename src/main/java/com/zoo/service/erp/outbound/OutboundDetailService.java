@@ -21,4 +21,12 @@ public class OutboundDetailService {
 	public void addDetail(OutboundDetail detail) {
 		detailMapper.addDetail(detail);		
 	}
+	public OutboundDetail getDetailById(String id) {
+		// TODO Auto-generated method stub
+		return detailMapper.getDetailById(id);
+	}
+	public void deleteDetailById(String id) {
+		detailMapper.outboundDetailId(id);
+		
+	}
 }

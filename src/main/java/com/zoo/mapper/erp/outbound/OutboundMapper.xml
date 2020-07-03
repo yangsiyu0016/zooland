@@ -78,11 +78,17 @@
 			AND o.ctime <![CDATA[ <= ]]> #{end_ctime}
 		</if>
 	</select>
+	<select id="getDetailCount" resultType="long">
+		select count(*) form outbound_detail where outboundId=#{id}
+	</select>
 	<select id="getOutboundByCostId" resultMap="BaseResultMap">
 		select * from outbound where costId=#{costId}
 	</select>
 	<select id="getOutboundByForeignKey" resultMap="BaseResultMap">
 		select * from outbound where foreignKey=#{foreignKey}
+	</select>
+	<select id="getOutboundById" resultMap="BaseResultMap">
+		select * from outbound where id=#{id}
 	</select>
 	<insert id="addOutbound">
 		insert into outbound (
@@ -108,5 +114,7 @@
 	<delete id="deleteByCostId">
 		delete from outbound where costId=#{costId}
 	</delete>
-	
+	<delete id="deleteById">
+		delete from outbound where id=#{id}
+	</delete>
 </mapper>

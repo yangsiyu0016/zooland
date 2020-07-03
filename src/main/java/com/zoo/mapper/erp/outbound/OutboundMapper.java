@@ -38,4 +38,7 @@ public interface OutboundMapper {
 	int deleteByCostId(@Param("costId")String costId);
 	Outbound getOutboundByCostId(@Param("costId")String costId);
 	Outbound getOutboundByForeignKey(@Param("foreignKey") String foreignKey);
+	Outbound getOutboundById(@Param("id")String id);
+	long getDetailCount(@Param("id")String id);
+	int deleteById(@Param("id")String id);
 }

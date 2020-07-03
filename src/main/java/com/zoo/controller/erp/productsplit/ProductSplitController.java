@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -81,7 +82,19 @@ public class ProductSplitController {
 			return new RespBean("500", e.getMsg());
 		}
 	}
-	
+	@DeleteMapping("deleteOut")
+	public Map<String,Object> deleteOut(@RequestParam("splitId")String splitId,@RequestParam("outboundDetailId")String outboundDetailId,@RequestParam("type")String type){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			BigDecimal notOutNumber = splitService.deleteOut(splitId, outboundDetailId,type);
+			resultMap.put("status", "200");
+			resultMap.put("notOutNumber", notOutNumber);
+		} catch (ZooException e) {
+			resultMap.put("status", "500");
+			resultMap.put("msg", e.getMsg());
+		}
+		return resultMap;
+	}
 	@PostMapping("add")
 	public RespBean add(@RequestBody ProductSplit split) {
 		try {
