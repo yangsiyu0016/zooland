@@ -5,8 +5,11 @@
 <mapper namespace="com.zoo.mapper.erp.inbound.InboundMapper">
 	<resultMap type="com.zoo.model.erp.inbound.Inbound" id="BaseResultMap">
 		<id column="id" property="id"/>
-		<id column="foreignKey" property="foreignKey"/>
+		<result column="foreignKey" property="foreignKey"/>
+		<result column="type" property="type"/>
+		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
 		<association column="foreignKey"   property="splitDetail" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailById"></association>
+		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.inbound.InboundDetailMapper.getDetailByInboundId"></collection>
 	</resultMap>
 	<insert id="addInbound">
@@ -30,20 +33,91 @@
 			#{inbound.cost.id}
 		)
 	</insert>
-	<select id="getInboundByPage" resultType="java.util.HashMap">
-		select i.code code, i.ctime ctime, ps.name from 
-		inbound i left join 
-		(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps 
-		on i.foreignKey = ps.id order by ctime desc 
+	<!-- <select id="getInboundByPage" resultType="java.util.HashMap">
+		select i.code code, i.ctime ctime, ps.name, i.type, w.name warehouseName from 
+			inbound i 
+		left join 
+			(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps on i.foreignKey = ps.id 
+		left join 
+			warehouse w on i.warehouseId = w.id
+		where 1 = 1 
+		<if test="keywords != null and keywords != '' ">
+			and i.code like concat('%', #{keywords}, '%') 
+		</if>
+			order by ${sort} ${order}
+		<if test="start != null and size != null">
+			limit #{start}, #{size}
+		</if>
+	</select> -->
+	<select id="getInboundByPage" resultMap="BaseResultMap">
+		select 
+			distinct i.* 
+		from
+			inbound i 
+		left join inbound_detail id on i.id = id.inboundId	
+		left join product p on id.productId = p.id 
+		where 1 = 1 
+		<if test="keywords != null and keywords != '' ">
+			and (i.code like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and i.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="type != null and type != '' ">
+			and i.type = #{type}
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and i.warehouseId = #{warehouseId}
+		</if>
+		<if test="start_time != null and start_time != '' ">
+			and i.ctime &gt;= #{start_time}
+		</if>
+		<if test="end_time != null and end_time != '' ">
+			and i.ctime &lt;= #{end_time}
+		</if>
+		order by ${sort} ${order}
 		<if test="start != null and size != null">
 			limit #{start}, #{size}
 		</if>
 	</select>
 	<select id="getTotleCount" resultType="long">
-		select count(*) count from 
-		inbound i left join 
-		(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps 
-		on i.foreignKey = ps.id
+		select 
+			count(distinct i.id) count 
+		from
+			inbound i 
+		left join inbound_detail id on i.id = id.inboundId	
+		left join product p on id.productId = p.id 
+		where 1 = 1 
+		<if test="keywords != null and keywords != '' ">
+			and (i.code like concat('%', #{keywords}, '%') or p.code like concat('%', #{keywords}, '%') or p.name like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="code != null and code != '' ">
+			and i.code like concat('%', #{code}, '%') 
+		</if>
+		<if test="productCode != null and productCode != '' ">
+			and p.code like concat('%', #{productCode}, '%') 
+		</if>
+		<if test="productName != null and productName != '' ">
+			and p.name like concat('%', #{productName}, '%') 
+		</if>
+		<if test="type != null and type != '' ">
+			and i.type = #{type}
+		</if>
+		<if test="warehouseId != null and warehouseId != '' ">
+			and i.warehouseId = #{warehouseId}
+		</if>
+		<if test="start_time != null and start_time != '' ">
+			and i.ctime &gt;= #{start_time}
+		</if>
+		<if test="end_time != null and end_time != '' ">
+			and i.ctime &lt;= #{end_time}
+		</if>
 	</select>
 	<select id="getInboundByForeignKey" resultMap="BaseResultMap">
 		select * from inbound where foreignKey=#{foreignKey}
@@ -51,4 +125,7 @@
 	<delete id="deleteInboundByForeignKey">
 		delete from inbound where foreignKey=#{foreignKey}
 	</delete>
+	<select id="getInboundById" resultMap="BaseResultMap">
+		select * from inbound where id = #{id}
+	</select>
 </mapper>
