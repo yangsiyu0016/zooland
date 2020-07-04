@@ -12,7 +12,10 @@ public class JournalAccountType {
 	public static final String SELLDETAILDELETE = "SELLDETAILDELETE";//销售单出库撤销
 	public static final String SPLIT = "SPLIT";//销售单出库撤销
 	public static final String CFDESTROY = "CFDESTROY";//拆分单作废
-	public static final String ASSEMBLED = "ASSEMBLED";//组装单
+	public static final String ASSEMBLEDCK = "ASSEMBLEDCK";//组装单出库
+	public static final String ASSEMBLEDRK = "ASSEMBLEDRK";//组装单入库
+	public static final String ASSEMBLEDDESTROY = "ASSEMBLEDDESTROY";//组装单作废
+	public static final String ASSEMBLEDDELETE = "ASSEMBLEDDELETE";//组装单删除
 	public static final String PURCHASEDESTROY = "PURCHASEDESTROY";//采购单作废
 	public static final String SPLITCK = "SPLITCK";//拆分单出库
 	public static final String SPLITCKDELETE = "SPLITCKDELETE";//拆分单出库删除
