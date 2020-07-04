@@ -26,7 +26,7 @@ public class OutboundDetailService {
 		return detailMapper.getDetailById(id);
 	}
 	public void deleteDetailById(String id) {
-		detailMapper.outboundDetailId(id);
+		detailMapper.deleteDetailById(id);
 		
 	}
 }

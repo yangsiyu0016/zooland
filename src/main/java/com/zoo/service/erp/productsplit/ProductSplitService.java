@@ -25,23 +25,17 @@ import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
-import com.zoo.mapper.erp.inbound.InboundMapper;
-import com.zoo.mapper.erp.outbound.OutboundDetailMapper;
-import com.zoo.mapper.erp.outbound.OutboundMapper;
+
 import com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper;
 import com.zoo.mapper.erp.productsplit.ProductSplitMapper;
 import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
-import com.zoo.mapper.erp.warehouse.StockDetailMapper;
-import com.zoo.mapper.erp.warehouse.StockMapper;
+
 import com.zoo.model.erp.JournalAccount;
-import com.zoo.model.erp.inbound.Inbound;
-import com.zoo.model.erp.inbound.InboundDetail;
-import com.zoo.model.erp.openingInventory.OpeningInventory;
+
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
-import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
@@ -89,10 +83,6 @@ public class ProductSplitService {
 	
 	@Autowired
 	TaskService taskService;
-	
-	@Autowired
-	private InboundMapper inboundMapper;
-	
 	/**
 	 * 分页查询
 	 * @param page
@@ -247,76 +237,7 @@ public class ProductSplitService {
 	 * @param id
 	 */
 	public void destroy(String id) {
-		//获取拆分单
-		ProductSplit split = this.getProductSplitById(id);
-		String status = split.getStatus();
-		//获取拆分出库单
-		Outbound outbound = outboundMapper.getOutboundByForeignKey(id);
-		if (status.equals(ProductSplitStatus.FINISHED)) {//如果状态是作废
-			Stock stock = stockMapper.getStock(split.getProduct().getId(), split.getWarehouse().getId());
-			//设置库存可用数量
-			stock.setUsableNumber(stock.getUsableNumber().add(split.getNumber()));
-			//设置库存总额
-			stock.setTotalMoney(stock.getTotalMoney().add(stock.getCostPrice().multiply(split.getNumber())));
-			stockMapper.updateStock(stock);
-			for(OutboundDetail outboundDetail: outbound.getDetails()) {
-				//获取库存详情表
-				StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), outboundDetail.getGoodsAllocation().getId());
-				//设置货位可用数量
-				stockDetail.setUsableNumber(outboundDetail.getNumber().add(stockDetail.getUsableNumber()));
-				stockDetailMapper.updateStockDetail(stockDetail);
-			}
-			//添加拆分出库的库存变动明细
-			JournalAccount account = new JournalAccount();
-			account.setId(UUID.randomUUID().toString());
-			account.setType(JournalAccountType.CFDESTROY);
-			account.setOrderDetailId(split.getId());
-			account.setOrderCode(split.getCode());
-			account.setCkNumber(split.getNumber());
-			account.setCkPrice(stock.getCostPrice());
-			account.setTotalMoney(stock.getTotalMoney());
-			account.setCtime(new Date());
-			account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
-			account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-			journalAccountService.addJournalAccount(account);
-			
-			
-			for(ProductSplitDetail splitDetail: split.getDetails()) {//添加入库单作废后的库存变动明细
-				Inbound inbound = inboundMapper.getInboundByForeignKey(splitDetail.getId());
-				Stock stock2 = stockMapper.getStock(splitDetail.getProduct().getId(), split.getWarehouse().getId());
-				BigDecimal usableNumber = stock2.getUsableNumber();
-				if (splitDetail.getNumber().subtract(usableNumber).compareTo(BigDecimal.ZERO) == 1) {
-					throw new ZooException(ExceptionEnum.STOCK_NOT_ENOUGH);
-				}else {
-					stock2.setUsableNumber(usableNumber.subtract(splitDetail.getNumber()));
-					stock2.setTotalMoney(stock2.getTotalMoney().subtract(splitDetail.getNumber().multiply(stock2.getCostPrice())));
-					stockMapper.updateStock(stock2);
-					for(InboundDetail inboundDetail: inbound.getDetails()) {
-						StockDetail stockDetail = stockDetailMapper.getDetail(stock2.getId(), inboundDetail.getGoodsAllocation().getId());
-						BigDecimal usableNumber2 = stockDetail.getUsableNumber();
-						if(inboundDetail.getNumber().subtract(usableNumber2).compareTo(BigDecimal.ZERO) == 1) {
-							throw new ZooException(ExceptionEnum.STOCK_DETAIL_NO_ENOUGH);
-						}else {
-							stockDetail.setUsableNumber(usableNumber2.subtract(inboundDetail.getNumber()));
-							stockDetailMapper.updateStockDetail(stockDetail);
-						}
-					}
-				}
-				
-				//添加库存变动详情表
-				account.setId(UUID.randomUUID().toString());
-				account.setType(JournalAccountType.CFDESTROY);
-				account.setOrderDetailId(split.getId());
-				account.setOrderCode(split.getCode());
-				account.setCkNumber(splitDetail.getNumber());
-				account.setCkPrice(stock2.getCostPrice());
-				account.setTotalMoney(stock2.getTotalMoney());
-				account.setCtime(new Date());
-				account.setTotalNumber(stock2.getUsableNumber().add(stock2.getLockedNumber()==null?new BigDecimal("0"):stock2.getLockedNumber()));
-				account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
-				journalAccountService.addJournalAccount(account);
-			}
-		}
+		
 	}
 
 	/**
@@ -423,14 +344,16 @@ public class ProductSplitService {
 				outboundService.deleteById(outbound.getId());
 			}
 			notOutNumber  = notOutNumber.add(outboundDetail.getNumber());
-			this.updateNotOutNumberById(notOutNumber, splitId);
+			//this.updateNotOutNumberById(notOutNumber, splitId);
 		}else {
 			for(OutboundDetail detail:outbound.getDetails()) {
 				this.deleteOutDetail(detail, outbound);
 				notOutNumber= notOutNumber.add(detail.getNumber());
 			}
 			outboundService.deleteById(outbound.getId());
+			
 		}
+		this.updateNotOutNumberById(notOutNumber, splitId);
 		return notOutNumber;
 		
 	}

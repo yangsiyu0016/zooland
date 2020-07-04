@@ -79,7 +79,7 @@
 		</if>
 	</select>
 	<select id="getDetailCount" resultType="long">
-		select count(*) form outbound_detail where outboundId=#{id}
+		select count(*) from outbound_detail where outboundId=#{id}
 	</select>
 	<select id="getOutboundByCostId" resultMap="BaseResultMap">
 		select * from outbound where costId=#{costId}

@@ -15,6 +15,9 @@
 	<select id="getDetailByOutboundId" resultMap="BaseResultMap">
 		select * from outbound_detail where outboundId=#{outboundId}
 	</select>
+	<select id="getDetailById" resultMap="BaseResultMap">
+		select * from outbound_detail where id=#{id}
+	</select>
 	<insert id="addDetail">
 		insert into outbound_detail (
 			id,

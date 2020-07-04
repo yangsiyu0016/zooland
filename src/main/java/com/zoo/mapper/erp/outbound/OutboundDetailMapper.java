@@ -16,6 +16,6 @@ public interface OutboundDetailMapper {
 	
 	int update(@Param("detail") OutboundDetail detail);
 	OutboundDetail getDetailById(@Param("id")String id);
-	int outboundDetailId(@Param("id")String id);
+	int deleteDetailById(@Param("id")String id);
 	
 }
