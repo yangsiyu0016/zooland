@@ -12,7 +12,7 @@ import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.service.erp.inbound.InboundDetailService;
 
 @RestController
-@RequestMapping("/erp/outbound/detail")
+@RequestMapping("/erp/inbound/detail")
 public class InboundDetailController {
 	@Autowired
 	InboundDetailService inboundDetailService;
