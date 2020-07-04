@@ -16,8 +16,8 @@ import com.zoo.service.erp.outbound.OutboundDetailService;
 public class OutboundDetailController {
 	@Autowired
 	OutboundDetailService outboundDetailService;
-	@GetMapping("getDetailByOuboundForeignKey")
-	public List<OutboundDetail> getDetailByOuboundForeignKey(@RequestParam("foreignKey")String foreignKey){
-		return outboundDetailService.getDetailByOuboundForeignKey(foreignKey);
+	@GetMapping("getDetailByOutboundForeignKey")
+	public List<OutboundDetail> getDetailByOutboundForeignKey(@RequestParam("foreignKey")String foreignKey){
+		return outboundDetailService.getDetailByOutboundForeignKey(foreignKey);
 	}
 }

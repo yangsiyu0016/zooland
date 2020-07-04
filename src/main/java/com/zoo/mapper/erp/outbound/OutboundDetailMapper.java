@@ -9,7 +9,7 @@ import com.zoo.model.erp.outbound.OutboundDetail;
 
 @Component
 public interface OutboundDetailMapper {
-	List<OutboundDetail> getDetailByOuboundForeignKey(@Param("foreignKey")String foreignKey);
+	List<OutboundDetail> getDetailByOutboundForeignKey(@Param("foreignKey")String foreignKey);
 	int addDetail(@Param("detail")OutboundDetail detail);
 
 	int deleteByOutboundId(@Param("outboundId")String outboundId);

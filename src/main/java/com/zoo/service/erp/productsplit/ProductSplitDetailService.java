@@ -159,18 +159,4 @@ public class ProductSplitDetailService {
 		journalAccountService.addJournalAccount(account);
 		/*------------------库存变动明细结束----------------------*/
 	}
-	
-	public List<Inbound> getInboundByProductSplitId(String id){
-		ProductSplit split = splitMapper.getProductSplitById(id);
-		List<Inbound> list = new ArrayList<Inbound>();
-		for(ProductSplitDetail detail : split.getDetails()) {
-			Inbound inbound = inboundMapper.getInboundByForeignKey(detail.getId());
-			if(inbound != null) {
-				ProductSplitDetail splitDetail = detailMapper.getDetailById(inbound.getForeignKey());
-				inbound.setSplitDetail(splitDetail);
-				list.add(inbound);
-			}
-		}
-		return list;
-	}
 }

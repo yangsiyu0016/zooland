@@ -1,5 +1,7 @@
 package com.zoo.mapper.erp.inbound;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -13,5 +15,7 @@ public interface InboundDetailMapper {
 	int update(@Param("detail") InboundDetail detail);
 
 	int deleteDetailByInboundId(@Param("inboundId")String inboundId);
+
+	List<InboundDetail> getDetailByInboundForeignKey(@Param("foreignKey")String foreignKey);
 	
 }

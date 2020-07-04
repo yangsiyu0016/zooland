@@ -9,7 +9,7 @@
 		<association column="productId"   property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		<association column="goodsAllocationId"   property="goodsAllocation" select="com.zoo.mapper.erp.warehouse.GoodsAllocationMapper.getGoodsAllocationById"></association>
 	</resultMap>
-	<select id="getDetailByOuboundForeignKey" resultMap="BaseResultMap">
+	<select id="getDetailByOutboundForeignKey" resultMap="BaseResultMap">
 		select od.* from outbound_detail od left join outbound o on od.outboundId=o.id where o.foreignKey=#{foreignKey}
 	</select>
 	<select id="getDetailByOutboundId" resultMap="BaseResultMap">

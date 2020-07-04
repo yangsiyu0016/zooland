@@ -2,7 +2,6 @@ package com.zoo.controller.erp.productsplit;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,13 +100,5 @@ public class ProductSplitDetailController {
 			// TODO: handle exception
 			return new RespBean("500", e.getMessage());
 		}
-	}
-	@GetMapping("getInboundByProductSplitId")
-	public Map<String, Object> getInboundByProductSplitId(@RequestParam("id") String id) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<Inbound> list = detailService.getInboundByProductSplitId(id);
-		map.put("status", 200);
-		map.put("inbounds", list);
-		return map;
 	}
 }

@@ -12,6 +12,9 @@
 	<select id="getDetailByInboundId" resultMap="BaseResultMap">
 		select * from inbound_detail where inboundId=#{inboundId}
 	</select>
+	<select id="getDetailByInboundForeignKey" resultMap="BaseResultMap">
+		select id.* from inbound_detail id left join inbound i on id.inboundId=i.id where i.foreignKey=#{foreignKey}
+	</select>
 	<insert id="addDetail">
 		insert into inbound_detail (
 			id,
