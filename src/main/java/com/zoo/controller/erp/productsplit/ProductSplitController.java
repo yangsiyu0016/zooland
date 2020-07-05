@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zoo.exception.ZooException;
+import com.zoo.model.erp.inbound.Inbound;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.productsplit.ProductSplit;
 import com.zoo.service.erp.productsplit.ProductSplitService;
@@ -95,6 +96,16 @@ public class ProductSplitController {
 		}
 		return resultMap;
 	}
+	@PostMapping("addInbound")
+	public RespBean addInbound(@RequestBody Inbound inbound) {
+		try {
+			splitService.addInbound(inbound);
+			return new RespBean("200", "添加成功");
+		} catch (ZooException e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMsg());
+		}
+	}
 	@PostMapping("add")
 	public RespBean add(@RequestBody ProductSplit split) {
 		try {
@@ -156,15 +167,15 @@ public class ProductSplitController {
 	}
 	
 	//取回
-		@GetMapping("reset")
-		public RespBean reject(@RequestParam("id") String id) {
-			try {
-				splitService.reset(id);
-				return new RespBean("200", "取回成功");
-			} catch (ZooException e) {
-				// TODO: handle exception
-				return new RespBean("500", e.getMsg());
-			}
+	@GetMapping("reset")
+	public RespBean reject(@RequestParam("id") String id) {
+		try {
+			splitService.reset(id);
+			return new RespBean("200", "取回成功");
+		} catch (ZooException e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMsg());
 		}
+	}
 	
 }
