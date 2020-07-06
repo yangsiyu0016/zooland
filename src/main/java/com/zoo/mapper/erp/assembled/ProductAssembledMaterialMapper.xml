@@ -12,6 +12,9 @@
 		<association column="productId" property="product" select="com.zoo.mapper.erp.product.ProductMapper.getProductById"></association>
 		
 	</resultMap>
+	<select id="getMaterailByPaIdAndPid" resultMap="BaseResultMap">
+		select * from product_assembled_material where productAssembledId = #{productAssembledId} and productId = #{productId}
+	</select>
 	<select id="getMaterialByAssembledId" resultMap="BaseResultMap">
 		select * from product_assembled_material where productAssembledId = #{productAssembledId}
 	</select>

@@ -29,6 +29,8 @@ import com.zoo.model.erp.warehouse.GoodsAllocation;
 import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.service.erp.JournalAccountService;
+import com.zoo.service.erp.outbound.OutboundDetailService;
+import com.zoo.service.erp.outbound.OutboundService;
 import com.zoo.service.erp.warehouse.StockService;
 
 @Service
@@ -50,6 +52,11 @@ public class ProductAssembledMaterialService {
 	GoodsAllocationMapper gaMapper;
 	@Autowired
 	private JournalAccountService journalAccountService;
+	
+	@Autowired
+	private OutboundService outboundService;
+	@Autowired
+	private OutboundDetailService outboundDetailService;
 	
 	public int updateNotOutNumber(BigDecimal notOutNumber, String id) {
 		return materialMapper.updateNotOutNumber(notOutNumber, id);
@@ -146,18 +153,17 @@ public class ProductAssembledMaterialService {
 		outboundMapper.addOutbound(outbound);
 		
 		for(OutboundDetail detail: outbound.getDetails()) {
-			ProductAssembledMaterial material = materialMapper.getMaterialById(detail.getOrderDetailId());
+			
 			//设置出库详情单
 			detail.setId(UUID.randomUUID().toString());
 			detail.setCtime(new Date());
 			detail.setOutboundId(outbound.getId());
-			detail.setProduct(material.getProduct());
 			//获取库存单
-			Stock stock = stockMapper.getStock(material.getProduct().getId(), assembled.getWarehouse().getId());
+			Stock stock = stockMapper.getStock(detail.getProduct().getId(), assembled.getWarehouse().getId());
 			
 			if(stock != null) {
 				if(stock.getUsableNumber().subtract(detail.getNumber()).compareTo(BigDecimal.ZERO) == -1) {//库存不足
-					throw new ZooException(material.getProduct().getName() + "库存不足");
+					throw new ZooException(detail.getProduct().getName() + "库存不足");
 				}else {
 					StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), detail.getGoodsAllocation().getId());
 					if(stockDetail != null) {
@@ -205,8 +211,13 @@ public class ProductAssembledMaterialService {
 							journalAccountService.addJournalAccount(account);
 							
 							//更新组装单未出库数量
-							BigDecimal notOutNumber = material.getNotOutNumber().subtract(detail.getNumber());
-							this.updateNotOutNumber(notOutNumber, material.getId());
+							List<ProductAssembledMaterial> materials = assembled.getMaterials();
+							for(ProductAssembledMaterial material: materials) {
+								if(material.getProduct().getId().equals(detail.getProduct().getId())) {
+									BigDecimal notOutNumber = material.getNotOutNumber().subtract(detail.getNumber());
+									this.updateNotOutNumber(notOutNumber, material.getId());
+								}
+							}
 						}
 					}else {
 						throw new ZooException(detail.getGoodsAllocation().getName()+"货位库存不存在");
@@ -217,19 +228,74 @@ public class ProductAssembledMaterialService {
 			}
 		}
 	}
-	
-	public List<Outbound> getOutboundByProductAssembledId(String id) {
-		// TODO Auto-generated method stub
-		ProductAssembled assembled = productAssembledMapper.getProductAssembledById(id);
-		List<Outbound> list = new ArrayList<Outbound>();
-		for(ProductAssembledMaterial material: assembled.getMaterials()) {
-			Outbound outbound = outboundMapper.getOutboundByForeignKey(material.getId());
-			if(outbound != null) {
-				//ProductAssembledMaterial assembledMaterial = materialMapper.getMaterialById(outbound.getForeignKey());
-				//outbound.setProductAssembledMaterial(material);
-				list.add(outbound);
+
+	/**
+	 *	删除出库信息
+	 * @param assembledId
+	 * @param outboundDetailId
+	 * @param type
+	 * @return
+	 */
+	public BigDecimal deleteOut(String assembledId, String outboundDetailId, String type) {
+		ProductAssembled assembled = productAssembledMapper.getProductAssembledById(assembledId);
+		if("all".equals(type)) {//删除所有
+			List<OutboundDetail> outboundDetails = outboundDetailMapper.getDetailByOutboundForeignKey(assembledId);//根据组装单id获取所有的出库单详情
+			for(OutboundDetail detail: outboundDetails) {
+				Outbound outbound = outboundMapper.getOutboundById(detail.getOutboundId());
+				ProductAssembledMaterial material = materialMapper.getMaterailByPaIdAndPid(assembledId, detail.getProduct().getId());//根据组装单id和产品id 获取唯一组装详情单
+				BigDecimal notOutNumber = material.getNotOutNumber();
+				BigDecimal after_notOutNumber = notOutNumber.add(detail.getNumber());
+				materialMapper.updateNotOutNumber(after_notOutNumber, material.getId());
+				deleteOutDetail(detail, outbound);
+				outboundDetailService.deleteDetailById(detail.getId());//删除出库详情单
+				boolean hasDetails = outboundService.checkHasDetails(outbound.getId());
+				if(!hasDetails) {//如果出库单未删除
+					outboundService.deleteById(outbound.getId());
+				}
 			}
+		}else {
+			OutboundDetail outboundDetail = outboundDetailMapper.getDetailById(outboundDetailId);//获取出库详情单
+			ProductAssembledMaterial material = materialMapper.getMaterailByPaIdAndPid(assembledId, outboundDetail.getProduct().getId());//根据组装单id和产品id 获取唯一组装详情单
+			BigDecimal notOutNumber = material.getNotOutNumber();
+			Outbound outbound = outboundMapper.getOutboundById(outboundDetailId);
+			deleteOutDetail(outboundDetail, outbound);
+			boolean hasDetails = outboundService.checkHasDetails(outbound.getId());
+			if(!hasDetails) {
+				outboundService.deleteById(outbound.getId());
+			}
+			notOutNumber  = notOutNumber.add(outboundDetail.getNumber());
+			materialMapper.updateNotOutNumber(notOutNumber, material.getId());
 		}
 		return null;
+	}
+	
+	private void deleteOutDetail(OutboundDetail outboundDetail, Outbound outbound) {
+		Stock stock = stockMapper.getStock(outboundDetail.getProduct().getId(), outbound.getWarehouse().getId());
+		
+		StockDetail stockDetail = stockDetailMapper.getDetail(stock.getId(), outboundDetail.getGoodsAllocation().getId());
+		stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(outboundDetail.getNumber()));
+		stockDetailMapper.updateStockDetail(stockDetail);
+		
+		BigDecimal after_usableNumber = stock.getUsableNumber().add(outboundDetail.getNumber());
+		BigDecimal after_totalMoney = stock.getTotalMoney().add(outboundDetail.getTotalMoney());
+		BigDecimal after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+		stock.setUsableNumber(after_usableNumber);
+		stock.setTotalMoney(after_totalMoney);
+		stock.setCostPrice(after_costPrice);
+		stockMapper.updateStock(stock);
+		
+		JournalAccount journalAccount = new JournalAccount();
+		journalAccount.setId(UUID.randomUUID().toString());
+		journalAccount.setType(JournalAccountType.ASSEMBLEDDELETE);
+		journalAccount.setOrderDetailId("");
+		journalAccount.setOrderCode(outbound.getCode());
+		journalAccount.setStock(stock);
+		journalAccount.setRkNumber(outboundDetail.getNumber());
+		journalAccount.setRkPrice(outboundDetail.getPrice());
+		journalAccount.setRkTotalMoney(outboundDetail.getTotalMoney());
+		journalAccount.setCtime(new Date());
+		journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+		journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+		journalAccountService.addJournalAccount(journalAccount);
 	}
 }

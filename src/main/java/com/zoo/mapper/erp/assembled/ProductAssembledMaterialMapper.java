@@ -15,4 +15,6 @@ public interface ProductAssembledMaterialMapper {
 	int updateNotOutNumber(@Param("notOutNumber") BigDecimal notOutNumber, @Param("id") String id);
 	
 	ProductAssembledMaterial getMaterialById(@Param("id") String id);
+	
+	ProductAssembledMaterial getMaterailByPaIdAndPid(@Param("productAssembledId") String productAssembledId, @Param("productId") String productId);
 }

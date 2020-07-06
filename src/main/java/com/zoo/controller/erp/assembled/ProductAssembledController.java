@@ -112,16 +112,7 @@ public class ProductAssembledController {
 		}
 	}
 	
-	@GetMapping("updateNotInNumber")
-	public RespBean updateNotInNumber(@RequestParam("notInNumber") BigDecimal notInNumber, @RequestParam("id") String id) {
-		try {
-			paService.updateNotInNumber(notInNumber, id);
-			return new RespBean("200", "更新成功");
-		} catch (Exception e) {
-			return new RespBean("500", e.getMessage());
-			// TODO: handle exception
-		}
-	}
+	
 	@GetMapping("getAssembledById")
 	public ProductAssembled getAssembledById(@RequestParam("id") String id) {
 		return paService.getProductAssembledById(id);
