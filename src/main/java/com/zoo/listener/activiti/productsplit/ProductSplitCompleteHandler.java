@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +17,12 @@ import com.zoo.service.erp.productsplit.ProductSplitService;
 import com.zoo.utils.ApplicationUtil;
 
 /**
- * 材料入库完成
+ * 流程完成
  * @author aa
  *
  */
-@Component("productSplitCLRKCompleteHandler")
-public class ProductSplitCLRKCompleteHandler implements TaskListener {
+@Component("productSplitCompleteHandler")
+public class ProductSplitCompleteHandler implements ExecutionListener {
 
 	/**
 	 * 
@@ -36,11 +36,11 @@ public class ProductSplitCLRKCompleteHandler implements TaskListener {
 	private ProductSplitService productSplitService;
 
 	@Override
-	public void notify(DelegateTask delegateTask) {
+	public void notify(DelegateExecution delegateExecution) {
 		// TODO Auto-generated method stub
 		processEngine = (ProcessEngine) ApplicationUtil.getBean("processEngine");
 		RuntimeService runtimeService = processEngine.getRuntimeService();
-		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+		ProcessInstance result = runtimeService.createProcessInstanceQuery().processInstanceId(delegateExecution.getProcessInstanceId()).singleResult();
 		String key = result.getBusinessKey();
 
 		productSplitService = (ProductSplitService) ApplicationUtil.getBean("productSplitService");

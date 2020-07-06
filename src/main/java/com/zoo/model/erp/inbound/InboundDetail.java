@@ -19,4 +19,5 @@ public class InboundDetail {
 	private BigDecimal number;
 	private BigDecimal price;
 	private BigDecimal totalMoney;
+	private Boolean finished;
 }

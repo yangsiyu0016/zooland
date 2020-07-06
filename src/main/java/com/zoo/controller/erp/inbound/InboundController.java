@@ -62,4 +62,5 @@ public class InboundController {
 	public Inbound getInboundById(@RequestParam("id") String id) {
 		return inboundService.getInboundById(id);
 	}
+	
 }

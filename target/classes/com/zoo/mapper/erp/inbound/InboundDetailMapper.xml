@@ -25,7 +25,8 @@
 			totalMoney,
 			orderDetailId,
 			goodsAllocationId,
-			ctime
+			ctime,
+			finished
 		)values(
 			#{detail.id},
 			#{detail.inboundId},
@@ -35,15 +36,17 @@
 			#{detail.totalMoney},
 			#{detail.orderDetailId},
 			#{detail.goodsAllocation.id},
-			#{detail.ctime}
+			#{detail.ctime},
+			#{detail.finished}
 		)
 	</insert>
 	<update id="update">
 		update inbound_detail set 
-			number = #{detail.number}
+			number = #{detail.number},
+			price = #{detail.price},
+			totalMoney=#{detail.totalMoney}
 		where id = #{detail.id}
 	</update>
-	
 	<select id="getDetailById" resultMap="BaseResultMap">
 		select * from inbound_detail where id = #{id}
 	</select>

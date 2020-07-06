@@ -144,9 +144,9 @@ public class ProductSplitController {
 		try {
 			splitService.destroy(id);
 			return new RespBean("200", "作废成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	
