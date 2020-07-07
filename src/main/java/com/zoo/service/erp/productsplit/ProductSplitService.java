@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
@@ -25,13 +26,11 @@ import com.zoo.controller.erp.constant.ProductSplitStatus;
 import com.zoo.enums.ExceptionEnum;
 import com.zoo.exception.ZooException;
 import com.zoo.filter.LoginInterceptor;
-
-import com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper;
 import com.zoo.mapper.erp.productsplit.ProductSplitMapper;
 import com.zoo.mapper.erp.warehouse.GoodsAllocationMapper;
-
 import com.zoo.model.erp.JournalAccount;
-
+import com.zoo.model.erp.inbound.Inbound;
+import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.model.erp.outbound.OutboundDetail;
 import com.zoo.model.erp.productsplit.ProductSplit;
@@ -40,6 +39,8 @@ import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.erp.JournalAccountService;
+import com.zoo.service.erp.inbound.InboundDetailService;
+import com.zoo.service.erp.inbound.InboundService;
 import com.zoo.service.erp.outbound.OutboundDetailService;
 import com.zoo.service.erp.outbound.OutboundService;
 import com.zoo.service.erp.warehouse.StockDetailService;
@@ -55,7 +56,7 @@ public class ProductSplitService {
 	private ProductSplitMapper productSplitMapper;
 	
 	@Autowired
-	private ProductSplitDetailMapper detailMapper;
+	private ProductSplitDetailService detailService;
 	
 	@Autowired
 	ProcessEngine processEngine;
@@ -74,13 +75,17 @@ public class ProductSplitService {
 	
 	@Autowired
 	OutboundDetailService outboundDetailService;
-	
+	@Autowired
+	InboundService inboundService;
+	@Autowired
+	InboundDetailService inboundDetailService;
 	@Autowired
 	GoodsAllocationMapper gaMapper;
 	
 	@Autowired
 	private JournalAccountService journalAccountService;
-	
+	@Autowired
+	HistoryService historyService;
 	@Autowired
 	TaskService taskService;
 	/**
@@ -129,14 +134,14 @@ public class ProductSplitService {
 	 */
 	public void updatePeoductSplit(ProductSplit productSplit) {
 		productSplitMapper.updatePeoductSplit(productSplit);
-		detailMapper.deleteByProductSplitId(productSplit.getId());
+		detailService.deleteByProductSplitId(productSplit.getId());
 		for(ProductSplitDetail detail : productSplit.getDetails()) {
 			detail.setId(UUID.randomUUID().toString());
 			detail.setCtime(new Date());
 			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
 			detail.setProductSplitId(productSplit.getId());
 			detail.setNotInNumber(detail.getNumber());
-			detailMapper.addDetail(detail);
+			detailService.addDetail(detail);
 		}
 	}
 	
@@ -153,7 +158,7 @@ public class ProductSplitService {
 			if(StringUtil.isNotEmpty(productSplit.getProcessInstanceId())) {
 				throw new ZooException("流程已启动,不能删除");
 			}
-			detailMapper.deleteByProductSplitId(id);
+			detailService.deleteByProductSplitId(id);
 		}
 	}
 	
@@ -186,7 +191,7 @@ public class ProductSplitService {
 			detail.setTotalNumber(detail.getNumber().multiply(productSplit.getNumber()));
 			detail.setProductSplitId(id);
 			detail.setNotInNumber(detail.getTotalNumber());
-			detailMapper.addDetail(detail);
+			detailService.addDetail(detail);
 		}
 	}
 	
@@ -237,9 +242,97 @@ public class ProductSplitService {
 	 * @param id
 	 */
 	public void destroy(String id) {
+		ProductSplit split = this.getProductSplitById(id);
+		String status = split.getStatus();
 		
+		
+		Map<String,Object> condition = new HashMap<String,Object>();
+		condition.put("id", id);
+		condition.put("status", ProductSplitStatus.DESTROY);
+		condition.put("etime", new Date());
+		this.updateProductSplitStatus(condition);
+		
+		//删除流程
+		if(StringUtil.isNotEmpty(split.getProcessInstanceId())&&!status.equals(ProductSplitStatus.WTJ)) {
+			if(!status.equals(ProductSplitStatus.FINISHED)) {
+				RuntimeService runtimeService = processEngine.getRuntimeService();
+				runtimeService.deleteProcessInstance(split.getProcessInstanceId(), "待定");
+				
+			}else {
+				//删除历史流程
+				historyService.deleteHistoricProcessInstance(split.getProcessInstanceId());
+			}	
+		}
+		productSplitMapper.updateProcessInstanceId(id, null);
+		//还原出库
+		List<Outbound> outbounds = outboundService.getOutboundByForeignKey(id);
+		for(Outbound outbound:outbounds) {
+			for(OutboundDetail outboundDetail:outbound.getDetails()) {
+				Stock stock = stockService.getStock(outboundDetail.getProduct().getId(), outbound.getWarehouse().getId());
+				StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), outboundDetail.getGoodsAllocation().getId());
+				
+				stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(outboundDetail.getNumber()));
+				stockDetailService.updateStockDetail(stockDetail);
+				
+				BigDecimal after_usableNumber = stock.getUsableNumber().add(outboundDetail.getNumber());
+				BigDecimal after_totalMoney = stock.getTotalMoney().add(outboundDetail.getTotalMoney());
+				BigDecimal after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+				stock.setCostPrice(after_costPrice);
+				stock.setTotalMoney(after_totalMoney);
+				stock.setUsableNumber(after_usableNumber);
+				stockService.updateStock(stock);
+				
+				JournalAccount journalAccount = new JournalAccount();
+				journalAccount.setId(UUID.randomUUID().toString());
+				journalAccount.setType(JournalAccountType.CFDESTROY);
+				journalAccount.setOrderDetailId("");
+				journalAccount.setOrderCode(split.getCode());
+				journalAccount.setStock(stock);
+				journalAccount.setRkNumber(outboundDetail.getNumber());
+				journalAccount.setRkPrice(outboundDetail.getPrice());
+				journalAccount.setRkTotalMoney(outboundDetail.getTotalMoney());
+				journalAccount.setCtime(new Date());
+				journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+				journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+				journalAccountService.addJournalAccount(journalAccount);
+			}
+		}
 	}
-
+	/**
+	 * 添加入库单
+	 */
+	public void addInbound(Inbound inbound) {
+		ProductSplit split = this.getProductSplitById(inbound.getForeignKey());
+		inbound.setId(UUID.randomUUID().toString());
+		inbound.setCode(split.getCode());
+		inbound.setCtime(new Date());
+		inbound.setCuserId(LoginInterceptor.getLoginUser().getId());
+		inbound.setWarehouse(split.getWarehouse());
+		inbound.setType("CF");
+		inboundService.addInbound(inbound);
+		
+		for(InboundDetail detail:inbound.getDetails()) {
+			detail.setId(UUID.randomUUID().toString());
+			detail.setCtime(new Date());
+			detail.setInboundId(inbound.getId());
+			detail.setFinished(false);
+			
+			Stock stock  = stockService.getStock(detail.getProduct().getId(), inbound.getWarehouse().getId());
+			if(stock!=null) {
+				detail.setPrice(stock.getCostPrice());
+				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
+			}
+			
+			inboundDetailService.addDetail(detail);
+			
+			for(ProductSplitDetail splitDetail:split.getDetails() ) {
+				if(detail.getProduct().getId().equals(splitDetail.getProduct().getId())) {
+					detailService.updateNotInNumberById(splitDetail.getNotInNumber().subtract(detail.getNumber()), splitDetail.getId());
+					break;
+				}
+			}
+		}
+	}
 	/**
 	 * 添加入库单 减库存 加出库明细
 	 * @param outbound

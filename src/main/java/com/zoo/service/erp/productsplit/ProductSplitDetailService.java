@@ -56,4 +56,9 @@ public class ProductSplitDetailService {
 		detailMapper.updateNumber(id, notInNumber);
 	}
 
+	public void deleteByProductSplitId(String id) {
+		detailMapper.deleteByProductSplitId(id);
+		
+	}
+
 }

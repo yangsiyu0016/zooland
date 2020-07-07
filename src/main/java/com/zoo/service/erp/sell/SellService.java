@@ -196,12 +196,6 @@ public class SellService {
 		sellMapper.updateProcessInstanceId(id, null);
 		
 		
-		//设置是否被签收表示
-		Map<String,Object> isClaimedCondition = new HashMap<String,Object>();
-		isClaimedCondition.put("code", sell.getCode());
-		isClaimedCondition.put("isClaimed", "N");
-		
-		sellMapper.updateSellIsClaimed(isClaimedCondition);
 		//删除物流信息
 		List<Cost> costs = costService.getCostByForeignKey(id);
 		for(Cost cost:costs) {

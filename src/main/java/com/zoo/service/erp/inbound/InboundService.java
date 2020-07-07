@@ -1,7 +1,6 @@
 package com.zoo.service.erp.inbound;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.zoo.mapper.erp.inbound.InboundMapper;
 import com.zoo.model.erp.inbound.Inbound;
-import com.zoo.utils.Date2StringUtils;
-
 @Service
 @Transactional
 public class InboundService {
@@ -79,5 +76,9 @@ public class InboundService {
 	public Inbound getInboundById(String id) {
 		// TODO Auto-generated method stub
 		return inboundMapper.getInboundById(id);
+	}
+	public void addInbound(Inbound inbound) {
+		inboundMapper.addInbound(inbound);
+		
 	}
 }
