@@ -257,12 +257,13 @@ public class ProductAssembledMaterialService {
 			OutboundDetail outboundDetail = outboundDetailMapper.getDetailById(outboundDetailId);//获取出库详情单
 			ProductAssembledMaterial material = materialMapper.getMaterailByPaIdAndPid(assembledId, outboundDetail.getProduct().getId());//根据组装单id和产品id 获取唯一组装详情单
 			BigDecimal notOutNumber = material.getNotOutNumber();
-			Outbound outbound = outboundMapper.getOutboundById(outboundDetailId);
+			Outbound outbound = outboundMapper.getOutboundById(outboundDetail.getOutboundId());
 			deleteOutDetail(outboundDetail, outbound);
 			boolean hasDetails = outboundService.checkHasDetails(outbound.getId());
 			if(!hasDetails) {
 				outboundService.deleteById(outbound.getId());
 			}
+			outboundDetailMapper.deleteDetailById(outboundDetailId);
 			notOutNumber  = notOutNumber.add(outboundDetail.getNumber());
 			materialMapper.updateNotOutNumber(notOutNumber, material.getId());
 		}

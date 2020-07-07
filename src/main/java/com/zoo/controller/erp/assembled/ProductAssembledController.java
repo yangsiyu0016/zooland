@@ -1,6 +1,5 @@
 package com.zoo.controller.erp.assembled;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,9 +101,9 @@ public class ProductAssembledController {
 		}
 	}
 	@PostMapping("addInbound")
-	public RespBean addInbound(@RequestBody Inbound inbound, @RequestParam("goodsAllocationId") String goodsAllocationId, @RequestParam("number") BigDecimal number) {
+	public RespBean addInbound(@RequestBody Inbound inbound) {
 		try {
-			paService.addInbound(inbound, goodsAllocationId, number);
+			paService.addInbound(inbound);
 			return new RespBean("200", "保存成功");
 		} catch (Exception e) {
 			// TODO: handle exception
