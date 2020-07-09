@@ -196,7 +196,7 @@ public class ProductAssembledService {
 		// TODO Auto-generated method stub
 		ProductAssembled pa = this.getProductAssembledById(id);
 		Task task = taskService.createTaskQuery().processInstanceId(pa.getProcessInstanceId()).active().singleResult();
-		if(task.getTaskDefinitionKey().equals("assembledckzg")) {
+		if("assembledckzg".equals(task.getTaskDefinitionKey())) {
 			if(StringUtil.isEmpty(task.getAssignee())) {
 				Map<String,Object> condition = new HashMap<String, Object>();
 				condition.put("id", id);
@@ -277,10 +277,10 @@ public class ProductAssembledService {
 				this.deleteInDetail(inbound, inboundDetail);	
 			}
 			//入库详情单删除
-			inboundDetailService.deleteInboundById(inboundDetailId);
+			inboundDetailService.deleteDetailById(inboundDetailId);
 			boolean hasDetails = inboundService.checkHasDetails(inbound.getId());
 			if(!hasDetails) {
-				inboundService.deleteInboundById(inbound.getId());
+				inboundService.deleteById(inbound.getId());
 			}
 			notInNumber = notInNumber.add(inboundDetail.getNumber());
 		}else {
@@ -289,8 +289,9 @@ public class ProductAssembledService {
 					this.deleteInDetail(inbound, detail);
 				}
 				notInNumber = notInNumber.add(detail.getNumber());
+				inboundService.deleteById(inbound.getId());
 			}
-			inboundService.deleteInboundById(inbound.getId());
+			
 		}
 		this.updateNotInNumber(notInNumber, assembledId);
 		return notInNumber;
@@ -397,5 +398,103 @@ public class ProductAssembledService {
 				journalAccountService.addJournalAccount(account);
 			}
 		}
+		//还原入库
+		List<Inbound> inbounds = inboundService.getInboundByForeignKey(id);
+		for(Inbound inbound: inbounds) {
+			for(InboundDetail inboundDetail: inbound.getDetails()) {
+				if(inboundDetail.getFinished()) {
+					Stock stock = stockService.getStock(inboundDetail.getProduct().getId(), inbound.getWarehouse().getId());
+					
+					if(stock.getUsableNumber().subtract(inboundDetail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+						throw new ZooException(inboundDetail.getProduct().getName()+"库存不足，不能作废");
+					}else {
+						StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), inboundDetail.getGoodsAllocation().getId());
+						if(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+							throw new ZooException(inboundDetail.getProduct().getName()+"在货位"+inboundDetail.getGoodsAllocation().getName()+"上库存不足");
+						}else {
+							stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()));
+							stockDetailService.updateStockDetail(stockDetail);
+							
+							BigDecimal after_usableNumber = stock.getUsableNumber().subtract(inboundDetail.getNumber());
+							BigDecimal after_totalMoney = stock.getTotalMoney().subtract(inboundDetail.getTotalMoney());
+							BigDecimal after_costPrice;
+							if(after_usableNumber.compareTo(BigDecimal.ZERO)==0) {
+								after_totalMoney = new BigDecimal("0");
+								after_costPrice = stock.getCostPrice();
+							}else {
+								after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+							}
+							
+							stock.setCostPrice(after_costPrice);
+							stock.setTotalMoney(after_totalMoney);
+							stock.setUsableNumber(after_usableNumber);
+							stockService.updateStock(stock);
+							JournalAccount journalAccount = new JournalAccount();
+							journalAccount.setId(UUID.randomUUID().toString());
+							journalAccount.setType(JournalAccountType.ASSEMBLEDDESTROY);
+							journalAccount.setOrderDetailId("");
+							journalAccount.setOrderCode(assembled.getCode());
+							journalAccount.setStock(stock);
+							journalAccount.setCkNumber(inboundDetail.getNumber());
+							journalAccount.setCkPrice(inboundDetail.getPrice());
+							journalAccount.setCkTotalMoney(inboundDetail.getTotalMoney());
+							journalAccount.setCtime(new Date());
+							journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+							journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+							journalAccountService.addJournalAccount(journalAccount);
+						}
+						
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 确认入库
+	 * @param id
+	 * @throws Exception 
+	 */
+	public void inboundOperation(String id) throws Exception {
+		// TODO Auto-generated method stub
+		inboundDetailService.updateFinished(id, true);
+		InboundDetail detail = inboundDetailService.getDetailById(id);//获取入库详情单
+		Inbound inbound = inboundService.getInboundById(detail.getInboundId());
+
+		if(!detail.getFinished() && !BigDecimal.ZERO.equals(detail.getNumber()) && !BigDecimal.ZERO.equals(detail.getPrice()) && !BigDecimal.ZERO.equals(detail.getTotalMoney())) {
+			//如果bu满足条件
+			throw new Exception("入库错误");
+		}else {//满足条件
+			Stock stock = stockService.getStock(detail.getProduct().getId(), inbound.getWarehouse().getId());//库存
+			StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), detail.getGoodsAllocation().getId());//库存详情
+			
+			stockDetail.setUsableNumber(stockDetail.getUsableNumber().add(detail.getNumber()));
+			stockDetailService.updateStockDetail(stockDetail);//更新库存详情
+			
+			BigDecimal after_usableNumber = stock.getUsableNumber().add(detail.getNumber());
+			BigDecimal after_totalMoney = stock.getTotalMoney().add(detail.getTotalMoney());
+			BigDecimal after_costPrice = after_totalMoney.divide(after_usableNumber);
+			
+			stock.setCostPrice(after_costPrice);
+			stock.setTotalMoney(after_totalMoney);
+			stock.setUsableNumber(after_usableNumber);
+			stockMapper.updateStock(stock);
+			
+			//添加库存变动明细表
+			JournalAccount account = new JournalAccount();
+			account.setId(UUID.randomUUID().toString());
+			account.setType(JournalAccountType.ASSEMBLEDRK);
+			account.setOrderCode(inbound.getCode());
+			account.setOrderDetailId("");
+			account.setStock(stock);
+			account.setRkNumber(detail.getNumber());
+			account.setRkPrice(detail.getPrice());
+			account.setRkTotalMoney(detail.getTotalMoney());
+			account.setCtime(new Date());
+			account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+			account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			journalAccountService.addJournalAccount(account);
+		}
+		
 	}
 }

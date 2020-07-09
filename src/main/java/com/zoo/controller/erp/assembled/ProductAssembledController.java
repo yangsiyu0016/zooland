@@ -113,6 +113,16 @@ public class ProductAssembledController {
 		}
 	}
 	
+	@GetMapping("inboundOperation")
+	public RespBean inboundOperation(@RequestParam("id") String id) {
+		try {
+			paService.inboundOperation(id);
+			return new RespBean("200", "入库成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		}
+	}
 	
 	@GetMapping("getAssembledById")
 	public ProductAssembled getAssembledById(@RequestParam("id") String id) {
