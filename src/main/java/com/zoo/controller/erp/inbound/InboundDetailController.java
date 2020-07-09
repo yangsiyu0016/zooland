@@ -42,9 +42,10 @@ public class InboundDetailController {
 	@PostMapping("inbound")
 	public RespBean inbound (@RequestParam("id")String id) {
 		try {
+			inboundDetailService.inbound(id);
 			return new RespBean("200","操作成功");
-		} catch (Exception e) {
-			return new RespBean("500",e.getMessage());
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
 		}
 	}
 }

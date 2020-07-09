@@ -18,5 +18,7 @@ public interface InboundDetailMapper {
 	List<InboundDetail> getDetailByInboundForeignKey(@Param("foreignKey")String foreignKey);
 
 	InboundDetail getDetailById(@Param("id")String id);
+
+	int updateFinished(@Param("id")String id, @Param("finished")boolean finished);
 	
 }

@@ -47,6 +47,9 @@
 			totalMoney=#{detail.totalMoney}
 		where id = #{detail.id}
 	</update>
+	<update id="updateFinished">
+		update inbound_detail set finished=#{finished} where id=#{id}
+	</update>
 	<select id="getDetailById" resultMap="BaseResultMap">
 		select * from inbound_detail where id = #{id}
 	</select>

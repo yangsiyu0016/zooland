@@ -27,12 +27,9 @@
     <userTask id="inbound" name="成品入库">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledKGHandler"></activiti:taskListener>
-        <activiti:taskListener event="complete" class="com.zoo.listener.activiti.assembled.AssembledKGCompleteHandler"></activiti:taskListener>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow7" sourceRef="assembledproduct" targetRef="inbound"></sequenceFlow>
     <endEvent id="endevent1" name="结束"></endEvent>
-    <sequenceFlow id="flow8" sourceRef="inbound" targetRef="endevent1"></sequenceFlow>
     <userTask id="reject" name="订单调整" activiti:assignee="${applyUserId}">
       <extensionElements>
         <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledStarterHandler"></activiti:taskListener>
@@ -48,6 +45,23 @@
     </sequenceFlow>
     <sequenceFlow id="flow15" name="重新提交" sourceRef="exclusivegateway2" targetRef="assembledckzg">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='AGREE'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow16" sourceRef="assembledproduct" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="exclusivegateway3" targetRef="inbound"></sequenceFlow>
+    <userTask id="assemblededitprice" name="录入成本价">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.zoo.listener.activiti.assembled.AssembledEditPriceHandler"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow18" sourceRef="exclusivegateway3" targetRef="assemblededitprice"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow19" sourceRef="assemblededitprice" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="inbound" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="flow21" sourceRef="exclusivegateway4" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.assembled.AssembledCompleteHandler"></activiti:executionListener>
+      </extensionElements>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_assembled">
@@ -68,7 +82,7 @@
         <omgdc:Bounds height="55.0" width="105.0" x="720.0" y="281.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="inbound" id="BPMNShape_inbound">
-        <omgdc:Bounds height="55.0" width="105.0" x="871.0" y="281.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="190.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="910.0" y="513.0"></omgdc:Bounds>
@@ -78,6 +92,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
         <omgdc:Bounds height="40.0" width="40.0" x="461.0" y="510.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="870.0" y="289.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="assemblededitprice" id="BPMNShape_assemblededitprice">
+        <omgdc:Bounds height="55.0" width="105.0" x="960.0" y="360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="1120.0" y="287.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="205.0" y="307.0"></omgdi:waypoint>
@@ -94,14 +117,6 @@
       <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
         <omgdi:waypoint x="675.0" y="308.0"></omgdi:waypoint>
         <omgdi:waypoint x="720.0" y="308.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
-        <omgdi:waypoint x="825.0" y="308.0"></omgdi:waypoint>
-        <omgdi:waypoint x="871.0" y="308.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
-        <omgdi:waypoint x="923.0" y="336.0"></omgdi:waypoint>
-        <omgdi:waypoint x="927.0" y="513.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
         <omgdi:waypoint x="481.0" y="330.0"></omgdi:waypoint>
@@ -125,6 +140,31 @@
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="14.0" width="48.0" x="357.0" y="514.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="825.0" y="308.0"></omgdi:waypoint>
+        <omgdi:waypoint x="870.0" y="309.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="890.0" y="289.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1012.0" y="245.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="890.0" y="329.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1012.0" y="360.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="1012.0" y="360.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="327.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="1012.0" y="245.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="1140.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1140.0" y="530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0" y="530.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
