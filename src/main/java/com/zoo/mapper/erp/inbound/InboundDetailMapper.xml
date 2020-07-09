@@ -56,4 +56,7 @@
 	<delete id="deleteDetailByInboundId">
 		delete from inbound_detail where inboundId=#{inboundId}
 	</delete>
+	<delete id="deleteDetailById">
+		delete from inbound_detail where id=#{id}
+	</delete>
 </mapper>

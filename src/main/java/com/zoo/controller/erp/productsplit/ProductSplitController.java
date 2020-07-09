@@ -106,6 +106,18 @@ public class ProductSplitController {
 			return new RespBean("500", e.getMsg());
 		}
 	}
+	@DeleteMapping("deleteIn")
+	public Map<String,Object> deleteIn(@RequestParam("splitId")String splitId,@RequestParam("inboundDetailId")String inboundDetailId,@RequestParam("type")String type){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			splitService.deleteIn(splitId, inboundDetailId,type);
+			resultMap.put("status", "200");
+		} catch (ZooException e) {
+			resultMap.put("status", "500");
+			resultMap.put("msg", e.getMsg());
+		}
+		return resultMap;
+	}
 	@PostMapping("add")
 	public RespBean add(@RequestBody ProductSplit split) {
 		try {

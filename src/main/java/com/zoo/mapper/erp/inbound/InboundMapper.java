@@ -40,4 +40,8 @@ public interface InboundMapper {
 	int deleteInboundByForeignKey(@Param("foreignKey")String foreignKey);
 
 	Inbound getInboundById(@Param("id")String id);
+
+	long getDetailCount(@Param("id")String id);
+
+	int deleteById(@Param("id")String id);
 }

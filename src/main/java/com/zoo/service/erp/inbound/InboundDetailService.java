@@ -124,14 +124,75 @@ public class InboundDetailService {
 				journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
 				journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 				journalAccountService.addJournalAccount(journalAccount);
+				this.updateFinished(id,true);
 			}
-			this.updateFinished(id,true);
+			
 		}
 		
+	}
+	public void cancelInbound(String id) {
+		InboundDetail inboundDetail = this.inboundDetailMapper.getDetailById(id);
+		
+		if(!inboundDetail.getFinished()) {
+			throw new ZooException("已取消入库，请重新打开此页面");
+		}else {
+			Inbound inbound = inboundService.getInboundById(inboundDetail.getInboundId());
+			Stock stock = stockService.getStock(inboundDetail.getProduct().getId(), inbound.getWarehouse().getId());
+			if(stock.getUsableNumber().subtract(inboundDetail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+				throw new ZooException(inboundDetail.getProduct().getName()+"库存不足，不能取消");
+			}else {
+				StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), inboundDetail.getGoodsAllocation().getId());
+				if(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()).compareTo(BigDecimal.ZERO)==-1) {
+					throw new ZooException(inboundDetail.getProduct().getName()+"在货位"+inboundDetail.getGoodsAllocation().getName()+"上库存不足");
+				}else {
+					stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()));
+					stockDetailService.updateStockDetail(stockDetail);
+					
+					BigDecimal after_usableNumber = stock.getUsableNumber().subtract(inboundDetail.getNumber());
+					BigDecimal after_totalMoney = stock.getTotalMoney().subtract(inboundDetail.getTotalMoney());
+					BigDecimal after_costPrice;
+					if(after_usableNumber.compareTo(BigDecimal.ZERO)==0) {
+						after_totalMoney = new BigDecimal("0");
+						after_costPrice = stock.getCostPrice();
+					}else {
+						after_costPrice = after_totalMoney.divide(after_usableNumber,4,BigDecimal.ROUND_HALF_UP);
+					}
+					
+					stock.setCostPrice(after_costPrice);
+					stock.setTotalMoney(after_totalMoney);
+					stock.setUsableNumber(after_usableNumber);
+					stockService.updateStock(stock);
+					JournalAccount journalAccount = new JournalAccount();
+					journalAccount.setId(UUID.randomUUID().toString());
+					journalAccount.setType(JournalAccountType.CFCANCELRK);
+					journalAccount.setOrderDetailId("");
+					journalAccount.setOrderCode(inbound.getCode());
+					journalAccount.setStock(stock);
+					journalAccount.setCkNumber(inboundDetail.getNumber());
+					journalAccount.setCkPrice(inboundDetail.getPrice());
+					journalAccount.setCkTotalMoney(inboundDetail.getTotalMoney());
+					journalAccount.setCtime(new Date());
+					journalAccount.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+					journalAccount.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+					journalAccountService.addJournalAccount(journalAccount);
+					
+					this.updateFinished(id, false);
+				}
+				
+			}
+		}
 	}
 	public void updateFinished(String id, boolean finished) {
 		inboundDetailMapper.updateFinished(id,finished);
 		
 	}
-
+	public void deleteDetailById(String id) {
+		inboundDetailMapper.deleteDetailById(id);
+		
+	}
+	public void deleteByInboundId(String id) {
+		inboundDetailMapper.deleteDetailByInboundId(id);
+		
+	}
+	
 }

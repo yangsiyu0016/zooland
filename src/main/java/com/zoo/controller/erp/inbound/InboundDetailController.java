@@ -48,4 +48,13 @@ public class InboundDetailController {
 			return new RespBean("500",e.getMsg());
 		}
 	}
+	@PostMapping("cancelInbound")
+	public RespBean cancelInbound (@RequestParam("id")String id) {
+		try {
+			inboundDetailService.cancelInbound(id);
+			return new RespBean("200","操作成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
+		}
+	}
 }

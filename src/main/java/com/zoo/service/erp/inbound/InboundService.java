@@ -81,4 +81,17 @@ public class InboundService {
 		inboundMapper.addInbound(inbound);
 		
 	}
+	public boolean checkHasDetails(String id) {
+		long count = inboundMapper.getDetailCount(id);
+		if(count>0) {
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+	public void deleteById(String id) {
+		inboundMapper.deleteById(id);
+		inbouncDetailService.deleteByInboundId(id);
+	}
 }

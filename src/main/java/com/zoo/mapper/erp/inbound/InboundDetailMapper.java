@@ -20,5 +20,7 @@ public interface InboundDetailMapper {
 	InboundDetail getDetailById(@Param("id")String id);
 
 	int updateFinished(@Param("id")String id, @Param("finished")boolean finished);
+
+	int deleteDetailById(@Param("id")String id);
 	
 }

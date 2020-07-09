@@ -122,10 +122,16 @@
 	<select id="getInboundByForeignKey" resultMap="BaseResultMap">
 		select * from inbound where foreignKey=#{foreignKey}
 	</select>
+	<select id="getDetailCount" resultType="long">
+		select count(*) from inbound_detail where inboundId=#{id}
+	</select>
 	<delete id="deleteInboundByForeignKey">
 		delete from inbound where foreignKey=#{foreignKey}
 	</delete>
 	<select id="getInboundById" resultMap="BaseResultMap">
 		select * from inbound where id = #{id}
 	</select>
+	<delete id="deleteById">
+		delete from inbound where id=#{id}
+	</delete>
 </mapper>
