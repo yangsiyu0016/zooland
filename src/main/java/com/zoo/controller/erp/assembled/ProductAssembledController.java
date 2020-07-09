@@ -1,10 +1,12 @@
 package com.zoo.controller.erp.assembled;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -115,5 +117,20 @@ public class ProductAssembledController {
 	@GetMapping("getAssembledById")
 	public ProductAssembled getAssembledById(@RequestParam("id") String id) {
 		return paService.getProductAssembledById(id);
+	}
+	
+	@DeleteMapping("deleteIn")
+	public Map<String, Object> deleteIn(@RequestParam("assembledId") String assembledId, @RequestParam("inboundDetailId") String inboundDetailId, @RequestParam("type") String type) {
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			BigDecimal notInNumber = paService.deleteIn(assembledId, inboundDetailId, type);
+			resultMap.put("status", "200");
+			resultMap.put("notInNumber", notInNumber);
+		} catch (ZooException e) {
+			// TODO: handle exception
+			resultMap.put("status", "500");
+			resultMap.put("msg", e.getMessage());
+		}
+		return resultMap;
 	}
 }
