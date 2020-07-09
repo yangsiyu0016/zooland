@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zoo.exception.ZooException;
 import com.zoo.model.erp.inbound.InboundDetail;
 import com.zoo.service.erp.inbound.InboundDetailService;
-import com.zoo.vo.RespBean;
 
 @RestController
 @RequestMapping("/erp/inbound/detail")
@@ -39,22 +37,5 @@ public class InboundDetailController {
 		}
 		return resultMap;
 	}
-	@PostMapping("inbound")
-	public RespBean inbound (@RequestParam("id")String id) {
-		try {
-			inboundDetailService.inbound(id);
-			return new RespBean("200","操作成功");
-		} catch (ZooException e) {
-			return new RespBean("500",e.getMsg());
-		}
-	}
-	@PostMapping("cancelInbound")
-	public RespBean cancelInbound (@RequestParam("id")String id) {
-		try {
-			inboundDetailService.cancelInbound(id);
-			return new RespBean("200","操作成功");
-		} catch (ZooException e) {
-			return new RespBean("500",e.getMsg());
-		}
-	}
+	
 }

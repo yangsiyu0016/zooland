@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.productsplit.ProductSplitDetail;
 import com.zoo.service.erp.productsplit.ProductSplitDetailService;
 import com.zoo.vo.RespBean;
@@ -73,6 +75,24 @@ public class ProductSplitDetailController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			return new RespBean("500", e.getMessage());
+		}
+	}
+	@PostMapping("inbound")
+	public RespBean inbound (@RequestParam("id")String id) {
+		try {
+			detailService.inbound(id);
+			return new RespBean("200","操作成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
+		}
+	}
+	@PostMapping("cancelInbound")
+	public RespBean cancelInbound (@RequestParam("id")String id) {
+		try {
+			detailService.cancelInbound(id);
+			return new RespBean("200","操作成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
 		}
 	}
 }
