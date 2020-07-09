@@ -51,7 +51,7 @@ public class OutboundController {
 	}
 	
 	@GetMapping("getOutboundByForeignKey")
-	public Outbound getOutboundByForeignKey(@RequestParam("foreignKey") String foreignKey) {
+	public List<Outbound> getOutboundByForeignKey(@RequestParam("foreignKey") String foreignKey) {
 		return outBoundService.getOutboundByForeignKey(foreignKey);
 	}
 }

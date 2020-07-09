@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zoo.exception.ZooException;
 import com.zoo.model.erp.outbound.Outbound;
 import com.zoo.service.erp.assembled.ProductAssembledMaterialService;
 import com.zoo.vo.RespBean;
@@ -42,9 +44,9 @@ public class ProductAssembledMaterialController {
 	}
 	
 	@PostMapping("addOutbound")
-	public RespBean addOutbound(@RequestBody Outbound outbound, @RequestParam("number") BigDecimal number, @RequestParam("goodsAllocationId") String goodsAllocationId) {
+	public RespBean addOutbound(@RequestBody Outbound outbound) {
 		try {
-			materialService.addOutbound(outbound, goodsAllocationId, number);
+			materialService.addOutbound(outbound);
 			return new RespBean("200", "添加成功");
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -52,12 +54,17 @@ public class ProductAssembledMaterialController {
 		}
 	}
 	
-	@GetMapping("getOutboundByProductAssembledId")
-	public Map<String, Object> getOutboundByProductAssembledId(@RequestParam("id") String id) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		List<Outbound> list = materialService.getOutboundByProductAssembledId(id);
-		map.put("status", 200);
-		map.put("outbounds", list);
-		return map;
+	@DeleteMapping("deleteOut")
+	public Map<String,Object> deleteOut(@RequestParam("assembledId")String assembledId,@RequestParam("outboundDetailId")String outboundDetailId,@RequestParam("type")String type){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			BigDecimal notOutNumber = materialService.deleteOut(assembledId, outboundDetailId,type);
+			resultMap.put("status", "200");
+			resultMap.put("notOutNumber", notOutNumber);
+		} catch (ZooException e) {
+			resultMap.put("status", "500");
+			resultMap.put("msg", e.getMsg());
+		}
+		return resultMap;
 	}
 }
