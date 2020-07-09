@@ -10,4 +10,5 @@ public class ProductAssembledStatus {
 	public static final String CLRK = "CLRK";//材料入库
 	public static final String FINISHED = "FINISHED";//完成
 	public static final String DESTROY = "DESTROY";//作废
+	public static final String CW = "CW";//作废
 }

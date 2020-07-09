@@ -287,7 +287,7 @@ public class ProductAssembledMaterialService {
 		
 		JournalAccount journalAccount = new JournalAccount();
 		journalAccount.setId(UUID.randomUUID().toString());
-		journalAccount.setType(JournalAccountType.ASSEMBLEDDELETE);
+		journalAccount.setType(JournalAccountType.ASSEMBLEDCKDELETE);
 		journalAccount.setOrderDetailId("");
 		journalAccount.setOrderCode(outbound.getCode());
 		journalAccount.setStock(stock);

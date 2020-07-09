@@ -47,6 +47,12 @@ import com.zoo.model.erp.warehouse.Stock;
 import com.zoo.model.erp.warehouse.StockDetail;
 import com.zoo.model.system.user.UserInfo;
 import com.zoo.service.erp.JournalAccountService;
+import com.zoo.service.erp.inbound.InboundDetailService;
+import com.zoo.service.erp.inbound.InboundService;
+import com.zoo.service.erp.outbound.OutboundDetailService;
+import com.zoo.service.erp.outbound.OutboundService;
+import com.zoo.service.erp.warehouse.StockDetailService;
+import com.zoo.service.erp.warehouse.StockService;
 import com.zoo.service.system.parameter.SystemParameterService;
 import com.zoo.utils.CodeGenerator;
 
@@ -85,7 +91,19 @@ public class ProductAssembledService {
 	private OutboundDetailMapper outboundDetailMapper;
 	
 	@Autowired
+	private InboundDetailService inboundDetailService;
+	
+	@Autowired
+	private InboundService inboundService;
+	
+	@Autowired
 	private HistoryService historyService;
+	
+	@Autowired
+	private StockService stockService;
+	
+	@Autowired 
+	private StockDetailService stockDetailService;
 	
 	public List<ProductAssembled> getProductAssembledByPage(Integer page, Integer size,String keywords,
 			String code,String productCode,String productName,String status,String warehouseId,
@@ -161,6 +179,7 @@ public class ProductAssembledService {
         identityService.setAuthenticatedUserId(user.getId());
 		String businessKey = id;
 		variables.put("CODE", pa.getCode());
+		variables.put("warehouseId", pa.getWarehouse().getId());
 		RuntimeService runtimeService = processEngine.getRuntimeService();
 		ProcessInstance processInstance = runtimeService
         		.startProcessInstanceByKeyAndTenantId("assembled",businessKey,variables, user.getCompanyId());
@@ -213,6 +232,10 @@ public class ProductAssembledService {
 		paMapper.updateNotInNumber(notInNumber, id);
 	}
 	
+	/**
+	 * 添加入库单
+	 * @param inbound
+	 */
 	public void addInbound(Inbound inbound) {
 		//获取组装单
 		ProductAssembled assembled = paMapper.getProductAssembledById(inbound.getForeignKey());
@@ -230,21 +253,87 @@ public class ProductAssembledService {
 			detail.setCtime(new Date());
 			detail.setInboundId(inbound.getId());
 			detail.setProduct(assembled.getProduct());
-			//获取库存信息
-			Stock stock = stockMapper.getStock(assembled.getProduct().getId(), assembled.getWarehouse().getId());
-			if(stock != null) {
-				detail.setPrice(stock.getCostPrice());
-				detail.setTotalMoney(stock.getCostPrice().multiply(detail.getNumber()));
-				
-				//添加入库详情单
-				inboundDetailMapper.addDetail(detail);
-				
-				if(detail.getProduct().getId().equals(assembled.getProduct().getId())) {
-					paMapper.updateNotInNumber(assembled.getNotInNumber().subtract(detail.getNumber()), assembled.getId());
-				}
-			}else {
-				throw new ZooException(assembled.getProduct().getName() + "库存不存在");
+			detail.setFinished(false);
+			//添加入库详情单
+			inboundDetailMapper.addDetail(detail);
+			
+			if(detail.getProduct().getId().equals(assembled.getProduct().getId())) {
+				paMapper.updateNotInNumber(assembled.getNotInNumber().subtract(detail.getNumber()), assembled.getId());
 			}
+		}
+	}
+	
+	/**
+	 * 入库单删除
+	 */
+	public BigDecimal deleteIn(String assembledId, String inboundDetailId, String type) {
+		//获取入库单
+		ProductAssembled assembled = this.getProductAssembledById(assembledId);
+		BigDecimal notInNumber = assembled.getNotInNumber();//未入库数量
+		InboundDetail inboundDetail = inboundDetailService.getDetailById(inboundDetailId);//获取入库详情单
+		Inbound inbound = inboundService.getInboundById(inboundDetail.getInboundId());
+		if("only".equals(type)) {//如果只删除一条
+			if(inboundDetail.getFinished()) {//已完成
+				this.deleteInDetail(inbound, inboundDetail);	
+			}
+			//入库详情单删除
+			inboundDetailService.deleteInboundById(inboundDetailId);
+			boolean hasDetails = inboundService.checkHasDetails(inbound.getId());
+			if(!hasDetails) {
+				inboundService.deleteInboundById(inbound.getId());
+			}
+			notInNumber = notInNumber.add(inboundDetail.getNumber());
+		}else {
+			for(InboundDetail detail: inbound.getDetails()) {
+				if(inboundDetail.getFinished()) {
+					this.deleteInDetail(inbound, detail);
+				}
+				notInNumber = notInNumber.add(detail.getNumber());
+			}
+			inboundService.deleteInboundById(inbound.getId());
+		}
+		this.updateNotInNumber(notInNumber, assembledId);
+		return notInNumber;
+	}
+	
+	private void deleteInDetail(Inbound inbound, InboundDetail inboundDetail) {
+		//获取库存
+		Stock stock = stockService.getStock(inboundDetail.getProduct().getId(), inbound.getWarehouse().getId());
+		//获取库存详情
+		StockDetail stockDetail = stockDetailService.getStockDetail(stock.getId(), inboundDetail.getGoodsAllocation().getId());
+		if(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()).compareTo(BigDecimal.ZERO) == -1) {
+			throw new ZooException(inboundDetail.getProduct().getName() + ExceptionEnum.STOCK_NOT_ENOUGH);
+		}else {
+			stockDetail.setUsableNumber(stockDetail.getUsableNumber().subtract(inboundDetail.getNumber()));
+			stockDetailService.updateStockDetail(stockDetail);
+			
+			//更新库存
+			//变更后的可用数量
+			BigDecimal after_usableNumber = stock.getUsableNumber().subtract(inboundDetail.getNumber());
+			//变更后的总额
+			BigDecimal after_totalMoney = stock.getTotalMoney().subtract(inboundDetail.getTotalMoney());
+			//更新后单价
+			BigDecimal after_costPrice = after_totalMoney.divide(after_usableNumber, 4, BigDecimal.ROUND_HALF_UP);
+			
+			stock.setUsableNumber(after_usableNumber);
+			stock.setTotalMoney(after_totalMoney);
+			stock.setCostPrice(after_costPrice);
+			stockService.updateStock(stock);
+			
+			//添加库存明细单
+			JournalAccount account = new JournalAccount();
+			account.setId(UUID.randomUUID().toString());
+			account.setType(JournalAccountType.ASSEMBLEDRKDELETE);
+			account.setOrderDetailId("");
+			account.setOrderCode(inbound.getCode());
+			account.setStock(stock);
+			account.setRkNumber(inboundDetail.getNumber());
+			account.setRkPrice(inboundDetail.getPrice());
+			account.setRkTotalMoney(inboundDetail.getTotalMoney());
+			account.setCtime(new Date());
+			account.setTotalNumber(stock.getUsableNumber().add(stock.getLockedNumber()==null?new BigDecimal("0"):stock.getLockedNumber()));
+			account.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
+			journalAccountService.addJournalAccount(account);
 		}
 	}
 	
