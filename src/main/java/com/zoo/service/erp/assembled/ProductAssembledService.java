@@ -289,9 +289,8 @@ public class ProductAssembledService {
 					this.deleteInDetail(inbound, detail);
 				}
 				notInNumber = notInNumber.add(detail.getNumber());
-				inboundService.deleteById(inbound.getId());
 			}
-			
+			inboundService.deleteById(inbound.getId());
 		}
 		this.updateNotInNumber(notInNumber, assembledId);
 		return notInNumber;

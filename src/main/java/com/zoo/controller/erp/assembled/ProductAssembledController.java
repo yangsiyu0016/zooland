@@ -143,4 +143,15 @@ public class ProductAssembledController {
 		}
 		return resultMap;
 	}
+	
+	@GetMapping("destroy")
+	public RespBean destroy(@RequestParam("id") String id) {
+		try {
+			paService.destroy(id);
+			return new RespBean("200", "作废成功");
+		} catch (Exception e) {
+			// TODO: handle exception
+			return new RespBean("500", e.getMessage());
+		} 
+	}
 }
