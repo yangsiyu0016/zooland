@@ -215,6 +215,7 @@ public class ProductAssembledMaterialService {
 							for(ProductAssembledMaterial material: materials) {
 								if(material.getProduct().getId().equals(detail.getProduct().getId())) {
 									BigDecimal notOutNumber = material.getNotOutNumber().subtract(detail.getNumber());
+									material.setNotOutNumber(notOutNumber);
 									this.updateNotOutNumber(notOutNumber, material.getId());
 								}
 							}
@@ -242,16 +243,19 @@ public class ProductAssembledMaterialService {
 			List<OutboundDetail> outboundDetails = outboundDetailMapper.getDetailByOutboundForeignKey(assembledId);//根据组装单id获取所有的出库单详情
 			for(OutboundDetail detail: outboundDetails) {
 				Outbound outbound = outboundMapper.getOutboundById(detail.getOutboundId());
-				ProductAssembledMaterial material = materialMapper.getMaterailByPaIdAndPid(assembledId, detail.getProduct().getId());//根据组装单id和产品id 获取唯一组装详情单
-				BigDecimal notOutNumber = material.getNotOutNumber();
-				BigDecimal after_notOutNumber = notOutNumber.add(detail.getNumber());
-				materialMapper.updateNotOutNumber(after_notOutNumber, material.getId());
+				//ProductAssembledMaterial material = materialMapper.getMaterailByPaIdAndPid(assembledId, detail.getProduct().getId());//根据组装单id和产品id 获取唯一组装详情单
+				//BigDecimal notOutNumber = material.getNotOutNumber();
+				//BigDecimal after_notOutNumber = notOutNumber.add(detail.getNumber());
+				//materialMapper.updateNotOutNumber(after_notOutNumber, material.getId());
 				deleteOutDetail(detail, outbound);
 				outboundDetailService.deleteDetailById(detail.getId());//删除出库详情单
 				boolean hasDetails = outboundService.checkHasDetails(outbound.getId());
 				if(!hasDetails) {//如果出库单未删除
 					outboundService.deleteById(outbound.getId());
 				}
+			}
+			for(ProductAssembledMaterial material: assembled.getMaterials()) {
+				materialMapper.updateNotOutNumber(material.getNeedNumber(), material.getId());
 			}
 		}else {
 			OutboundDetail outboundDetail = outboundDetailMapper.getDetailById(outboundDetailId);//获取出库详情单
