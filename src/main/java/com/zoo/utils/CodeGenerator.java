@@ -77,7 +77,7 @@ public class CodeGenerator {
 			}
 			if(dateString.contains("DAY")) {
 				int day = now.get(Calendar.DAY_OF_MONTH);
-				if(day<0) {
+				if(day<10) {
 					dateValue+=("0"+day);
 				}else {
 					dateValue+=day;
