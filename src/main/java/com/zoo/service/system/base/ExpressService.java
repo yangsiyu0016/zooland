@@ -9,6 +9,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zoo.enums.ExceptionEnum;
+import com.zoo.exception.ZooException;
+import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.system.base.ExpressMapper;
 import com.zoo.model.system.base.Express;
 
@@ -17,22 +20,27 @@ import com.zoo.model.system.base.Express;
 public class ExpressService {
 	@Autowired
 	ExpressMapper expressMapper;
-	public List<Express> getExpressByPage(Integer page,Integer size){
+	public List<Express> getExpressByPage(Integer page,Integer size, String keywords, String expressName, String expressType, String startAddress){
 		
 		Integer start = null;
 		if(page!=null) {
 			start = (page-1)*size;
 		}
-		List<Express> expresses = expressMapper.getExpressByPage(start, size);
+		List<Express> expresses = expressMapper.getExpressByPage(start, size, keywords, expressName, expressType, startAddress, LoginInterceptor.getLoginUser().getCompanyId());
 		return expresses;
 	}
-	public long getCount() {
-		return expressMapper.getCount();
+	public long getCount(String keywords, String expressName, String expressType, String startAddress) {
+		return expressMapper.getCount(keywords, expressName, expressType, startAddress, LoginInterceptor.getLoginUser().getCompanyId());
 	}
 	public void addExpress(Express express) {
 		express.setId(UUID.randomUUID().toString());
 		express.setCtime(new Date());
-		expressMapper.addExpress(express);
+		long count = expressMapper.selectCountByExpressName(express.getName(), LoginInterceptor.getLoginUser().getCompanyId());
+		if(count>0) {//如果有重名，不能添加
+			throw new ZooException(ExceptionEnum.EXPRESS_NAME_REPEAT);
+		}else {//如果没有重名，添加物流信息
+			expressMapper.addExpress(express);
+		}
 	}
 	public void updateExpress(Express express) {
 		expressMapper.updateExpress(express);
@@ -41,5 +49,11 @@ public class ExpressService {
 	public Express getExpressById(String id) {
 		// TODO Auto-generated method stub
 		return expressMapper.getExpressById(id);
+	}
+	//删除
+	public void deleteById(String ids) {
+		// TODO Auto-generated method stub
+		String[] split = ids.split(",");
+		expressMapper.deleteById(split);
 	}
 }

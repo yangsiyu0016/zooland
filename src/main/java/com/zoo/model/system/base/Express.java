@@ -12,4 +12,5 @@ public class Express {
 	private String startAddress;
 	private String type;
 	private Date ctime;
+	private String companyId;
 }

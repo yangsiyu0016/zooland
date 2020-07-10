@@ -11,18 +11,46 @@
 		<result column="description" property="description"/>
 		<result column="type" property="type"/>
 		<result column="ctime" property="ctime"/>
+		<result column="companyId" property="companyId"/>
 	</resultMap>
 	<select id="getExpressByPage" resultMap="BaseResultMap">
-		select * from express 
+		select * from express where companyId = #{companyId} and isDelete = 0 
+		<if test="keywords != null and keywords != '' ">
+			and (name like concat('%',#{keywords},'%') or type like concat('%', #{keywords}, '%') or startAddress like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="expressName != null and expressName != '' ">
+			and name like concat('%', #{expressName}, '%') 
+		</if>
+		<if test="expressType != null and expressType != '' ">
+			and type = #{expressType} 
+		</if>
+		<if test="startAddress != null and startAddress != '' ">
+			and startAddress like concat('%', #{startAddress}, '%')
+		</if>
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
+	<select id="selectCountByExpressName" resultType="long">
+		select count(*) from express where name = #{expressName} and companyId = #{companyId} and isDelete = 0 
+	</select>
 	<select id="getCount" resultType="long">
-		select count(*) from express
+		select count(*) from express where companyId = #{companyId} and isDelete = 0 
+		<if test="keywords != null and keywords != '' ">
+			and (name like concat('%',#{keywords},'%') or type like concat('%', #{keywords}, '%') or startAddress like concat('%', #{keywords}, '%')) 
+		</if>
+		<if test="expressName != null and expressName != '' ">
+			and name like concat('%', #{expressName}, '%') 
+		</if>
+		<if test="expressType != null and expressType != '' ">
+			and type = #{expressType} 
+		</if>
+		<if test="startAddress != null and startAddress != '' ">
+			and startAddress like concat('%', #{startAddress}, '%')
+		</if>
 	</select>
 	<select id="getExpressById" resultMap="BaseResultMap">
-		select * from express where id=#{id}
+		select * from express where id=#{id} and isDelete = 0 
 	</select>
 	<insert id="addExpress">
 		insert into express (
@@ -52,6 +80,14 @@
 			type = #{express.type}
 		where id = #{express.id}
 		
+	</update>
+	<update id="deleteById"> 
+		update express set 
+			isDelete = 1 
+		where id in 
+			<foreach collection="ids" separator="," open="(" close=")" item="id">
+            	#{id}
+        	</foreach>
 	</update>
 </mapper>
 	
