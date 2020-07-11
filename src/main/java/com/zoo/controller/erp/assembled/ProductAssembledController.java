@@ -118,9 +118,9 @@ public class ProductAssembledController {
 		try {
 			paService.inboundOperation(id);
 			return new RespBean("200", "入库成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	
@@ -139,7 +139,7 @@ public class ProductAssembledController {
 		} catch (ZooException e) {
 			// TODO: handle exception
 			resultMap.put("status", "500");
-			resultMap.put("msg", e.getMessage());
+			resultMap.put("msg", e.getMsg());
 		}
 		return resultMap;
 	}

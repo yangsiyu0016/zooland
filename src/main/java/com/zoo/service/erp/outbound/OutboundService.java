@@ -61,7 +61,7 @@ public class OutboundService {
 		return outboundMapper.getOutboundByForeignKey(foreignKey);
 	}
 
-	public void addOutBound(Outbound outbound) {
+	public void addOutbound(Outbound outbound) {
 		outboundMapper.addOutbound(outbound);
 		
 	}

@@ -23,4 +23,5 @@ public class JournalAccountType {
 	public static final String SPLITRK = "SPLITRK";//拆分单入库
 	public static final String CFCANCELRK = "CFCANCELRK";//拆分单取消入库
 	public static final String SPLITRKDELETE = "SPLITRKDELETE";//拆分单入库删除
+	public static final String ZZCANCELRK = "ZZCANCELRK";//组装单取消入库
 }

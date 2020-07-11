@@ -2,7 +2,6 @@ package com.zoo.controller.erp.assembled;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +47,9 @@ public class ProductAssembledMaterialController {
 		try {
 			materialService.addOutbound(outbound);
 			return new RespBean("200", "添加成功");
-		} catch (Exception e) {
+		} catch (ZooException e) {
 			// TODO: handle exception
-			return new RespBean("500", e.getMessage());
+			return new RespBean("500", e.getMsg());
 		}
 	}
 	
@@ -58,13 +57,21 @@ public class ProductAssembledMaterialController {
 	public Map<String,Object> deleteOut(@RequestParam("assembledId")String assembledId,@RequestParam("outboundDetailId")String outboundDetailId,@RequestParam("type")String type){
 		Map<String,Object> resultMap = new HashMap<String,Object>();
 		try {
-			BigDecimal notOutNumber = materialService.deleteOut(assembledId, outboundDetailId,type);
+			materialService.deleteOut(assembledId, outboundDetailId,type);
 			resultMap.put("status", "200");
-			resultMap.put("notOutNumber", notOutNumber);
 		} catch (ZooException e) {
 			resultMap.put("status", "500");
 			resultMap.put("msg", e.getMsg());
 		}
 		return resultMap;
+	}
+	@PostMapping("cancelInbound")
+	public RespBean cancelInbound (@RequestParam("id")String id) {
+		try {
+			materialService.cancelInbound(id);
+			return new RespBean("200","操作成功");
+		} catch (ZooException e) {
+			return new RespBean("500",e.getMsg());
+		}
 	}
 }

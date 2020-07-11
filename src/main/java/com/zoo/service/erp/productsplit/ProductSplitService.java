@@ -396,7 +396,7 @@ public class ProductSplitService {
 		outbound.setCuserId(LoginInterceptor.getLoginUser().getId());
 		outbound.setWarehouse(split.getWarehouse());
 		outbound.setType("CF");
-		outboundService.addOutBound(outbound);
+		outboundService.addOutbound(outbound);
 		
 		for(OutboundDetail detail:outbound.getDetails()) {
 			detail.setId(UUID.randomUUID().toString());

@@ -138,7 +138,7 @@ public class ProductSplitDetailService {
 		
 	}
 	public void cancelInbound(String id) {
-		InboundDetail inboundDetail = this.inboundDetailService.getDetailById(id);
+		InboundDetail inboundDetail = inboundDetailService.getDetailById(id);
 		
 		if(!inboundDetail.getFinished()) {
 			throw new ZooException("已取消入库，请重新打开此页面");
