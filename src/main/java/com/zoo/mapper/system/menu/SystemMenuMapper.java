@@ -19,4 +19,7 @@ public interface SystemMenuMapper {
 	List<SystemMenu> getAdminMenu();
 	List<SystemMenu> getMenuByCompanyTypeId(@Param("companyTypeId")String companyTypeId);
 	List<SystemMenu> getMenuByPositionId(@Param("positionId")String positionId);
+	
+	int deleteCompanyTypeMenuByMenuId(@Param("menuId") String menuId);
+	int deletePositionMenuByMenuId(@Param("menuId") String menuId);
 }

@@ -224,4 +224,10 @@
     <delete id="deleteMenuById">
     	delete from system_menu where id = #{id}
     </delete>
+    <delete id="deleteCompanyTypeMenuByMenuId">
+    	delete from c_mt where menuId=#{menuId}
+    </delete>
+    <delete id="deletePositionMenuByMenuId">
+    	delete from p_m where menuId=#{menuId}
+    </delete>
 </mapper>
