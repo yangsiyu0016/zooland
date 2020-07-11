@@ -258,7 +258,9 @@ public class ProductAssembledService {
 			inboundDetailMapper.addDetail(detail);
 			
 			if(detail.getProduct().getId().equals(assembled.getProduct().getId())) {
-				paMapper.updateNotInNumber(assembled.getNotInNumber().subtract(detail.getNumber()), assembled.getId());
+				BigDecimal notInNumber = assembled.getNotInNumber().subtract(detail.getNumber());
+				assembled.setNotInNumber(notInNumber);
+				paMapper.updateNotInNumber(notInNumber, assembled.getId());
 			}
 		}
 	}

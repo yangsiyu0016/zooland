@@ -14,8 +14,13 @@ import com.zoo.model.flow.SellTask;
 
 @Component
 public interface CustomTaskMapper {
-	long getAssembledTaskCount(@Param("userId")String userId);
-	List<AssembledTask> getAssembledTask(@Param("start")Integer start, @Param("size")Integer size, @Param("userId")String userId);
+	long getAssembledTaskCount(@Param("keywords")String keywords,@Param("userId")String userId);
+	List<AssembledTask> getAssembledTask(@Param("start")Integer start, 
+			@Param("size")Integer size, 
+			@Param("sort")String sort,
+			@Param("order")String order,
+			@Param("keywords")String keywords,
+			@Param("userId")String userId);
 	List<OpeningInventoryTask> getOpeningInventoryTask(
 			@Param("start")Integer start,
 			@Param("size")Integer size,

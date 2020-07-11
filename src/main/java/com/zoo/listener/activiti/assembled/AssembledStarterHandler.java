@@ -2,9 +2,7 @@ package com.zoo.listener.activiti.assembled;
 
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.activiti.engine.ProcessEngine;
@@ -16,10 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.zoo.controller.erp.constant.ProductAssembledStatus;
 import com.zoo.model.erp.assembled.ProductAssembled;
-import com.zoo.model.erp.warehouse.Warehouse;
-import com.zoo.model.system.user.SystemUser;
 import com.zoo.service.erp.assembled.ProductAssembledService;
-import com.zoo.service.erp.warehouse.WarehouseService;
 import com.zoo.utils.ApplicationUtil;
 /**
  * wo Warehouse Operator 库管
