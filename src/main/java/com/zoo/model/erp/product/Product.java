@@ -32,4 +32,6 @@ public class Product {
 	
 	private Boolean hasBom;//是否已做bom 0未做 1 已做
 	
+	private String mnemonic;//助记码
+	
 }

@@ -26,4 +26,10 @@ public interface ExpressMapper {
 	 * @param split
 	 */
 	void deleteById(@Param("ids") String[] ids);
+	/**
+	 * 根据要修改的物流id获取不重复物流信息数量
+	 * @param id
+	 * @return
+	 */
+	long getNoRepeatCountByEditExpressName(@Param("id") String id, @Param("name") String name, @Param("companyId") String companyId);
 }

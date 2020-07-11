@@ -54,7 +54,7 @@ public class ExpressController {
 			expressService.addExpress(express);
 			return new RespBean("200","添加成功");
 		} catch (ZooException e) {
-			return new RespBean("500",e.getMsg());
+			return new RespBean("500",e.getExceptionEnum().message());
 		}
 	}
 	@PutMapping("updateExpress")
@@ -62,8 +62,8 @@ public class ExpressController {
 		try {
 			expressService.updateExpress(express);
 			return new RespBean("200","更新成功");
-		} catch (Exception e) {
-			return new RespBean("500",e.getMessage());
+		} catch (ZooException e) {
+			return new RespBean("500",e.getExceptionEnum().message());
 		}
 	}
 	@GetMapping("delete")
