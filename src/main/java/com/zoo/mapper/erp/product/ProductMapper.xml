@@ -10,6 +10,7 @@
 		<result column="code" property="code"/>
 		<result column="companyId" property="companyId"/>
 		<result column="ctime" property="ctime"/>
+		<result column="mnemonic" property="mnemonic"/>
 		<association column="brandId"   property="productBrand" select="com.zoo.mapper.erp.product.ProductBrandMapper.getBrandById"></association>
 		<association column="unitId"   property="unit" select="com.zoo.mapper.erp.product.UnitMapper.getUnitById"></association>
 	</resultMap>
@@ -82,7 +83,8 @@
 				description,
 				companyId,
 				ctime,
-				imageUrl
+				imageUrl,
+				mnemonic
 			) values(
 				#{product.id},
 				#{product.name},
@@ -97,7 +99,8 @@
 				#{product.description},
 				#{product.companyId},
 				#{product.ctime},
-				#{product.imageUrl}
+				#{product.imageUrl},
+				#{product.mnemonic}
 			)
 	</insert>
 	<update id="updateProduct">
@@ -111,7 +114,8 @@
 			color=#{product.color},
 			puse=#{product.puse},
 			description=#{product.description},
-			imageUrl=#{product.imageUrl}
+			imageUrl=#{product.imageUrl},
+			mnemonic=#{mnemonic}
 		where id=#{product.id}
 	</update>
 	<update id="deleteProductById">

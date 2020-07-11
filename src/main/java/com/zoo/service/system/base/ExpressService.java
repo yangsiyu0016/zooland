@@ -20,7 +20,7 @@ import com.zoo.model.system.base.Express;
 public class ExpressService {
 	@Autowired
 	ExpressMapper expressMapper;
-	public List<Express> getExpressByPage(Integer page,Integer size, String keywords, String expressName, String expressType, String startAddress){
+	public List<Express> getExpressByPage(Integer page, Integer size, String keywords, String expressName, String expressType, String startAddress){
 		
 		Integer start = null;
 		if(page!=null) {
@@ -34,6 +34,7 @@ public class ExpressService {
 	}
 	public void addExpress(Express express) {
 		express.setId(UUID.randomUUID().toString());
+		express.setCompanyId(LoginInterceptor.getLoginUser().getCompanyId());
 		express.setCtime(new Date());
 		long count = expressMapper.selectCountByExpressName(express.getName(), LoginInterceptor.getLoginUser().getCompanyId());
 		if(count>0) {//如果有重名，不能添加
@@ -43,8 +44,12 @@ public class ExpressService {
 		}
 	}
 	public void updateExpress(Express express) {
-		expressMapper.updateExpress(express);
-		
+		long num = expressMapper.getNoRepeatCountByEditExpressName(express.getId(), express.getName(), LoginInterceptor.getLoginUser().getCompanyId());
+		if(num > 0) {//说明有重复物流信息
+			throw new ZooException(ExceptionEnum.EXPRESS_NAME_REPEAT);
+		}else {//如果没有重名，添加物流信息
+			expressMapper.updateExpress(express);
+		}
 	}
 	public Express getExpressById(String id) {
 		// TODO Auto-generated method stub
