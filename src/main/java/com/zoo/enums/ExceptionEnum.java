@@ -64,6 +64,7 @@ public enum ExceptionEnum {
     STOCK_DETAIL_NO_ENOUGH(500,"货位库存不足"), 
     
     EXPRESS_NAME_REPEAT(200, "物流名称重复"),
+    UNIT_NAME_REPEAT(200, "单位名称重复"),
     
 
     ;

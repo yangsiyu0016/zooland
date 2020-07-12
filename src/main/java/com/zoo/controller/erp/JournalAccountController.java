@@ -39,4 +39,19 @@ public class JournalAccountController {
 		map.put("count", count);
 		return map;
 	}
+	
+	@GetMapping("getAccountsOfExport")
+	public List<JournalAccount> getAccountsOfExport(
+			@RequestParam("keywords")String keywords,
+			@RequestParam("code")String code,
+			@RequestParam("productCode")String productCode,
+			@RequestParam("productName")String productName,
+			@RequestParam("warehouseId")String warehouseId,
+			@RequestParam("start_ctime")String start_ctime,
+			@RequestParam("end_ctime")String end_ctime,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order) {
+		List<JournalAccount> list = jaService.getAccountsOfExport(keywords, code, productCode, productName, warehouseId, start_ctime, end_ctime, sort, order);
+		return list;
+	}
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.statistics.PurchaseStatisticsMapper;
@@ -43,17 +44,31 @@ public class PurchaseStatisticsService {
 	 * @param size
 	 * @return
 	 */
-	public Map<String, Object> search(SearchData searchData) {
+	public Map<String, Object> search(Integer page,
+				Integer size,
+				String sort,
+				String order,
+				String keywords,
+				String code,
+				String productName,
+				String supplierName,
+				String start_initDate,
+				String end_initDate,
+				String start_ctime,
+				String end_ctime,
+				String status) {
 		// TODO Auto-generated method stub
-		Integer start = (searchData.getPage() - 1) * searchData.getSize();
-		
+		Integer start = 0;
+		if(page >0) {
+			start = (page - 1) * size;
+		}
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		
 		UserInfo userInfo = LoginInterceptor.getLoginUser();
 		
-		List<PurchaseStatistics> list = purchaseStatisticsMapper.search(searchData, start, searchData.getSize(), userInfo.getCompanyId());
+		List<PurchaseStatistics> list = purchaseStatisticsMapper.search(start, size, sort, order, keywords, code, productName, supplierName, start_initDate, end_initDate, start_ctime, end_ctime, status, userInfo.getCompanyId());
 		
-		Long count = purchaseStatisticsMapper.getSearchCount(searchData, userInfo.getCompanyId());
+		Long count = purchaseStatisticsMapper.getSearchCount(sort, order, keywords, code, productName, supplierName, start_initDate, end_initDate, start_ctime, end_ctime, status, userInfo.getCompanyId());
 		
 		
 		map.put("purchaseStatisticses", list);
