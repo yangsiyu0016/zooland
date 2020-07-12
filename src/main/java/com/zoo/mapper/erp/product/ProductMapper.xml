@@ -23,9 +23,21 @@
 			and typeId = #{typeId} 
 		</if>
 		<if test="keywords != null and keywords != '' ">
-			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%') or mnemonic like concat('%', #{keywords}, '%'))   
 		</if>
-		order by ctime desc
+		<if test="brandId!=null and brandId!=''">
+			and brandId=#{brandId}
+		</if>
+		<if test="name!=null and name!=''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		<if test="code!=null and code!=''">
+			and code like concat('%', #{code}, '%')
+		</if>
+		<if test="mnemonic!=null and mnemonic!=''">
+			and mnemonic like concat('%', #{mnemonic}, '%')
+		</if>
+		order by ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
@@ -39,7 +51,19 @@
 			and typeId = #{typeId} 
 		</if>
 		<if test="keywords != null and keywords != '' ">
-			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%') or mnemonic like concat('%', #{keywords}, '%'))   
+		</if>
+		<if test="brandId!=null and brandId!=''">
+			and brandId=#{brandId}
+		</if>
+		<if test="name!=null and name!=''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		<if test="code!=null and code!=''">
+			and code like concat('%', #{code}, '%')
+		</if>
+		<if test="mnemonic!=null and mnemonic!=''">
+			and mnemonic like concat('%', #{mnemonic}, '%')
 		</if>
 	</select>
 	<select id="getProductByTypeId" resultMap="BaseResultMap">
@@ -115,7 +139,7 @@
 			puse=#{product.puse},
 			description=#{product.description},
 			imageUrl=#{product.imageUrl},
-			mnemonic=#{mnemonic}
+			mnemonic=#{product.mnemonic}
 		where id=#{product.id}
 	</update>
 	<update id="deleteProductById">

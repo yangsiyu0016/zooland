@@ -63,13 +63,14 @@ public class ProductService {
             throw new ZooException(ExceptionEnum.UPLOAD_IMAGE_EXCEPTION);
         }
 	}
-	public List<Product> getProductByPage(Integer page,Integer size, String keywords, String typeId){
+	public List<Product> getProductByPage(Integer page,Integer size, String sort,String order,String keywords, String typeId,String brandId,String name,String code,String mnemonic){
 		Integer start = null;
 		if(page!=null&&size!=null) {
 			start = (page-1)*size;
 		}
 		
-		List<Product> products = productMapper.getProductByPage(start, size, keywords, typeId, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Product> products = productMapper.getProductByPage(
+				start, size,sort,order, keywords, typeId,brandId,name,code,mnemonic, LoginInterceptor.getLoginUser().getCompanyId());
 		handleType(products);
 		return products;
 	}
@@ -93,8 +94,8 @@ public class ProductService {
 		}
 		return name;
 	}
-	public Long getCount(String key, String typeId) {
-		return productMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(), key, typeId);
+	public Long getCount(String keywords, String typeId,String brandId,String name,String code,String mnemonic) {
+		return productMapper.getCount( keywords, typeId,brandId,name,code,mnemonic,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 
 	
