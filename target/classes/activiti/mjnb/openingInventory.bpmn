@@ -43,10 +43,6 @@
       </extensionElements>
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${msg=='UNAGREE'}]]></conditionExpression>
     </sequenceFlow>
-    <textAnnotation id="textannotation1">
-      <text>主管人员可填写审批意见等</text>
-    </textAnnotation>
-    <association id="association1" sourceRef="textannotation1" targetRef="usertask2"></association>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_openingInventory">
     <bpmndi:BPMNPlane bpmnElement="openingInventory" id="BPMNPlane_openingInventory">
@@ -70,9 +66,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
         <omgdc:Bounds height="40.0" width="40.0" x="440.0" y="470.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
-        <omgdc:Bounds height="50.0" width="100.0" x="420.0" y="143.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="695.0" y="237.0"></omgdi:waypoint>

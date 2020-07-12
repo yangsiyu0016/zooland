@@ -79,7 +79,7 @@ public class AnnexController {
 				
 				String projectPath = System.getProperty("user.dir");//获取当前项目路径
 				//拼接上传路径
-				String uploadUrl = projectPath + "/src/annexFile/" + fileName;
+				String uploadUrl = projectPath + "/static/annexFile/" + fileName;
 				
 				//判断该文件是否存在，
 				File uploadFile = new File(uploadUrl);
@@ -118,7 +118,7 @@ public class AnnexController {
         
         String projectPath = System.getProperty("user.dir");//获取当前项目路径
 		//拼接上传路径
-		String uploadUrl = projectPath + "/src/annexFile/" + fileName;
+		String uploadUrl = projectPath + "/static/annexFile/" + fileName;
         try {
 			
         	// 取得输出流

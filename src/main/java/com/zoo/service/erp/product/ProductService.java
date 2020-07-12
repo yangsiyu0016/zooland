@@ -165,15 +165,14 @@ public class ProductService {
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
 			//p判断该产品是否删除之前图片
-			Product product2 = productMapper.getProductById(product.getId());
-			String url = product2.getImageUrl();
-			String[] split = null;
-			if(url != null && !"".equals(url)) {
-				split = url.split("/");
-			}	
-			url = projectPath + "/static/productimage/" + split[split.length -1];
-			boolean flag = new File(url).delete();
-			if(flag) {
+			/*
+			 * Product product2 = productMapper.getProductById(product.getId()); String url
+			 * = product2.getImageUrl(); String[] split = null; if(url != null &&
+			 * !"".equals(url)) { split = url.split("/"); } url = projectPath +
+			 * "/static/productimage/" + split[split.length -1]; boolean flag = new
+			 * File(url).delete();
+			 */
+			//if(flag) {
 				//判断该文件是否存在，
 				File uploadFile = new File(uploadUrl);
 				if(file != null) {
@@ -181,7 +180,7 @@ public class ProductService {
 				}
 				
 				product.setImageUrl(sourceIp+"/productimage/" + fileName);
-			}
+			//}
 			
 			
 		}

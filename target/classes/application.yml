@@ -3,11 +3,11 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://rm-2ze89p9068qadm19ibo.mysql.rds.aliyuncs.com:3306/mjnb?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
-    url: jdbc:mysql://localhost:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://rm-2ze89p9068qadm19ibo.mysql.rds.aliyuncs.com:3306/mjnb?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    #url: jdbc:mysql://localhost:3306/zooland?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: root
-    #password: Zooland_007
-    password: root
+    password: Zooland_007
+    #password: root
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10

@@ -72,6 +72,7 @@ public class ProductController {
     		productService.updateProduct(product, file);
 			return new RespBean("200","更新成功");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new RespBean("500",e.getMessage());
 		}
     }

@@ -46,7 +46,7 @@ public class AnnexService {
 			String projectPath = System.getProperty("user.dir");//获取当前项目路径
 			
 			//拼接上传路径
-			String uploadUrl = projectPath + "/src/annexFile/" + annex.getFileName();
+			String uploadUrl = projectPath + "/static/annexFile/" + annex.getFileName();
 			new File(uploadUrl).delete();
 			
 		}
