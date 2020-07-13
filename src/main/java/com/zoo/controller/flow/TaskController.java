@@ -38,10 +38,14 @@ public class TaskController {
 	@Autowired
 	InventoryCheckService inventoryCheckService;
 	@GetMapping("getAssembledTask")
-	public Map<String,Object> getAssembledTask(@RequestParam("page")Integer page,@RequestParam("size")Integer size){
+	public Map<String,Object> getAssembledTask(@RequestParam("page")Integer page,
+			@RequestParam("size")Integer size,
+			@RequestParam("sort")String sort,
+			@RequestParam("order")String order,
+			@RequestParam("keywords")String keywords){
 		Map<String,Object> map = new HashMap<String,Object>();
-		List<AssembledTask> tasks =  customTaskService.getAssembledTask(page,size);
-		long count  = customTaskService.getAssembledTaskCount();
+		List<AssembledTask> tasks =  customTaskService.getAssembledTask(page,size,sort,order,keywords);
+		long count  = customTaskService.getAssembledTaskCount(keywords);
 		map.put("tasks", tasks);
 		map.put("count", count);
 		return map;

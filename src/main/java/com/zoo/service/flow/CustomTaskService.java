@@ -1,7 +1,6 @@
 package com.zoo.service.flow;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -18,9 +17,6 @@ import com.zoo.model.flow.ProductSplitTask;
 import com.zoo.model.flow.PurchaseTask;
 import com.zoo.model.flow.SellTask;
 import com.zoo.service.erp.inventorycheck.InventoryCheckService;
-import com.zoo.service.erp.openingInventory.OpeningInventoryService;
-import com.zoo.service.erp.purchase.PurchaseService;
-import com.zoo.service.erp.sell.SellService;
 
 @Service
 @Transactional
@@ -34,22 +30,13 @@ public class CustomTaskService {
 	
 	@Autowired
 	InventoryCheckService inventoryCheckService;
-	
-	@Autowired
-	private SellService sellService;
-	
-	@Autowired
-	private PurchaseService purchaseService;
-	
-	@Autowired
-	private OpeningInventoryService openingInventoryService;
-	public List<AssembledTask> getAssembledTask(Integer page, Integer size) {
+	public List<AssembledTask> getAssembledTask(Integer page,Integer size,String sort,String order,String keywords) {
 		Integer start = (page-1)*size;
-		return taskMapper.getAssembledTask(start,size,LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getAssembledTask(start,size,sort,order,keywords,LoginInterceptor.getLoginUser().getId());
 	}
-	public long getAssembledTaskCount() {
+	public long getAssembledTaskCount(String keywords) {
 		// TODO Auto-generated method stub
-		return taskMapper.getAssembledTaskCount(LoginInterceptor.getLoginUser().getId());
+		return taskMapper.getAssembledTaskCount(keywords,LoginInterceptor.getLoginUser().getId());
 	}
 	public List<OpeningInventoryTask> getOpeningInventoryTask(Integer page,Integer size,String sort,String order,String keywords){
 		Integer start = (page-1)*size;
@@ -117,22 +104,6 @@ public class CustomTaskService {
 	public ProductSplitTask getProductSplitTaskById(String taskId) {
 		// TODO Auto-generated method stub
 		return taskMapper.getProductSplitTaskById(taskId);
-	}
-	/*--------------拆分单流程任务代码结束-----------------*/
-	public void claim(String taskId, String id) {
-		taskService.claim(taskId, LoginInterceptor.getLoginUser().getId());
-		Map<String, Object> variables = taskService.getVariables(taskId);
-		variables.put("id", id);
-		String string = variables.get("CODE").toString().substring(0, 2);
-		if("PD".equals(string)) {
-			inventoryCheckService.updateInventoryCheckIsClaimed(variables);
-		}else if ("XS".equals(string)) {
-			sellService.updateSellIsClaimed(variables);
-		}else if ("CG".equals(string)) {
-			purchaseService.updatePurchaseIsClaimed(variables);
-		}else if ("QC".equals(string)) {
-			openingInventoryService.updateOpeningInventoryIsClaimed(variables);
-		}
 	}
 	
 }

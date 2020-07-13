@@ -14,7 +14,7 @@
     <endEvent id="endevent1" name="结束"></endEvent>
     <sequenceFlow id="flow3" sourceRef="selloutbound" targetRef="endevent1">
       <extensionElements>
-        <activiti:executionListener event="take" class="com.zoo.listener.activiti.SellENDHandler"></activiti:executionListener>
+        <activiti:executionListener event="take" class="com.zoo.listener.activiti.sell.SellENDHandler"></activiti:executionListener>
       </extensionElements>
     </sequenceFlow>
     <userTask id="sellcwreceive" name="财务收款">

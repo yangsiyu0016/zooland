@@ -10,6 +10,7 @@
 		<result column="code" property="code"/>
 		<result column="companyId" property="companyId"/>
 		<result column="ctime" property="ctime"/>
+		<result column="mnemonic" property="mnemonic"/>
 		<association column="brandId"   property="productBrand" select="com.zoo.mapper.erp.product.ProductBrandMapper.getBrandById"></association>
 		<association column="unitId"   property="unit" select="com.zoo.mapper.erp.product.UnitMapper.getUnitById"></association>
 	</resultMap>
@@ -22,9 +23,21 @@
 			and typeId = #{typeId} 
 		</if>
 		<if test="keywords != null and keywords != '' ">
-			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%') or mnemonic like concat('%', #{keywords}, '%'))   
 		</if>
-		order by ctime desc
+		<if test="brandId!=null and brandId!=''">
+			and brandId=#{brandId}
+		</if>
+		<if test="name!=null and name!=''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		<if test="code!=null and code!=''">
+			and code like concat('%', #{code}, '%')
+		</if>
+		<if test="mnemonic!=null and mnemonic!=''">
+			and mnemonic like concat('%', #{mnemonic}, '%')
+		</if>
+		order by ${sort} ${order}
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
@@ -38,7 +51,19 @@
 			and typeId = #{typeId} 
 		</if>
 		<if test="keywords != null and keywords != '' ">
-			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%'))   
+			and (name like concat('%', #{keywords}, '%') or code like concat('%', #{keywords}, '%') or mnemonic like concat('%', #{keywords}, '%'))   
+		</if>
+		<if test="brandId!=null and brandId!=''">
+			and brandId=#{brandId}
+		</if>
+		<if test="name!=null and name!=''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		<if test="code!=null and code!=''">
+			and code like concat('%', #{code}, '%')
+		</if>
+		<if test="mnemonic!=null and mnemonic!=''">
+			and mnemonic like concat('%', #{mnemonic}, '%')
 		</if>
 	</select>
 	<select id="getProductByTypeId" resultMap="BaseResultMap">
@@ -82,7 +107,8 @@
 				description,
 				companyId,
 				ctime,
-				imageUrl
+				imageUrl,
+				mnemonic
 			) values(
 				#{product.id},
 				#{product.name},
@@ -97,7 +123,8 @@
 				#{product.description},
 				#{product.companyId},
 				#{product.ctime},
-				#{product.imageUrl}
+				#{product.imageUrl},
+				#{product.mnemonic}
 			)
 	</insert>
 	<update id="updateProduct">
@@ -111,7 +138,8 @@
 			color=#{product.color},
 			puse=#{product.puse},
 			description=#{product.description},
-			imageUrl=#{product.imageUrl}
+			imageUrl=#{product.imageUrl},
+			mnemonic=#{product.mnemonic}
 		where id=#{product.id}
 	</update>
 	<update id="deleteProductById">

@@ -51,6 +51,8 @@ public class SystemMenuService {
 		if(count>0) {
 			throw new ZooException(ExceptionEnum.DELETE_MENU_HAS_CHIILDREN);
 		}else {
+			systemMenuMapper.deleteCompanyTypeMenuByMenuId(id);
+			systemMenuMapper.deletePositionMenuByMenuId(id);
 			systemMenuMapper.deleteMenuById(id);
 		}
 		

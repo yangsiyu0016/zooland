@@ -37,11 +37,17 @@ public class ProductController {
     public Map<String,Object> getProductByPage(
     		@RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(value = "keywords", required = false) String keywords,
-            @RequestParam(value = "typeId", required = false) String typeId){
+            @RequestParam("sort") String sort,
+            @RequestParam("order") String order,
+            @RequestParam("keywords") String keywords,
+            @RequestParam("typeId") String typeId,
+            @RequestParam("brandId") String brandId,
+            @RequestParam("name") String name,
+            @RequestParam("code") String code,
+            @RequestParam("mnemonic") String mnemonic){
     	Map<String,Object> map = new HashMap<String,Object>();
-    	List<Product> products = productService.getProductByPage(page, size, keywords, typeId);
-    	long count = productService.getCount(keywords, typeId);
+    	List<Product> products = productService.getProductByPage(page, size,sort,order,keywords, typeId,brandId,name,code,mnemonic);
+    	long count = productService.getCount(keywords, typeId,brandId,name,code,mnemonic);
     	map.put("products", products);
     	map.put("count", count);
     	return map;
@@ -66,6 +72,7 @@ public class ProductController {
     		productService.updateProduct(product, file);
 			return new RespBean("200","更新成功");
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new RespBean("500",e.getMessage());
 		}
     }

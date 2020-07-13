@@ -31,6 +31,9 @@
 			limit #{start},#{size}
 		</if>
 	</select>
+	<select id="getNoRepeatCountByEditExpressName" resultType="long">
+		select count(*) from express where isDelete = 0 and id not in (#{id}) and name = #{name} and companyId = #{companyId}
+	</select>
 	<select id="selectCountByExpressName" resultType="long">
 		select count(*) from express where name = #{expressName} and companyId = #{companyId} and isDelete = 0 
 	</select>
@@ -60,7 +63,8 @@
 			phone,
 			description,
 			type,
-			ctime
+			ctime,
+			companyId
 		) values(
 			#{express.id},
 			#{express.name},
@@ -68,7 +72,8 @@
 			#{express.phone},
 			#{express.description},
 			#{express.type},
-			#{express.ctime}
+			#{express.ctime},
+			#{express.companyId}
 		)
 	</insert>
 	<update id="updateExpress">
@@ -78,8 +83,7 @@
 			phone = #{express.phone},
 			description = #{express.description},
 			type = #{express.type}
-		where id = #{express.id}
-		
+		where id = #{express.id}	
 	</update>
 	<update id="deleteById"> 
 		update express set 

@@ -19,7 +19,7 @@
 		<association column="parentId" property="parent" select="getDirectoryById"></association>
 	</resultMap>
 	<select id="getTreeData" resultMap="WithChildrenResultMap">
-		select * from system_parameter_directory where companyId=#{companyId} and parentId='' order by orderNumber
+		select * from system_parameter_directory where companyId=#{companyId} and (parentId='' or parentId=null) order by orderNumber
 	</select>
 	<select id="getDirecotryByParentId" resultMap="WithChildrenResultMap">
 		select * from system_parameter_directory where parentId=#{parentId} order by orderNumber

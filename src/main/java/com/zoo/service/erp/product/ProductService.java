@@ -63,13 +63,14 @@ public class ProductService {
             throw new ZooException(ExceptionEnum.UPLOAD_IMAGE_EXCEPTION);
         }
 	}
-	public List<Product> getProductByPage(Integer page,Integer size, String keywords, String typeId){
+	public List<Product> getProductByPage(Integer page,Integer size, String sort,String order,String keywords, String typeId,String brandId,String name,String code,String mnemonic){
 		Integer start = null;
 		if(page!=null&&size!=null) {
 			start = (page-1)*size;
 		}
 		
-		List<Product> products = productMapper.getProductByPage(start, size, keywords, typeId, LoginInterceptor.getLoginUser().getCompanyId());
+		List<Product> products = productMapper.getProductByPage(
+				start, size,sort,order, keywords, typeId,brandId,name,code,mnemonic, LoginInterceptor.getLoginUser().getCompanyId());
 		handleType(products);
 		return products;
 	}
@@ -93,8 +94,8 @@ public class ProductService {
 		}
 		return name;
 	}
-	public Long getCount(String key, String typeId) {
-		return productMapper.getCount(LoginInterceptor.getLoginUser().getCompanyId(), key, typeId);
+	public Long getCount(String keywords, String typeId,String brandId,String name,String code,String mnemonic) {
+		return productMapper.getCount( keywords, typeId,brandId,name,code,mnemonic,LoginInterceptor.getLoginUser().getCompanyId());
 	}
 
 	
@@ -164,15 +165,14 @@ public class ProductService {
 			String uploadUrl = projectPath + "/static/productimage/" + fileName;
 			
 			//p判断该产品是否删除之前图片
-			Product product2 = productMapper.getProductById(product.getId());
-			String url = product2.getImageUrl();
-			String[] split = null;
-			if(url != null && !"".equals(url)) {
-				split = url.split("/");
-			}	
-			url = projectPath + "/static/productimage/" + split[split.length -1];
-			boolean flag = new File(url).delete();
-			if(flag) {
+			/*
+			 * Product product2 = productMapper.getProductById(product.getId()); String url
+			 * = product2.getImageUrl(); String[] split = null; if(url != null &&
+			 * !"".equals(url)) { split = url.split("/"); } url = projectPath +
+			 * "/static/productimage/" + split[split.length -1]; boolean flag = new
+			 * File(url).delete();
+			 */
+			//if(flag) {
 				//判断该文件是否存在，
 				File uploadFile = new File(uploadUrl);
 				if(file != null) {
@@ -180,7 +180,7 @@ public class ProductService {
 				}
 				
 				product.setImageUrl(sourceIp+"/productimage/" + fileName);
-			}
+			//}
 			
 			
 		}

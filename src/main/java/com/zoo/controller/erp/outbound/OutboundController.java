@@ -36,7 +36,7 @@ public class OutboundController {
 			@RequestParam("end_ctime") String end_ctime) {
 		Map<String, Object> respMap = new HashMap<String, Object>();
 		try {
-			List<Map<String,Object>> list = outBoundService.getOutboundsByPage(page, size,sort,order,keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
+			List<Outbound> list = outBoundService.getOutboundsByPage(page, size,sort,order,keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
 			Long count = outBoundService.getTotalCount(keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
 			respMap.put("outbounds", list);
 			respMap.put("count", count);

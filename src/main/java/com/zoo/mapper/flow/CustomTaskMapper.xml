@@ -59,7 +59,10 @@
 			) t
 		WHERE 1=1 
 		
-		ORDER BY t.CREATE_TIME_ DESC 
+		<if test="keywords!=null and keywords!=''">
+			AND t.code like concat('%',#{keywords},'%')
+		</if>
+		ORDER BY ${sort} ${order}
 		<if test="start!=null and size!=null">
 			LIMIT #{start},#{size} 
 		</if>
@@ -108,7 +111,9 @@
 				AND ARP.KEY_='assembled'
 			) t
 		WHERE 1=1
-		
+		<if test="keywords!=null and keywords!=''">
+			AND t.code like concat('%',#{keywords},'%')
+		</if>
 	</select>
 
 <select id="getPurchaseTask" resultType="com.zoo.model.flow.PurchaseTask" parameterType="map">
