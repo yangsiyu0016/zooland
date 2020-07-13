@@ -7,16 +7,26 @@
 		<id column="id" property="id"/>
 		<result column="name" property="name"/>
 	</resultMap>
-
+	<select id="getCountByRepeat" resultType="Long">
+		select count(*) from unit where name = #{name}
+	</select>
+	<select id="getCountByRepeatOfEdit" resultType="Long">
+		select count(*) from unit where name = #{name} and id not in (#{id})
+	</select>
 	<select id="getUnitByPage" resultMap="BaseResult">
 		select * from unit where 1=1
-
+		<if test="keywords != null and keywords != '' ">
+			and name like concat('%', #{keywords}, '%') 
+		</if>
 		<if test="start!=null and size!=null">
 			limit #{start},#{size}
 		</if>
 	</select>
 	<select id="getCount" resultType="Long">
 		select count(*) from unit where 1=1
+		<if test="keywords != null and keywords != '' ">
+			and name like concat('%', #{keywords}, '%') 
+		</if>
 	</select>
 	<select id="getUnitById" resultMap="BaseResult">
 		select * from unit where id=#{id}
@@ -27,5 +37,16 @@
 	<insert id="addUnit">
 		insert into unit (id,name) values(#{unit.id},#{unit.name})
 	</insert>
-
+	<update id="update">
+		update unit set 
+			name = #{unit.name}
+		where 
+			id = #{unit.id}
+	</update>
+	<delete id="delete">
+		delete from unit where id in
+		<foreach collection="ids" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+	</delete>
 </mapper>

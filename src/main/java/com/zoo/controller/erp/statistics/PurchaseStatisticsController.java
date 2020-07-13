@@ -33,8 +33,20 @@ public class PurchaseStatisticsController {
 	}
 	
 	@PostMapping("search")
-	public Map<String, Object> search(@RequestBody SearchData searchData) {
-		return purchaseStatisticsService.search(searchData);
+	public Map<String, Object> search(@RequestParam("page") Integer page,
+			@RequestParam("size") Integer size,
+			@RequestParam("sort") String sort,
+			@RequestParam("order") String order,
+			@RequestParam("keywords") String keywords,
+			@RequestParam("code") String code,
+			@RequestParam("productName") String productName,
+			@RequestParam("supplierName") String supplierName,
+			@RequestParam("start_initDate") String start_initDate,
+			@RequestParam("end_initDate") String end_initDate,
+			@RequestParam("start_ctime") String start_ctime,
+			@RequestParam("end_ctime") String end_ctime,
+			@RequestParam("status") String status) {
+		return purchaseStatisticsService.search(page,size,sort,order,keywords,code,productName,supplierName,start_initDate,end_initDate,start_ctime,end_ctime,status);
 	}
 	
 }
