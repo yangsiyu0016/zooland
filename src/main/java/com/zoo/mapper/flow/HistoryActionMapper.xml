@@ -6,7 +6,7 @@
 
 <select id="getHistoryActionByProcessInstanceId" resultType="com.zoo.model.flow.HistoryAction">
 	
-	SELECT 
+	SELECT DISTINCT
 		aha.ACT_NAME_ actName,
 		aha.ACT_TYPE_ actType,
 		aha.ASSIGNEE_ assignee,

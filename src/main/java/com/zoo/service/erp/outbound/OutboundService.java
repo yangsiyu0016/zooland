@@ -1,7 +1,6 @@
 package com.zoo.service.erp.outbound;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class OutboundService {
 	private OutboundMapper outboundMapper;
 	@Autowired
 	private OutboundDetailMapper outboundDetailMapper;
-	public List<Map<String, Object>> getOutboundsByPage(
+	public List<Outbound> getOutboundsByPage(
 			Integer page, 
 			Integer size,
 			String sort, 
@@ -33,7 +32,7 @@ public class OutboundService {
 			String start_ctime, 
 			String end_ctime) {
 		Integer start = (page -1) * size;
-		List<Map<String,Object>> list = outboundMapper.getOutboundsByPage(
+		List<Outbound> list = outboundMapper.getOutboundsByPage(
 				start, size,sort,order,LoginInterceptor.getLoginUser().getCompanyId(),
 				keywords,code,productCode,productName,type,warehouseId,start_ctime,end_ctime);
 		return list;

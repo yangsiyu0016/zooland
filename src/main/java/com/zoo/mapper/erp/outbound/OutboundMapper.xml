@@ -7,6 +7,7 @@
 		<id column="id" property="id"/>
 		<association column="warehouseId" property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<association column="cuserId" property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
+		<association column="costId" property="cost" select="com.zoo.mapper.erp.cost.CostMapper.getCostById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.outbound.OutboundDetailMapper.getDetailByOutboundId"></collection>
 	</resultMap>
 	<select id="getOutboundsByPage" resultMap="BaseResultMap">
