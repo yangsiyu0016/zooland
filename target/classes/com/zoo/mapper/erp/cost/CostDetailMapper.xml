@@ -30,8 +30,8 @@
 			#{detail.totalMoney}
 		)
 	</insert>
-	<update id="updateDetail">
-		update cost_detail set price = #{detial.price},totalMoney = #{detail.totalMoney} where id = #{detail.id}
+	<update id="updateCostDetail">
+		update cost_detail set price = #{detail.price},totalMoney = #{detail.totalMoney} where id = #{detail.id}
 	</update>
 	<delete id="deleteDetailById">
 		delete from cost_detail where id=#{id}

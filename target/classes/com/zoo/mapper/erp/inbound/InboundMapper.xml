@@ -8,7 +8,6 @@
 		<result column="foreignKey" property="foreignKey"/>
 		<result column="type" property="type"/>
 		<association column="cuserId"   property="cuser" select="com.zoo.mapper.system.user.SystemUserMapper.getUserById"></association>
-		<association column="foreignKey"   property="splitDetail" select="com.zoo.mapper.erp.productsplit.ProductSplitDetailMapper.getDetailById"></association>
 		<association column="warehouseId"   property="warehouse" select="com.zoo.mapper.erp.warehouse.WarehouseMapper.getWarehouseById"></association>
 		<collection column="id" property="details" select="com.zoo.mapper.erp.inbound.InboundDetailMapper.getDetailByInboundId"></collection>
 	</resultMap>
@@ -33,22 +32,6 @@
 			#{inbound.cost.id}
 		)
 	</insert>
-	<!-- <select id="getInboundByPage" resultType="java.util.HashMap">
-		select i.code code, i.ctime ctime, ps.name, i.type, w.name warehouseName from 
-			inbound i 
-		left join 
-			(select p.id id, s.supplierName name from purchase p left join supplier s on p.supplierId = s.id) ps on i.foreignKey = ps.id 
-		left join 
-			warehouse w on i.warehouseId = w.id
-		where 1 = 1 
-		<if test="keywords != null and keywords != '' ">
-			and i.code like concat('%', #{keywords}, '%') 
-		</if>
-			order by ${sort} ${order}
-		<if test="start != null and size != null">
-			limit #{start}, #{size}
-		</if>
-	</select> -->
 	<select id="getInboundByPage" resultMap="BaseResultMap">
 		select 
 			distinct i.* 
