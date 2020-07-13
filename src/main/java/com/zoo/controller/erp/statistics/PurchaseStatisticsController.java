@@ -4,13 +4,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.service.erp.statistics.PurchaseStatisticsService;
 
 /**
@@ -32,7 +29,7 @@ public class PurchaseStatisticsController {
 				
 	}
 	
-	@PostMapping("search")
+	@GetMapping("search")
 	public Map<String, Object> search(@RequestParam("page") Integer page,
 			@RequestParam("size") Integer size,
 			@RequestParam("sort") String sort,

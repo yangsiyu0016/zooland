@@ -1,6 +1,6 @@
 package com.zoo.service.erp.statistics;
 
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.statistics.SellStatisticsMapper;
-import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.model.erp.statistics.SellStatistics;
-import com.zoo.model.system.user.UserInfo;
 
 
 @Service
@@ -21,29 +19,33 @@ public class SellStatisticsService {
 	@Autowired
 	private SellStatisticsMapper sellStatisticsMapper;
 
-	public Map<String, Object> page(SearchData searchData) throws ParseException {
-		Integer start = (searchData.getPage() - 1) * searchData.getSize();
-		
+
+	public Map<String, Object> page(Integer page, Integer size, String sort, String order, String keywords, String code,
+			String productName, String customerName, String start_initDate, String end_initDate, String start_ctime,
+			String end_ctime, String status) {
+		// TODO Auto-generated method stub
+		Integer start = (page - 1) * size;
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		
-		UserInfo userInfo = LoginInterceptor.getLoginUser();
-		/*
-		 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //格式化规则
-		 * if(searchData.getStartDate() != null && searchData.getEndDate() != null) {
-		 * Date startDate = searchData.getStartDate(); Date endDate =
-		 * searchData.getEndDate();
-		 * searchData.setStartDate(sdf.parse(sdf.format(startDate)));
-		 * searchData.setEndDate(sdf.parse(sdf.format(endDate)));
-		 * System.out.println(sdf.parse(sdf.format(startDate))); }
-		 */
-		
-		List<SellStatistics> list = sellStatisticsMapper.page(searchData, start, searchData.getSize(), userInfo.getCompanyId());
-		
-		Long count = sellStatisticsMapper.getCount(searchData, userInfo.getCompanyId());
-		
+		List<SellStatistics> list = sellStatisticsMapper.page(start, size, sort, order, keywords, code, productName, customerName, start_initDate, end_initDate, start_ctime, end_ctime, status, LoginInterceptor.getLoginUser().getCompanyId());
+		Long count = sellStatisticsMapper.getCount(sort, order, keywords, code, productName, customerName, start_initDate, end_initDate, start_ctime, end_ctime, status, LoginInterceptor.getLoginUser().getCompanyId());
+		//获取导出excel文件的数据
+		List<SellStatistics> exportSellStatistics = sellStatisticsMapper.page(null, null, sort, order, keywords, code, productName, customerName, start_initDate, end_initDate, start_ctime, end_ctime, status, LoginInterceptor.getLoginUser().getCompanyId());
+		//添加合计
+		SellStatistics statistics = new SellStatistics();
+		BigDecimal notOutNumber = new BigDecimal("0");
+		BigDecimal number = new BigDecimal("0");
+		for(SellStatistics statistic: exportSellStatistics) {
+			notOutNumber = notOutNumber.add(statistic.getNotOutNumber() == null? new BigDecimal("0") : statistic.getNotOutNumber());
+			number = number.add(statistic.getNumber() == null? new BigDecimal("0") : statistic.getNumber());
+		}
+		statistics.setTypeName("合计");
+		statistics.setNotOutNumber(notOutNumber);
+		statistics.setNumber(number);
+		exportSellStatistics.add(statistics);
 		map.put("sellStatisticses", list);
 		map.put("count", count);
-		
+		map.put("exportSellStatistics", exportSellStatistics);
 		return map;
 	}
 }

@@ -139,7 +139,7 @@
 			and pdp.companyId = #{companyId}
 		</if> 
 		<if test="keywords != null and keywords != '' ">
-			and (pdp.code like concat('%', #{keywords}, '%') or pro.name like concat('%', #{keywords}, '%') or sup.supplierName like concat('%'， #{keywords}, '%')) 
+			and (pdp.code like concat('%', #{keywords}, '%') or pro.name like concat('%', #{keywords}, '%') or sup.supplierName like concat('%', #{keywords}, '%')) 
 		</if>
 		<if test="productName != null and productName != '' ">
 			and pro.name like concat('%', #{productName}, '%') 
@@ -148,7 +148,7 @@
 			and pdp.code like concat('%', #{code}, '%')  
 		</if>
 		<if test="supplierName != null and supplierName != '' ">
-			and sup.supplierName like concat('%', #{searchData.supplierName},'%') 
+			and sup.supplierName like concat('%', #{supplierName},'%') 
 		</if>
 		<if test="start_initDate != null and start_initDate != '' and end_initDate != null and end_initDate != '' ">
 			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
@@ -210,20 +210,30 @@
 		<if test="companyId != null">
 			and pdp.companyId = #{companyId}
 		</if> 
-		<if test="searchData.productName != null and searchData.productName != '' ">
-			and pro.id = #{searchData.productId} 
+		<if test="keywords != null and keywords != '' ">
+			and (pdp.code like concat('%', #{keywords}, '%') or pro.name like concat('%', #{keywords}, '%') or sup.supplierName like concat('%', #{keywords}, '%')) 
 		</if>
-		<if test="searchData.code != null and searchData.code != '' ">
-			and pdp.code like concat('%', #{searchData.code}, '%')  
+		<if test="productName != null and productName != '' ">
+			and pro.name like concat('%', #{productName}, '%') 
 		</if>
-		<if test="searchData.supplierName != null and searchData.supplierName != '' ">
-			and sup.supplierName like concat('%', #{searchData.supplierName},'%') 
+		<if test="code != null and code != '' ">
+			and pdp.code like concat('%', #{code}, '%')  
 		</if>
-		<if test="searchData.startDate != null and searchData.endDate != null">
+		<if test="supplierName != null and supplierName != '' ">
+			and sup.supplierName like concat('%', #{supplierName},'%') 
+		</if>
+		<if test="start_initDate != null and start_initDate != '' and end_initDate != null and end_initDate != '' ">
 			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
-			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]> --> 
-			and pdp.initDate &gt;= #{searchData.startDate} and pdp.initDate &lt;= #{searchData.endDate} 
-			
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]>  -->
+			and pdp.initDate &gt;= #{start_initDate} and pdp.initDate &lt;= #{end_initDate}
+		</if>
+		<if test="start_ctime != null and start_ctime != ''  and end_ctime != null and end_ctime != '' ">
+			<!-- and dd.initDate &gt; #{searchData.startDate} and dd.initDate &lt; #{searchData.endDate} --> 
+			<!-- <![CDATA[and pdp.initDate > #{searchData.startDate} and pdp.initDate < #{searchData.endDate}]]>  -->
+			and pdp.ctime &gt;= #{start_ctime} and pdp.ctime &lt;= #{end_ctime}
+		</if>
+		<if test="status != null and status != '' ">
+			and pdp.status = #{status}
 		</if>
 	</select>
 </mapper>

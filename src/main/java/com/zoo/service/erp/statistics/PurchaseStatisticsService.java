@@ -1,17 +1,16 @@
 package com.zoo.service.erp.statistics;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.zoo.filter.LoginInterceptor;
 import com.zoo.mapper.erp.statistics.PurchaseStatisticsMapper;
 import com.zoo.model.erp.statistics.PurchaseStatistics;
-import com.zoo.model.erp.statistics.SearchData;
 import com.zoo.model.system.user.UserInfo;
 
 
@@ -69,10 +68,24 @@ public class PurchaseStatisticsService {
 		List<PurchaseStatistics> list = purchaseStatisticsMapper.search(start, size, sort, order, keywords, code, productName, supplierName, start_initDate, end_initDate, start_ctime, end_ctime, status, userInfo.getCompanyId());
 		
 		Long count = purchaseStatisticsMapper.getSearchCount(sort, order, keywords, code, productName, supplierName, start_initDate, end_initDate, start_ctime, end_ctime, status, userInfo.getCompanyId());
+		//获取导出采购统计数据
+		List<PurchaseStatistics> exportPurchaseStatistics = purchaseStatisticsMapper.search(null, null, sort, order, keywords, code, productName, supplierName, start_initDate, end_initDate, start_ctime, end_ctime, status, userInfo.getCompanyId());
 		
-		
+		//添加合计
+		PurchaseStatistics purchaseStatistics = new PurchaseStatistics();
+		BigDecimal notInNumber = new BigDecimal("0");
+		BigDecimal number = new BigDecimal("0");
+		for(PurchaseStatistics statistic: exportPurchaseStatistics) {
+			notInNumber = notInNumber.add(statistic.getNotInNumber() == null? new BigDecimal("0") : statistic.getNotInNumber());
+			number = number.add(statistic.getNumber() == null? new BigDecimal("0") : statistic.getNumber());
+		}
+		purchaseStatistics.setProductType("合计");
+		purchaseStatistics.setNotInNumber(notInNumber);
+		purchaseStatistics.setNumber(number);
+		exportPurchaseStatistics.add(purchaseStatistics);
 		map.put("purchaseStatisticses", list);
 		map.put("count", count);
+		map.put("exportPurchaseStatistics", exportPurchaseStatistics);
 		return map;
 	}
 	
