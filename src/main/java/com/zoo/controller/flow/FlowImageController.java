@@ -69,7 +69,7 @@ public class FlowImageController {
 			List<String> highLightedFlowIds = getHighLightedFlows(bpmnModel, historicActivityInstances);
 
 			// 使用默认配置获得流程图表生成器，并生成追踪图片字符流
-			InputStream imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "png", highLightedActivitiIds, highLightedFlowIds, "宋体", "微软雅黑", "黑体", null, 2.0);
+			InputStream imageStream = processDiagramGenerator.generateDiagram(bpmnModel, "png", highLightedActivitiIds, highLightedFlowIds, "宋体", "宋体", "黑体", null, 2.0);
 
 			// 输出图片内容
 			byte[] b = new byte[1024];
