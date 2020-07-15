@@ -28,8 +28,10 @@ public class StockController {
 			@RequestParam("warehouseId")String warehouseId){
 		Map<String,Object> map = new HashMap<String,Object>();
 		List<Stock> stocks = stockService.getStockByPage(page, size,keywords,productCode,productName,warehouseId);
+		List<Stock> exportStocks = stockService.getExportStocks(keywords, productCode, productName, warehouseId);
 		long count = stockService.getStockCount(keywords,productCode,productName,warehouseId);
 		map.put("stocks", stocks);
+		map.put("exportStocks", exportStocks);
 		map.put("count", count);
 		return map;
 	}
